@@ -136,9 +136,9 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
           </div>
           
           {/* Footer */}
-          <div className="mt-12 text-center">
+          <div className="mt-8 text-center">
             <p className="text-gray-500 text-sm" style={{ fontFamily: 'Hanken Grotesk' }}>
-              © 2024 Katalog Ikan. All rights reserved.
+              © 2025 Made with 🖤 by akbar.
             </p>
           </div>
         </div>
