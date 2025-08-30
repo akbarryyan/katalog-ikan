@@ -14,9 +14,10 @@ import TabelIkan from './TabelIkan';
 interface AdminDashboardProps {
   onLogout: () => void;
   user: { username: string } | null;
+  onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan') => void;
 }
 
-const AdminDashboard = ({ onLogout, user }: AdminDashboardProps) => {
+const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
 
@@ -63,7 +64,12 @@ const AdminDashboard = ({ onLogout, user }: AdminDashboardProps) => {
               return (
                 <li key={item.id}>
                   <button
-                    onClick={() => setActiveTab(item.id)}
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      if (item.id === 'tambah-ikan' || item.id === 'kelola-ikan') {
+                        onNavigate(item.id as 'tambah-ikan' | 'kelola-ikan');
+                      }
+                    }}
                     className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
                       activeTab === item.id
                         ? 'bg-blue-100 text-blue-700'

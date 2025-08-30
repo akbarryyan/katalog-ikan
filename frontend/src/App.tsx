@@ -1,7 +1,7 @@
-import AdminApp from './components/AdminApp'
+import Router from './router'
 
 function App() {
-  return <AdminApp />
+  return <Router />
 }
 
 export default App
