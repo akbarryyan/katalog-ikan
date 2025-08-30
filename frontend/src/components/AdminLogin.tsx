@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface AdminLoginProps {
   onLogin: (credentials: { username: string; password: string }) => void;
@@ -9,10 +11,52 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
     username: '',
     password: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(formData);
+    
+    if (!formData.username || !formData.password) {
+      toast.error('Username dan password harus diisi!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Call onLogin
+      onLogin(formData);
+      
+      toast.success('Login berhasil! Mengalihkan ke dashboard...', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      toast.error('Terjadi kesalahan saat login. Silakan coba lagi.', {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,20 +158,37 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 text-white py-3 px-6 rounded-2xl font-bold text-lg hover:from-blue-600 hover:via-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:ring-offset-2 focus:ring-offset-white transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-xl hover:shadow-2xl relative overflow-hidden group"
+                    disabled={isLoading}
+                                         className={`w-full py-3 px-6 rounded-2xl font-bold text-lg text-white focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-white transition-all duration-300 transform shadow-xl relative overflow-hidden group ${
+                       isLoading
+                         ? 'bg-gray-400 cursor-not-allowed shadow-lg'
+                         : 'bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 hover:from-blue-600 hover:via-blue-700 hover:to-indigo-700 hover:scale-[1.02] active:scale-[0.98] hover:shadow-2xl'
+                     }`}
                     style={{ fontFamily: 'Hanken Grotesk' }}
                   >
                     {/* Button Shine Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    {!isLoading && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    )}
                     
                     {/* Button Content */}
                     <span className="relative flex items-center justify-center">
-                      <div className="w-6 h-6 bg-white rounded-lg mr-3 flex items-center justify-center group-hover:rotate-12 transition-transform duration-300 shadow-sm">
-                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                        </svg>
-                      </div>
-                      Masuk ke Dashboard
+                      {isLoading ? (
+                        <>
+                          {/* Loading Spinner */}
+                          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
+                          Memproses Login...
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-6 h-6 bg-white rounded-lg mr-3 flex items-center justify-center group-hover:rotate-12 transition-transform duration-300 shadow-sm">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                          </div>
+                          Masuk ke Dashboard
+                        </>
+                      )}
                     </span>
                   </button>
                 </div>
@@ -143,6 +204,9 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
           </div>
         </div>
       </div>
+      
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 };
