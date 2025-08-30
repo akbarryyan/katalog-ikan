@@ -8,8 +8,8 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import FormIkan from './FormIkan';
-import TabelIkan from './TabelIkan';
+import FormIkan from '../components/FormIkan';
+import TabelIkan from '../components/TabelIkan';
 
 interface AdminDashboardProps {
   onLogout: () => void;

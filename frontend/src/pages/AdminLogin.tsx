@@ -46,20 +46,23 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         localStorage.setItem('adminToken', result.data.token);
         localStorage.setItem('adminUser', JSON.stringify(result.data.admin));
         
-        toast.success(result.message + ' Mengalihkan ke dashboard...', {
+        toast.success('🎉 ' + result.message + ' Mengalihkan ke dashboard...', {
           position: "top-right",
-          autoClose: 2000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
         });
 
-        // Panggil onLogin dengan data dari backend
-        onLogin({
-          email: result.data.admin.email,
-          password: formData.password // Password tidak disimpan, hanya untuk compatibility
-        });
+        // Delay redirect agar toast notification tampil dulu
+        setTimeout(() => {
+          // Panggil onLogin dengan data dari backend
+          onLogin({
+            email: result.data.admin.email,
+            password: formData.password // Password tidak disimpan, hanya untuk compatibility
+          });
+        }, 1500); // Delay 1.5 detik agar toast tampil
       } else {
         toast.error(result.message, {
           position: "top-right",
@@ -231,7 +234,19 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
       </div>
       
       {/* Toast Container */}
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        style={{ zIndex: 9999 }}
+      />
     </div>
   );
 };
