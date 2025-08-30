@@ -1,5 +1,6 @@
+// Router for Admin Application
 import { useState, useEffect } from 'react';
-import AdminLogin from './components/AdminLogin';
+import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import FormIkan from './components/FormIkan';
 import TabelIkan from './components/TabelIkan';

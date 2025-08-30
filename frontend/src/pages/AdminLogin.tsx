@@ -159,11 +159,11 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                                         className={`w-full py-3 px-6 rounded-2xl font-bold text-lg text-white focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-white transition-all duration-300 transform shadow-xl relative overflow-hidden group ${
-                       isLoading
-                         ? 'bg-gray-400 cursor-not-allowed shadow-lg'
-                         : 'bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 hover:from-blue-600 hover:via-blue-700 hover:to-indigo-700 hover:scale-[1.02] active:scale-[0.98] hover:shadow-2xl'
-                     }`}
+                    className={`w-full py-3 px-6 rounded-2xl font-bold text-lg text-white focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-white transition-all duration-300 transform shadow-xl relative overflow-hidden group ${
+                      isLoading
+                        ? 'bg-gray-400 cursor-not-allowed shadow-lg'
+                        : 'bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 hover:from-blue-600 hover:via-blue-700 hover:to-indigo-700 hover:scale-[1.02] active:scale-[0.98] hover:shadow-2xl'
+                    }`}
                     style={{ fontFamily: 'Hanken Grotesk' }}
                   >
                     {/* Button Shine Effect */}
