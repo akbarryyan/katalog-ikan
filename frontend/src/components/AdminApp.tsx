@@ -1,6 +1,7 @@
+// AdminApp Component - Main admin application entry point
 import { useState } from 'react';
-import AdminLogin from './AdminLogin';
-import AdminDashboard from './AdminDashboard';
+import AdminLogin from './AdminLogin.tsx';
+import AdminDashboard from './AdminDashboard.tsx';
 
 const AdminApp = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
