@@ -39,16 +39,14 @@ export const Router = () => {
 
   // Login handler
   const handleLogin = (credentials: { email: string; password: string }) => {
-    if (credentials.email === 'admin@ikan.com' && credentials.password === 'admin123') {
-      const userData = { email: credentials.email };
-      setUser(userData);
-      setIsLoggedIn(true);
-      localStorage.setItem('adminLoggedIn', 'true');
-      localStorage.setItem('adminUser', JSON.stringify(userData));
-      setCurrentRoute('dashboard');
-    } else {
-      alert('Email atau password salah! Gunakan admin@ikan.com/admin123');
-    }
+    // Frontend validation sudah tidak diperlukan karena backend sudah handle
+    // Data dari backend sudah valid, langsung set user dan redirect
+    const userData = { email: credentials.email };
+    setUser(userData);
+    setIsLoggedIn(true);
+    localStorage.setItem('adminLoggedIn', 'true');
+    localStorage.setItem('adminUser', JSON.stringify(userData));
+    setCurrentRoute('dashboard');
   };
 
   // Logout handler

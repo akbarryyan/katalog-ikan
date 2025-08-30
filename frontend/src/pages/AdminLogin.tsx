@@ -31,20 +31,45 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Call onLogin
-      onLogin(formData);
-      
-      toast.success('Login berhasil! Mengalihkan ke dashboard...', {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+      const response = await fetch('http://localhost:5000/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
       });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Simpan token dan data admin ke localStorage
+        localStorage.setItem('adminToken', result.data.token);
+        localStorage.setItem('adminUser', JSON.stringify(result.data.admin));
+        
+        toast.success(result.message + ' Mengalihkan ke dashboard...', {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+
+        // Panggil onLogin dengan data dari backend
+        onLogin({
+          email: result.data.admin.email,
+          password: formData.password // Password tidak disimpan, hanya untuk compatibility
+        });
+      } else {
+        toast.error(result.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
     } catch (error) {
       toast.error('Terjadi kesalahan saat login. Silakan coba lagi.', {
         position: "top-right",
