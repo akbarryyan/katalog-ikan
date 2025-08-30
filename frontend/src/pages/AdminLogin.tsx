@@ -3,12 +3,12 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface AdminLoginProps {
-  onLogin: (credentials: { username: string; password: string }) => void;
+  onLogin: (credentials: { email: string; password: string }) => void;
 }
 
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -16,8 +16,8 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.username || !formData.password) {
-      toast.error('Username dan password harus diisi!', {
+    if (!formData.email || !formData.password) {
+      toast.error('Email dan password harus diisi!', {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -100,28 +100,28 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
               
               {/* Form */}
               <form className="space-y-4" onSubmit={handleSubmit}>
-                {/* Username Field */}
+                {/* Email Field */}
                 <div className="space-y-2">
-                  <label htmlFor="username" className="block text-sm font-semibold text-gray-700 uppercase tracking-wide" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    Username
+                  <label htmlFor="email" className="block text-sm font-semibold text-gray-700 uppercase tracking-wide" style={{ fontFamily: 'Hanken Grotesk' }}>
+                    Email
                   </label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                       <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-sm">
                         <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                       </div>
                     </div>
                     <input
-                      id="username"
-                      name="username"
-                      type="text"
+                      id="email"
+                      name="email"
+                      type="email"
                       required
-                      value={formData.username}
+                      value={formData.email}
                       onChange={handleChange}
                       className="w-full pl-16 pr-5 py-3 bg-gray-50/80 border-2 border-gray-200 rounded-2xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all duration-300 hover:bg-gray-100 hover:border-gray-300 hover:shadow-md"
-                      placeholder="Masukkan username Anda"
+                      placeholder="Masukkan email Anda"
                       style={{ fontFamily: 'Hanken Grotesk' }}
                     />
                   </div>

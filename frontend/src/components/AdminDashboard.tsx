@@ -13,7 +13,7 @@ import TabelIkan from './TabelIkan';
 
 interface AdminDashboardProps {
   onLogout: () => void;
-  user: { username: string } | null;
+  user: { email: string } | null;
   onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan') => void;
 }
 

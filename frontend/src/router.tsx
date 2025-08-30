@@ -12,7 +12,7 @@ export type Route = 'login' | 'dashboard' | 'tambah-ikan' | 'edit-ikan' | 'kelol
 export const Router = () => {
   const [currentRoute, setCurrentRoute] = useState<Route>('login');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<{ username: string } | null>(null);
+  const [user, setUser] = useState<{ email: string } | null>(null);
   const [editData, setEditData] = useState<any>(null);
 
   // Check login status on mount
@@ -38,16 +38,16 @@ export const Router = () => {
   };
 
   // Login handler
-  const handleLogin = (credentials: { username: string; password: string }) => {
-    if (credentials.username === 'admin' && credentials.password === 'admin123') {
-      const userData = { username: credentials.username };
+  const handleLogin = (credentials: { email: string; password: string }) => {
+    if (credentials.email === 'admin@ikan.com' && credentials.password === 'admin123') {
+      const userData = { email: credentials.email };
       setUser(userData);
       setIsLoggedIn(true);
       localStorage.setItem('adminLoggedIn', 'true');
       localStorage.setItem('adminUser', JSON.stringify(userData));
       setCurrentRoute('dashboard');
     } else {
-      alert('Username atau password salah! Gunakan admin/admin123');
+      alert('Email atau password salah! Gunakan admin@ikan.com/admin123');
     }
   };
 
