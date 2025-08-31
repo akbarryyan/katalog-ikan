@@ -134,30 +134,126 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
       {/* Main content */}
       <div className="lg:ml-72">
         {/* Top bar */}
-        <div className="bg-white shadow-lg border-b border-[#96BF8A]/20">
-          <div className="flex items-center justify-between h-20 px-6">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg text-[#00412E] hover:bg-[#E8EAE5] transition-colors duration-200"
-            >
-              <Menu size={24} />
-            </button>
-            
+        <div className="bg-white shadow-lg border-b border-gray-100">
+          <div className="flex items-center justify-between h-20 px-6 lg:px-8">
+            {/* Left Section - Mobile Menu & Breadcrumb */}
             <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#96BF8A]" size={20} />
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden p-3 rounded-xl text-[#00412E] hover:bg-[#E8EAE5] transition-all duration-200 hover:scale-105 active:scale-95"
+              >
+                <Menu size={24} />
+              </button>
+              
+              {/* Breadcrumb */}
+              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
+                <span className="font-medium text-[#00412E]">Dashboard</span>
+                <span>/</span>
+                <span className="capitalize">{activeTab.replace('-', ' ')}</span>
+              </div>
+            </div>
+            
+            {/* Center Section - Search Bar */}
+            <div className="flex-1 max-w-2xl mx-4 hidden md:block">
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#96BF8A] group-focus-within:text-[#00412E] transition-colors duration-200" size={20} />
                 <input
                   type="text"
-                  placeholder="Cari ikan, kategori, atau harga..."
-                  className="pl-12 pr-4 py-3 border border-[#96BF8A]/30 rounded-xl focus:ring-2 focus:ring-[#96BF8A] focus:border-[#96BF8A] transition-all duration-200 w-80"
+                  placeholder="🔍 Cari ikan, kategori, atau harga..."
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#96BF8A] focus:border-[#96BF8A] transition-all duration-200 bg-gray-50 focus:bg-white placeholder:text-gray-400"
                   style={{ fontFamily: 'Hanken Grotesk' }}
                 />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <kbd className="hidden lg:inline-flex items-center px-2 py-1 text-xs font-medium text-gray-400 bg-gray-100 rounded-md">
+                    ⌘K
+                  </kbd>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right Section - Actions & User */}
+            <div className="flex items-center space-x-3">
+              {/* Mobile Search Button */}
+              <button className="md:hidden p-3 rounded-xl text-[#00412E] hover:bg-[#E8EAE5] transition-all duration-200 hover:scale-105 active:scale-95">
+                <Search size={20} />
+              </button>
+              
+              {/* Filter Button */}
+              <button className="flex items-center px-4 py-3 text-sm font-medium text-[#00412E] bg-[#96BF8A]/10 hover:bg-[#96BF8A]/20 rounded-xl transition-all duration-200 border border-[#96BF8A]/20 hover:border-[#96BF8A]/30 hover:scale-105 active:scale-95 group">
+                <Filter size={18} className="mr-2 group-hover:rotate-180 transition-transform duration-300" />
+                <span className="hidden sm:inline">Filter</span>
+              </button>
+              
+              {/* Notifications */}
+              <button className="relative p-3 rounded-xl text-[#00412E] hover:bg-[#E8EAE5] transition-all duration-200 hover:scale-105 active:scale-95">
+                <div className="relative">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M9 11h.01M9 8h.01" />
+                  </svg>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                </div>
+              </button>
+              
+              {/* Quick Actions Dropdown */}
+              <div className="relative group">
+                <button className="flex items-center px-4 py-3 text-sm font-medium text-[#00412E] bg-[#96BF8A]/10 hover:bg-[#96BF8A]/20 rounded-xl transition-all duration-200 border border-[#96BF8A]/20 hover:border-[#96BF8A]/30 hover:scale-105 active:scale-95">
+                  <Plus size={18} className="mr-2" />
+                  <span className="hidden sm:inline">Quick Add</span>
+                  <svg className="w-4 h-4 ml-2 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right scale-95 group-hover:scale-100 z-50">
+                  <div className="py-2">
+                    <button 
+                      onClick={() => onNavigate('tambah-ikan')}
+                      className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-[#E8EAE5] hover:text-[#00412E] transition-colors duration-200"
+                    >
+                      <Fish size={16} className="mr-3" />
+                      Tambah Ikan Baru
+                    </button>
+                    <button className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-[#E8EAE5] hover:text-[#00412E] transition-colors duration-200">
+                      <Package size={16} className="mr-3" />
+                      Update Stok
+                    </button>
+                    <button className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-[#E8EAE5] hover:text-[#00412E] transition-colors duration-200">
+                      <DollarSign size={16} className="mr-3" />
+                      Update Harga
+                    </button>
+                  </div>
+                </div>
               </div>
               
-              <button className="flex items-center px-4 py-3 text-sm font-medium text-[#00412E] bg-[#96BF8A]/20 rounded-xl hover:bg-[#96BF8A]/30 transition-all duration-200 border border-[#96BF8A]/30">
-                <Filter size={18} className="mr-2" />
-                Filter
-              </button>
+              {/* User Profile */}
+              <div className="hidden lg:flex items-center space-x-3 pl-4 border-l border-gray-200">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Hanken Grotesk' }}>
+                    {user?.email || 'Admin'}
+                  </p>
+                  <p className="text-xs text-[#96BF8A]" style={{ fontFamily: 'Hanken Grotesk' }}>
+                    Online
+                  </p>
+                </div>
+                <div className="w-10 h-10 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200">
+                  <Users className="text-white" size={20} />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Mobile Search Bar (Hidden by default, shown when mobile search button clicked) */}
+          <div className="md:hidden px-6 pb-4">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#96BF8A]" size={20} />
+              <input
+                type="text"
+                placeholder="🔍 Cari ikan, kategori, atau harga..."
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#96BF8A] focus:border-[#96BF8A] transition-all duration-200 bg-gray-50 focus:bg-white placeholder:text-gray-400"
+                style={{ fontFamily: 'Hanken Grotesk' }}
+              />
             </div>
           </div>
         </div>
