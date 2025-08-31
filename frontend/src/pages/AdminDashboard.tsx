@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import FormIkan from '../components/FormIkan';
 import TabelIkan from '../components/TabelIkan';
+import ManageIkan from './ManageIkan';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -28,10 +29,14 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
 
+
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3, color: 'from-[#00412E] to-[#96BF8A]' },
     { id: 'kelola-ikan', label: 'Kelola Ikan', icon: Fish, color: 'from-[#00412E] to-[#96BF8A]' },
   ];
+  
+
 
   const handleLogout = () => {
     onLogout();
@@ -96,9 +101,6 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                   <button
                     onClick={() => {
                       setActiveTab(item.id);
-                      if (item.id === 'tambah-ikan' || item.id === 'kelola-ikan') {
-                        onNavigate(item.id as 'tambah-ikan' | 'kelola-ikan');
-                      }
                     }}
                     className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group ${
                       activeTab === item.id
@@ -148,8 +150,12 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
               {/* Breadcrumb */}
               <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
                 <span className="font-medium text-[#00412E]">Dashboard</span>
-                <span>/</span>
-                <span className="capitalize">{activeTab.replace('-', ' ')}</span>
+                {activeTab !== 'dashboard' && (
+                  <>
+                    <span>/</span>
+                    <span className="capitalize">{activeTab.replace('-', ' ')}</span>
+                  </>
+                )}
               </div>
             </div>
             
@@ -353,7 +359,7 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                         </button>
                         
                         <button 
-                          onClick={() => onNavigate('kelola-ikan')}
+                          onClick={() => setActiveTab('kelola-ikan')}
                           className="flex items-center justify-center px-6 py-3 bg-[#96BF8A]/20 hover:bg-[#96BF8A]/30 backdrop-blur-sm rounded-xl border border-[#96BF8A]/30 hover:border-[#96BF8A]/50 transition-all duration-200 hover:scale-105 active:scale-95 group"
                         >
                           <Fish className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
@@ -693,17 +699,7 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
           )}
           
           {activeTab === 'kelola-ikan' && (
-            <TabelIkan
-              onEdit={(ikan) => {
-                console.log('Edit ikan:', ikan);
-                // TODO: Implement edit logic
-              }}
-              onDelete={(id) => {
-                console.log('Delete ikan dengan ID:', id);
-                // TODO: Implement delete logic
-              }}
-              onAdd={() => setActiveTab('tambah-ikan')}
-            />
+            <ManageIkan />
           )}
         </div>
       </div>
