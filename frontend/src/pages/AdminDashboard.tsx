@@ -12,7 +12,8 @@ import {
   AlertCircle,
   BarChart3,
   Users,
-  DollarSign
+  DollarSign,
+  Clock
 } from 'lucide-react';
 import FormIkan from '../components/FormIkan';
 import TabelIkan from '../components/TabelIkan';
@@ -263,13 +264,138 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
           {activeTab === 'dashboard' && (
             <div className="space-y-8">
               {/* Welcome Section */}
-              <div className="bg-gradient-to-r from-[#00412E] to-[#96BF8A] rounded-2xl p-8 text-white">
-                <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-                  Selamat Datang, Admin! 👋
-                </h2>
-                <p className="text-[#E8EAE5] text-lg" style={{ fontFamily: 'Hanken Grotesk' }}>
-                  Kelola katalog ikan dan pantau performa penjualan Anda
-                </p>
+              <div className="relative overflow-hidden bg-gradient-to-br from-[#00412E] via-[#00412E]/95 to-[#96BF8A] rounded-3xl p-8 lg:p-12 text-white shadow-2xl">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
+                  <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white rounded-full opacity-50"></div>
+                </div>
+                
+                {/* Floating Icons */}
+                <div className="absolute top-6 right-8 opacity-20">
+                  <Fish className="w-16 h-16 text-white animate-pulse" />
+                </div>
+                
+                {/* Main Content */}
+                <div className="relative z-10">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex-1">
+                      {/* Greeting with Time-based Message */}
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                          <span className="text-2xl">👋</span>
+                        </div>
+                        <div>
+                          <h2 className="text-2xl lg:text-4xl font-bold mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
+                            Selamat {(() => {
+                              const hour = new Date().getHours();
+                              if (hour < 12) return 'Pagi';
+                              if (hour < 15) return 'Siang';
+                              if (hour < 18) return 'Sore';
+                              return 'Malam';
+                            })()}, Admin!
+                          </h2>
+                          <p className="text-[#E8EAE5] text-base lg:text-lg opacity-90" style={{ fontFamily: 'Hanken Grotesk' }}>
+                            Kelola katalog ikan dan pantau performa penjualan Anda dengan mudah
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Quick Stats - Jumlah Ikan */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-200 group cursor-pointer">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs text-[#E8EAE5] opacity-80">Total Ikan</p>
+                            <Fish className="w-4 h-4 text-[#96BF8A] group-hover:scale-110 transition-transform duration-200" />
+                          </div>
+                          <p className="text-xl font-bold">24</p>
+                          <p className="text-xs text-[#96BF8A] mt-1">+2 dari kemarin</p>
+                        </div>
+                        
+                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-200 group cursor-pointer">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs text-[#E8EAE5] opacity-80">Tersedia</p>
+                            <Package className="w-4 h-4 text-green-400 group-hover:scale-110 transition-transform duration-200" />
+                          </div>
+                          <p className="text-xl font-bold">18</p>
+                          <p className="text-xs text-green-400 mt-1">75% stok</p>
+                        </div>
+                        
+                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-200 group cursor-pointer">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs text-[#E8EAE5] opacity-80">Habis Stok</p>
+                            <AlertCircle className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform duration-200" />
+                          </div>
+                          <p className="text-xl font-bold">6</p>
+                          <p className="text-xs text-red-400 mt-1">Perlu restock</p>
+                        </div>
+                        
+                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-200 group cursor-pointer">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs text-[#E8EAE5] opacity-80">Kategori</p>
+                            <BarChart3 className="w-4 h-4 text-yellow-400 group-hover:scale-110 transition-transform duration-200" />
+                          </div>
+                          <p className="text-xl font-bold">8</p>
+                          <p className="text-xs text-yellow-400 mt-1">Air Tawar & Laut</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Right Side - Action Buttons */}
+                    <div className="mt-6 lg:mt-0 lg:ml-8">
+                      <div className="flex flex-col space-y-3">
+                        <button 
+                          onClick={() => onNavigate('tambah-ikan')}
+                          className="flex items-center justify-center px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl border border-white/30 hover:border-white/50 transition-all duration-200 hover:scale-105 active:scale-95 group"
+                        >
+                          <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+                          <span className="font-medium">Tambah Ikan</span>
+                        </button>
+                        
+                        <button 
+                          onClick={() => onNavigate('kelola-ikan')}
+                          className="flex items-center justify-center px-6 py-3 bg-[#96BF8A]/20 hover:bg-[#96BF8A]/30 backdrop-blur-sm rounded-xl border border-[#96BF8A]/30 hover:border-[#96BF8A]/50 transition-all duration-200 hover:scale-105 active:scale-95 group"
+                        >
+                          <Fish className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                          <span className="font-medium">Kelola Katalog</span>
+                        </button>
+                        
+                        <button className="flex items-center justify-center px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl border border-white/20 hover:border-white/40 transition-all duration-200 hover:scale-105 active:scale-95 group">
+                          <BarChart3 className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                          <span className="font-medium">Lihat Laporan</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Bottom Info */}
+                  <div className="mt-8 pt-6 border-t border-white/20">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                      <div className="flex items-center space-x-4 text-sm text-[#E8EAE5] opacity-80">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                          <span>Sistem Online</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Clock className="w-4 h-4" />
+                          <span>{new Date().toLocaleDateString('id-ID', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 lg:mt-0">
+                        <button className="text-sm text-[#96BF8A] hover:text-white transition-colors duration-200 underline decoration-dotted underline-offset-4">
+                          Lihat Tutorial Dashboard →
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Stats Cards */}
