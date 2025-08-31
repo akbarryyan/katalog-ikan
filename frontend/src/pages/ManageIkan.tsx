@@ -20,6 +20,7 @@ import {
   Grid3X3,
   List
 } from 'lucide-react';
+import Layout from '../components/Layout';
 
 interface Ikan {
   id: number;
@@ -35,7 +36,13 @@ interface Ikan {
   updated_at: string;
 }
 
-const ManageIkan = () => {
+interface ManageIkanProps {
+  onLogout?: () => void;
+  user?: { email: string } | null;
+  onNavigate?: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan') => void;
+}
+
+const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
@@ -148,7 +155,13 @@ const ManageIkan = () => {
   };
 
   return (
-    <div className="bg-[#E8EAE5] p-6">
+    <Layout 
+      onLogout={onLogout || (() => {})}
+      user={user || null}
+      onNavigate={onNavigate || (() => {})}
+      currentRoute="kelola-ikan"
+    >
+      <div className="bg-[#E8EAE5] p-6">
       {/* Test Header */}
       <div className="mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
@@ -543,7 +556,8 @@ const ManageIkan = () => {
           </button>
         </div>
       )}
-    </div>
+      </div>
+    </Layout>
   );
 };
 
