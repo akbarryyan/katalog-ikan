@@ -16,7 +16,6 @@ import {
   Clock
 } from 'lucide-react';
 import FormIkan from '../components/FormIkan';
-import TabelIkan from '../components/TabelIkan';
 import ManageIkan from './ManageIkan';
 
 interface AdminDashboardProps {
@@ -100,7 +99,11 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                 <li key={item.id}>
                   <button
                     onClick={() => {
-                      setActiveTab(item.id);
+                      if (item.id === 'kelola-ikan') {
+                        onNavigate('kelola-ikan');
+                      } else {
+                        setActiveTab(item.id);
+                      }
                     }}
                     className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group ${
                       activeTab === item.id
@@ -149,7 +152,12 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
               
               {/* Breadcrumb */}
               <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
-                <span className="font-medium text-[#00412E]">Dashboard</span>
+                <button 
+                  onClick={() => onNavigate('dashboard')}
+                  className="font-medium text-[#00412E] hover:text-[#96BF8A] transition-colors duration-200 cursor-pointer"
+                >
+                  Dashboard
+                </button>
                 {activeTab !== 'dashboard' && (
                   <>
                     <span>/</span>
@@ -359,7 +367,7 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                         </button>
                         
                         <button 
-                          onClick={() => setActiveTab('kelola-ikan')}
+                          onClick={() => onNavigate('kelola-ikan')}
                           className="flex items-center justify-center px-6 py-3 bg-[#96BF8A]/20 hover:bg-[#96BF8A]/30 backdrop-blur-sm rounded-xl border border-[#96BF8A]/30 hover:border-[#96BF8A]/50 transition-all duration-200 hover:scale-105 active:scale-95 group"
                         >
                           <Fish className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />

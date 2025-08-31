@@ -4,6 +4,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import FormIkan from './components/FormIkan';
 import TabelIkan from './components/TabelIkan';
+import ManageIkan from './pages/ManageIkan';
 
 // Route types
 export type Route = 'login' | 'dashboard' | 'tambah-ikan' | 'edit-ikan' | 'kelola-ikan';
@@ -23,13 +24,55 @@ export const Router = () => {
     if (loggedIn && userData) {
       setIsLoggedIn(true);
       setUser(JSON.parse(userData));
-      setCurrentRoute('dashboard');
+      
+      // Check current URL to set initial route
+      const path = window.location.pathname;
+      if (path === '/' || path === '') {
+        setCurrentRoute('dashboard');
+      } else {
+        const route = path.substring(1) as Route;
+        if (['dashboard', 'tambah-ikan', 'edit-ikan', 'kelola-ikan'].includes(route)) {
+          setCurrentRoute(route);
+        } else {
+          setCurrentRoute('dashboard');
+        }
+      }
     }
+  }, []);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === '/' || path === '') {
+        setCurrentRoute('dashboard');
+      } else {
+        const route = path.substring(1) as Route;
+        if (['dashboard', 'tambah-ikan', 'edit-ikan', 'kelola-ikan'].includes(route)) {
+          setCurrentRoute(route);
+        } else {
+          setCurrentRoute('dashboard');
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   // Navigation functions
   const navigate = (route: Route) => {
+    console.log('Navigating to:', route);
     setCurrentRoute(route);
+    
+    // Update URL based on route
+    if (route === 'dashboard') {
+      window.history.pushState({}, '', '/');
+      console.log('URL updated to: /');
+    } else {
+      window.history.pushState({}, '', `/${route}`);
+      console.log('URL updated to:', `/${route}`);
+    }
   };
 
   const navigateToEdit = (ikan: any) => {
@@ -114,21 +157,9 @@ export const Router = () => {
       );
 
     case 'kelola-ikan':
+      console.log('Rendering ManageIkan route');
       return (
-        <TabelIkan
-          onEdit={(ikan) => {
-            console.log('Edit ikan:', ikan);
-            navigateToEdit(ikan);
-          }}
-          onDelete={(id) => {
-            console.log('Delete ikan dengan ID:', id);
-            if (confirm('Apakah Anda yakin ingin menghapus ikan ini?')) {
-              // TODO: Implement delete logic
-              window.location.reload();
-            }
-          }}
-          onAdd={() => navigate('tambah-ikan')}
-        />
+        <ManageIkan />
       );
 
     default:

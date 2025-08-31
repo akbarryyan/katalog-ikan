@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Fish, 
   Plus, 
@@ -7,12 +7,10 @@ import {
   Edit3, 
   Trash2, 
   Eye, 
-  MoreHorizontal,
   ChevronDown,
   ChevronUp,
   Download,
   Upload,
-  RefreshCw,
   AlertCircle,
   CheckCircle,
   Clock,
