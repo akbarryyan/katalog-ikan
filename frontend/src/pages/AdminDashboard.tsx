@@ -30,7 +30,6 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3, color: 'from-[#00412E] to-[#96BF8A]' },
-    { id: 'tambah-ikan', label: 'Tambah Ikan', icon: Plus, color: 'from-[#96BF8A] to-[#00412E]' },
     { id: 'kelola-ikan', label: 'Kelola Ikan', icon: Fish, color: 'from-[#00412E] to-[#96BF8A]' },
   ];
 
