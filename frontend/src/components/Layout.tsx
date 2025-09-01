@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 
@@ -12,9 +12,21 @@ interface LayoutProps {
 
 const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#E8EAE5]">
+    <div style={{ minHeight: '100vh', backgroundColor: '#E8EAE5' }}>
       {/* Sidebar - Fixed */}
       <Sidebar 
         onLogout={onLogout}
@@ -26,7 +38,14 @@ const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutPr
       />
 
       {/* Main content - Scrollable */}
-      <div className="main-content-ultra-scrollable">
+      <div style={{
+        marginLeft: isDesktop ? '18rem' : '0', // Desktop margin for fixed sidebar
+        width: isDesktop ? 'calc(100% - 18rem)' : '100%',
+        position: 'relative',
+        zIndex: 1,
+        minHeight: '100vh',
+        transition: 'margin-left 0.3s ease-in-out, width 0.3s ease-in-out'
+      }}>
         {/* Top bar */}
         <TopBar 
           currentRoute={currentRoute}
@@ -35,13 +54,11 @@ const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutPr
         />
 
         {/* Content area - This will scroll */}
-        <div 
-          className="p-6"
-          style={{
-            minHeight: 'calc(100vh - 80px)', // Adjust based on TopBar height
-            overflowY: 'auto'
-          }}
-        >
+        <div style={{
+          padding: '1.5rem',
+          minHeight: 'calc(100vh - 80px)', // Adjust based on TopBar height
+          overflowY: 'auto'
+        }}>
           {children}
         </div>
       </div>

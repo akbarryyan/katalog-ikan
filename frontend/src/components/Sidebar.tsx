@@ -27,61 +27,148 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
     onLogout();
   };
 
+  // Calculate transform based on screen size and sidebar state
+  const getTransform = () => {
+    if (window.innerWidth >= 1024) {
+      // Desktop: always visible
+      return 'translateX(0)';
+    } else {
+      // Mobile: based on sidebarOpen state
+      return sidebarOpen ? 'translateX(0)' : 'translateX(-100%)';
+    }
+  };
+
   return (
     <>
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 40
+          }}
+          className="lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div 
-        className={`sidebar-ultra-fixed transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? 'open' : ''
-        }`}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '18rem',
+          height: '100vh',
+          backgroundColor: 'white',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          zIndex: 50,
+          overflow: 'hidden',
+          transform: getTransform(),
+          transition: 'transform 0.3s ease-in-out'
+        }}
       >
         {/* Sidebar Content Container */}
         <div 
           style={{
             height: '100vh',
-            maxHeight: '100vh',
-            overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column'
           }}
         >
           {/* Sidebar Header */}
-          <div className="flex-shrink-0 flex items-center justify-between h-20 px-6 border-b border-gray-100 bg-white">
-            <div className="flex items-center space-x-3">
-              <div className="p-3 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-xl shadow-lg">
-                <Fish className="text-white" size={24} />
+          <div style={{
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            height: '5rem',
+            padding: '0 1.5rem',
+            borderBottom: '1px solid #f3f4f6',
+            backgroundColor: 'white'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem'
+            }}>
+              <div style={{
+                padding: '0.75rem',
+                background: 'linear-gradient(to bottom right, #00412E, #96BF8A)',
+                borderRadius: '0.75rem',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+              }}>
+                <Fish style={{ color: 'white', width: '24px', height: '24px' }} />
               </div>
-              <h1 className="text-xl font-bold text-[#00412E]" style={{ fontFamily: 'Hanken Grotesk' }}>
+              <h1 style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                color: '#00412E',
+                fontFamily: 'Hanken Grotesk'
+              }}>
                 Ikan Oni
               </h1>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors duration-200"
+              style={{
+                padding: '0.5rem',
+                borderRadius: '0.5rem',
+                color: '#9ca3af',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+              className="lg:hidden"
             >
-              <X size={20} />
+              <X style={{ width: '20px', height: '20px' }} />
             </button>
           </div>
           
           {/* User Info */}
-          <div className="flex-shrink-0 px-6 py-6 border-b border-gray-100 bg-white">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-full flex items-center justify-center shadow-lg">
-                <Users className="text-white" size={22} />
+          <div style={{
+            flexShrink: 0,
+            padding: '1.5rem',
+            borderBottom: '1px solid #f3f4f6',
+            backgroundColor: 'white'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem'
+            }}>
+              <div style={{
+                width: '3rem',
+                height: '3rem',
+                background: 'linear-gradient(to bottom right, #00412E, #96BF8A)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+              }}>
+                <Users style={{ color: 'white', width: '22px', height: '22px' }} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-900" style={{ fontFamily: 'Hanken Grotesk' }}>
+                <p style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#111827',
+                  fontFamily: 'Hanken Grotesk'
+                }}>
                   {user?.email || 'Admin'}
                 </p>
-                <p className="text-xs text-[#96BF8A] font-medium" style={{ fontFamily: 'Hanken Grotesk' }}>
+                <p style={{
+                  fontSize: '0.75rem',
+                  color: '#96BF8A',
+                  fontWeight: '500',
+                  fontFamily: 'Hanken Grotesk'
+                }}>
                   Administrator
                 </p>
               </div>
@@ -89,17 +176,16 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
           </div>
           
           {/* Navigation Menu */}
-          <nav 
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              padding: '1.5rem 0.75rem'
-            }}
-          >
-            <ul className="space-y-3">
+          <nav style={{
+            flex: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            padding: '1.5rem 0.75rem'
+          }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {menuItems.map((item) => {
                 const Icon = item.icon;
+                const isActive = currentRoute === item.id;
                 return (
                   <li key={item.id}>
                     <button
@@ -110,16 +196,33 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
                           onNavigate('dashboard');
                         }
                       }}
-                      className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group ${
-                        currentRoute === item.id
-                          ? 'bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white shadow-lg shadow-[#96BF8A]/25'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-[#00412E] border border-transparent hover:border-gray-200'
-                      }`}
-                      style={{ fontFamily: 'Hanken Grotesk' }}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0.75rem 1rem',
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        borderRadius: '0.75rem',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        background: isActive 
+                          ? 'linear-gradient(to right, #00412E, #96BF8A)' 
+                          : 'transparent',
+                        color: isActive ? 'white' : '#4b5563',
+                        boxShadow: isActive ? '0 10px 15px -3px rgba(150, 191, 138, 0.25)' : 'none'
+                      }}
                     >
-                      <Icon size={20} className={`mr-3 transition-transform duration-200 ${
-                        currentRoute === item.id ? 'scale-110' : 'group-hover:scale-105'
-                      }`} />
+                      <Icon 
+                        style={{ 
+                          width: '20px', 
+                          height: '20px', 
+                          marginRight: '0.75rem',
+                          transform: isActive ? 'scale(1.1)' : 'scale(1)',
+                          transition: 'transform 0.2s'
+                        }} 
+                      />
                       {item.label}
                     </button>
                   </li>
@@ -129,13 +232,30 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
           </nav>
           
           {/* Logout Button */}
-          <div className="flex-shrink-0 p-4 border-t border-gray-100 bg-gray-50/50">
+          <div style={{
+            flexShrink: 0,
+            padding: '1rem',
+            borderTop: '1px solid #f3f4f6',
+            backgroundColor: '#f9fafb'
+          }}>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all duration-200 group border border-transparent hover:border-red-200"
-              style={{ fontFamily: 'Hanken Grotesk' }}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0.75rem 1rem',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                color: '#ef4444',
+                backgroundColor: 'transparent',
+                border: 'none',
+                borderRadius: '0.75rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
             >
-              <LogOut size={20} className="mr-3 group-hover:scale-105 transition-transform duration-200" />
+              <LogOut style={{ width: '20px', height: '20px', marginRight: '0.75rem' }} />
               Keluar
             </button>
           </div>
