@@ -1,24 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Fish, Upload, X, Save, AlertCircle } from 'lucide-react';
 
 interface FormTambahIkanProps {
   onSave: (data: any) => void;
   onCancel: () => void;
+  mode?: 'add' | 'edit';
+  initialData?: {
+    id?: number;
+    nama: string;
+    harga: string | number;
+    satuanHarga: 'kg' | 'gram';
+    stok: string | number;
+    status: 'tersedia' | 'habis' | 'pre-order';
+    deskripsi: string;
+    gambar?: string | null;
+  };
 }
 
-const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
+const FormTambahIkan = ({ onSave, onCancel, mode = 'add', initialData }: FormTambahIkanProps) => {
   const [formData, setFormData] = useState({
     nama: '',
     harga: '',
-    satuanHarga: 'kg',
+    satuanHarga: 'kg' as 'kg' | 'gram',
     stok: '',
-    status: 'tersedia',
+    status: 'tersedia' as 'tersedia' | 'habis' | 'pre-order',
     deskripsi: '',
     gambar: null as File | null
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Initialize form with initial data if provided
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        nama: initialData.nama || '',
+        harga: initialData.harga?.toString() || '',
+        satuanHarga: initialData.satuanHarga || 'kg',
+        stok: initialData.stok?.toString() || '',
+        status: initialData.status || 'tersedia',
+        deskripsi: initialData.deskripsi || '',
+        gambar: null // Reset gambar for edit mode
+      });
+    }
+  }, [initialData]);
 
   const handleInputChange = (field: string, value: string | File) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -33,19 +59,34 @@ const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
 
     if (!formData.nama.trim()) {
       newErrors.nama = 'Nama ikan harus diisi';
+    } else if (formData.nama.trim().length < 3) {
+      newErrors.nama = 'Nama ikan minimal 3 karakter';
+    } else if (formData.nama.trim().length > 100) {
+      newErrors.nama = 'Nama ikan maksimal 100 karakter';
     }
+
     if (!formData.harga) {
       newErrors.harga = 'Harga harus diisi';
     } else if (isNaN(Number(formData.harga)) || Number(formData.harga) <= 0) {
       newErrors.harga = 'Harga harus berupa angka positif';
+    } else if (Number(formData.harga) > 10000000) {
+      newErrors.harga = 'Harga maksimal Rp 10.000.000';
     }
+
     if (!formData.stok) {
       newErrors.stok = 'Stok harus diisi';
     } else if (isNaN(Number(formData.stok)) || Number(formData.stok) < 0) {
       newErrors.stok = 'Stok harus berupa angka non-negatif';
+    } else if (Number(formData.stok) > 10000) {
+      newErrors.stok = 'Stok maksimal 10.000';
     }
+
     if (!formData.deskripsi.trim()) {
       newErrors.deskripsi = 'Deskripsi harus diisi';
+    } else if (formData.deskripsi.trim().length < 10) {
+      newErrors.deskripsi = 'Deskripsi minimal 10 karakter';
+    } else if (formData.deskripsi.trim().length > 500) {
+      newErrors.deskripsi = 'Deskripsi maksimal 500 karakter';
     }
 
     setErrors(newErrors);
@@ -61,11 +102,56 @@ const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
 
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      onSave(formData);
+    try {
+      // Prepare data for API
+      const ikanData = {
+        nama: formData.nama.trim(),
+        harga: parseInt(formData.harga),
+        satuanHarga: formData.satuanHarga,
+        stok: parseInt(formData.stok),
+        status: formData.status,
+        deskripsi: formData.deskripsi.trim(),
+        gambar: formData.gambar ? formData.gambar.name : null // For now, just send filename
+      };
+
+      // Call API to save ikan
+      const url = mode === 'edit' && initialData?.id 
+        ? `http://localhost:3001/api/ikan/${initialData.id}`
+        : 'http://localhost:3001/api/ikan';
+      
+      const response = await fetch(url, {
+        method: mode === 'edit' ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ikanData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const savedIkan = await response.json();
+      console.log(`Ikan berhasil ${mode === 'edit' ? 'diperbarui' : 'disimpan'}:`, savedIkan);
+      
+      // Clear any previous errors
+      setErrors(prev => ({ ...prev, submit: '' }));
+      
+      // Call parent onSave with the saved data
+      onSave(savedIkan);
+      
+    } catch (error) {
+      console.error(`Error ${mode === 'edit' ? 'updating' : 'saving'} ikan:`, error);
+      
+      // Show error to user
+      setErrors(prev => ({
+        ...prev,
+        submit: error instanceof Error ? error.message : `Terjadi kesalahan saat ${mode === 'edit' ? 'memperbarui' : 'menyimpan'} data`
+      }));
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,6 +173,27 @@ const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Form Title */}
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-[#00412E]" style={{ fontFamily: 'Hanken Grotesk' }}>
+          {mode === 'edit' ? '✏️ Edit Data Ikan' : '🐟 Tambah Ikan Baru'}
+        </h2>
+        <p className="text-gray-600 mt-2">
+          {mode === 'edit' ? 'Perbarui informasi ikan yang sudah ada' : 'Isi form di bawah untuk menambahkan ikan baru ke katalog'}
+        </p>
+      </div>
+
+      {/* Submit Error Display */}
+      {errors.submit && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <div className="flex items-center text-sm text-red-600">
+            <AlertCircle className="w-5 h-5 mr-2" />
+            <span className="font-medium">Error:</span>
+            <span className="ml-1">{errors.submit}</span>
+          </div>
+        </div>
+      )}
+
       {/* Nama Ikan */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
@@ -108,6 +215,9 @@ const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
             {errors.nama}
           </div>
         )}
+        <p className="text-xs text-gray-500 mt-1">
+          Minimal 3 karakter, maksimal 100 karakter
+        </p>
       </div>
 
       {/* Harga & Satuan Row */}
@@ -135,6 +245,9 @@ const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
               {errors.harga}
             </div>
           )}
+          <p className="text-xs text-gray-500 mt-1">
+            Harga dalam Rupiah, maksimal Rp 10.000.000
+          </p>
         </div>
 
         <div>
@@ -175,6 +288,9 @@ const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
             {errors.stok}
           </div>
         )}
+        <p className="text-xs text-gray-500 mt-1">
+          Jumlah stok tersedia, maksimal 10.000
+        </p>
       </div>
 
       {/* Status */}
@@ -215,6 +331,9 @@ const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
             {errors.deskripsi}
           </div>
         )}
+        <p className="text-xs text-gray-500 mt-1">
+          Minimal 10 karakter, maksimal 500 karakter
+        </p>
       </div>
 
       {/* Upload Gambar */}
@@ -292,12 +411,12 @@ const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
           {isSubmitting ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-              Menyimpan...
+              {mode === 'edit' ? 'Memperbarui...' : 'Menyimpan...'}
             </>
           ) : (
             <>
               <Save className="w-4 h-4 mr-2" />
-              Simpan Ikan
+              {mode === 'edit' ? 'Perbarui Ikan' : 'Simpan Ikan'}
             </>
           )}
         </button>

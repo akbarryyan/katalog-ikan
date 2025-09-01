@@ -1,152 +1,120 @@
-# 🐟 Backend Ikan Oni
+# Backend API Ikan Oni
 
-Backend API untuk website jual ikan dengan admin dashboard.
+Backend server untuk aplikasi manajemen ikan dengan Express.js dan MySQL.
 
 ## 🚀 Quick Start
 
-### 1. Install Dependencies
-```bash
-npm install
+### Cara 1: Double Click (Recommended)
+1. Double click file `start.bat`
+2. Tunggu sampai muncul "Server berjalan di port 3001"
+3. Backend siap digunakan!
+
+### Cara 2: Manual
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Jalankan server**
+   ```bash
+   npm run dev
+   ```
+
+## 📊 Database
+
+Backend menggunakan tabel `fishs` yang sudah dibuat dengan struktur sesuai interface di frontend:
+
+- `id` - Primary key (auto increment)
+- `nama` - Nama ikan (varchar)
+- `harga` - Harga per satuan (decimal)
+- `satuanHarga` - Satuan harga (enum: kg, gram)
+- `stok` - Jumlah stok tersedia (int)
+- `status` - Status ketersediaan (enum: tersedia, habis, pre-order)
+- `deskripsi` - Deskripsi ikan (text)
+- `gambar` - Nama file gambar (varchar, nullable)
+- `created_at` - Timestamp pembuatan
+- `updated_at` - Timestamp update
+
+## 🌐 API Endpoints
+
+### Ikan (`/api/ikan`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Ambil semua data ikan |
+| GET | `/:id` | Ambil data ikan berdasarkan ID |
+| GET | `/search?q=keyword` | Cari ikan berdasarkan keyword |
+| GET | `/status/:status` | Ambil ikan berdasarkan status |
+| POST | `/` | Tambah ikan baru |
+| PUT | `/:id` | Update data ikan |
+| DELETE | `/:id` | Hapus data ikan |
+
+### Admin (`/api/admin`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/login` | Login admin |
+| GET | `/profile` | Ambil profil admin |
+
+## ⚙️ Konfigurasi Database
+
+Edit file `config/database.js` sesuai dengan konfigurasi MySQL Anda:
+
+```javascript
+const dbConfig = {
+  host: 'localhost',        // Host MySQL
+  user: 'root',            // Username MySQL
+  password: '',            // Password MySQL
+  database: 'ikan_oni',    // Nama database
+};
 ```
 
-### 2. Setup Database
-- Buat database MySQL: `ikan_oni`
-- Import file `database.sql` ke phpMyAdmin
-- Update konfigurasi database di `config/database.js`
+## 🧪 Testing API
 
-### 3. Start Server
+Setelah backend berjalan, test API dengan:
+
 ```bash
-npm run dev
+npm test
 ```
 
-Server akan berjalan di `http://localhost:5000`
+## 🚦 Status Codes
 
-## 📁 Struktur Project
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request
+- `401` - Unauthorized
+- `404` - Not Found
+- `500` - Internal Server Error
+
+## 🐛 Troubleshooting
+
+### Database Connection Error
+- Pastikan MySQL server berjalan
+- Periksa konfigurasi database
+- Pastikan database `ikan_oni` sudah dibuat
+
+### Port Already in Use
+- Ganti port di `server.js`
+- Atau hentikan service yang menggunakan port 3001
+
+### Module Not Found
+- Jalankan `npm install`
+- Periksa versi Node.js
+
+## 📁 Struktur Folder
 
 ```
 backend/
-├── config/
-│   └── database.js          # Database configuration
-├── controllers/
-│   └── adminController.js   # Admin logic
-├── middleware/
-│   └── auth.js             # JWT authentication
-├── models/
-│   └── Admin.js            # Admin model
-├── routes/
-│   └── adminRoutes.js      # Admin routes
-├── server.js               # Main server file
-├── database.sql            # Database setup script
-└── package.json
+├── config/          # Konfigurasi database
+├── controllers/     # Logic bisnis
+├── middleware/      # Middleware Express
+├── models/          # Model database
+├── routes/          # Route definitions
+├── server.js        # Entry point
+├── start.bat        # Script untuk menjalankan backend
+└── package.json     # Dependencies
 ```
 
-## 🔐 API Endpoints
+## 📄 License
 
-### Admin Routes (`/api/admin`)
-
-#### POST `/login`
-Login admin dengan email dan password.
-
-**Request:**
-```json
-{
-  "email": "admin@ikan.com",
-  "password": "password123"
-}
-```
-
-**Response Success:**
-```json
-{
-  "success": true,
-  "message": "Login berhasil!",
-  "data": {
-    "admin": {
-      "id": 1,
-      "email": "admin@ikan.com",
-      "nama_lengkap": "Administrator Utama",
-      "status": "aktif",
-      "created_at": "2025-01-01T00:00:00.000Z"
-    },
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-}
-```
-
-#### GET `/profile` (Protected)
-Get profile admin yang sedang login.
-
-**Headers:**
-```
-Authorization: Bearer <token>
-```
-
-#### POST `/logout` (Protected)
-Logout admin.
-
-## 🗄️ Database Schema
-
-### Table: `admin`
-- `id` - Primary key (auto increment)
-- `email` - Email admin (unique)
-- `password` - Password hash (bcrypt)
-- `nama_lengkap` - Nama lengkap admin
-- `status` - Status aktif/nonaktif
-- `created_at` - Waktu pembuatan
-- `updated_at` - Waktu update
-
-## 🔑 Credentials Default
-
-```
-Email: admin@ikan.com
-Password: password123
-```
-
-## 🛡️ Security Features
-
-- **Password Hashing**: Menggunakan bcrypt
-- **JWT Authentication**: Token-based auth
-- **Input Validation**: Validasi email dan password
-- **CORS**: Cross-origin resource sharing
-- **Error Handling**: Comprehensive error responses
-
-## 📦 Dependencies
-
-- `express` - Web framework
-- `mysql2` - MySQL driver
-- `bcrypt` - Password hashing
-- `jsonwebtoken` - JWT tokens
-- `cors` - CORS middleware
-- `nodemon` - Development server
-
-## 🚨 Environment Variables
-
-Buat file `.env` untuk production:
-
-```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=ikan_oni
-JWT_SECRET=your_secret_key
-PORT=5000
-```
-
-## 🔧 Development
-
-### Start Development Server
-```bash
-npm run dev
-```
-
-### Start Production Server
-```bash
-npm start
-```
-
-## 📝 Notes
-
-- JWT secret key default: `ikan_oni_secret_key_2025`
-- Password hash untuk `password123`: `$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi`
-- Token expires dalam 24 jam
-- Database menggunakan MySQL dengan charset utf8mb4
+ISC License

@@ -64,6 +64,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalLoading, setIsModalLoading] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [editData, setEditData] = useState<Ikan | null>(null);
 
   const statuses = ['all', 'tersedia', 'habis', 'pre-order'];
 
@@ -189,9 +190,10 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
 
   const handleEdit = (ikan: Ikan) => {
     console.log('Edit ikan:', ikan);
-    if (onNavigate) {
-      onNavigate('edit-ikan');
-    }
+    // Set edit data and open modal
+    setEditData(ikan);
+    setIsModalOpen(true);
+    setIsModalLoading(false);
   };
 
   const handleDelete = async (ikan: Ikan) => {
@@ -224,29 +226,23 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setIsModalLoading(false);
+    setEditData(null); // Reset edit data when closing modal
   };
 
   const handleSaveIkan = async (data: any) => {
     try {
-      const response = await fetch('http://localhost:3001/api/ikan', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Refresh data after successful save
+      // Data sudah disimpan oleh FormTambahIkan component
+      // Sekarang kita hanya perlu refresh data dan close modal
       await fetchIkan();
       handleCloseModal();
-      alert('Ikan berhasil ditambahkan!');
+      
+      // Show success message
+      const successMessage = data.id ? 'Data ikan berhasil diperbarui!' : 'Ikan baru berhasil ditambahkan!';
+      alert(successMessage);
+      
     } catch (err) {
-      console.error('Error saving ikan:', err);
-      alert('Terjadi kesalahan saat menyimpan data ikan');
+      console.error('Error handling save result:', err);
+      alert('Terjadi kesalahan saat memproses hasil penyimpanan');
     }
   };
 
@@ -870,16 +866,18 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
         </div>
       )}
 
-      {/* Modal Tambah Ikan */}
+      {/* Modal Tambah/Edit Ikan */}
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        title="🐟 Tambah Ikan Baru"
+        title={editData ? "✏️ Edit Data Ikan" : "🐟 Tambah Ikan Baru"}
         size="lg"
         showLoading={isModalLoading}
-        loadingMessage="Memuat form tambah ikan..."
+        loadingMessage={editData ? "Memuat form edit ikan..." : "Memuat form tambah ikan..."}
       >
         <FormTambahIkan
+          mode={editData ? "edit" : "add"}
+          initialData={editData || undefined}
           onSave={handleSaveIkan}
           onCancel={handleCloseModal}
         />
