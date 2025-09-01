@@ -85,9 +85,21 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      setIkanList(data);
-      setFilteredIkan(data);
+      const responseData = await response.json();
+      console.log('API Response:', responseData);
+      
+      // Pastikan data adalah array dan ambil dari response yang benar
+      const data = responseData.data || responseData;
+      
+      if (Array.isArray(data)) {
+        setIkanList(data);
+        setFilteredIkan(data);
+      } else {
+        console.error('Data bukan array:', data);
+        setIkanList([]);
+        setFilteredIkan([]);
+        setError('Format data tidak valid');
+      }
     } catch (err) {
       console.error('Error fetching ikan:', err);
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat mengambil data');
@@ -295,15 +307,15 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
               <div className="flex flex-wrap gap-2 mt-4">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#00412E]/10 text-[#00412E] border border-[#00412E]/20">
                   <Package className="w-3 h-3 mr-1" />
-                  {filteredIkan.length} Total Ikan
+                  {Array.isArray(filteredIkan) ? filteredIkan.length : 0} Total Ikan
                 </span>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
                   <CheckCircle className="w-3 h-3 mr-1" />
-                  {filteredIkan.filter((i: Ikan) => i.status === 'tersedia').length} Tersedia
+                  {Array.isArray(filteredIkan) ? filteredIkan.filter((i: Ikan) => i.status === 'tersedia').length : 0} Tersedia
                 </span>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
                   <AlertCircle className="w-3 h-3 mr-1" />
-                  {filteredIkan.filter((i: Ikan) => i.status === 'habis').length} Habis Stok
+                  {Array.isArray(filteredIkan) ? filteredIkan.filter((i: Ikan) => i.status === 'habis').length : 0} Habis Stok
                 </span>
               </div>
             </div>
@@ -355,7 +367,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                       currency: 'IDR',
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0
-                    }).format(filteredIkan.reduce((sum: number, i: Ikan) => sum + (i.harga * i.stok), 0))}
+                    }).format(Array.isArray(filteredIkan) ? filteredIkan.reduce((sum: number, i: Ikan) => sum + (i.harga * i.stok), 0) : 0)}
                   </span>
                 </div>
               </div>
@@ -387,7 +399,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 Total Ikan
               </p>
               <p className="text-3xl font-bold text-[#00412E] mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                {filteredIkan.length}
+                {Array.isArray(filteredIkan) ? filteredIkan.length : 0}
               </p>
             </div>
             <div className="p-3 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-xl">
@@ -403,7 +415,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 Tersedia
               </p>
               <p className="text-3xl font-bold text-green-600 mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                {filteredIkan.filter((i: Ikan) => i.status === 'tersedia').length}
+                                 {Array.isArray(filteredIkan) ? filteredIkan.filter((i: Ikan) => i.status === 'tersedia').length : 0}
               </p>
             </div>
             <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
@@ -419,7 +431,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 Habis Stok
               </p>
               <p className="text-3xl font-bold text-red-600 mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                {filteredIkan.filter((i: Ikan) => i.status === 'habis').length}
+                {Array.isArray(filteredIkan) ? filteredIkan.filter((i: Ikan) => i.status === 'habis').length : 0}
               </p>
             </div>
             <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl">
@@ -435,7 +447,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 Total Nilai
               </p>
               <p className="text-3xl font-bold text-[#00412E] mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                Rp {(filteredIkan.reduce((sum: number, i: Ikan) => sum + (i.harga * i.stok), 0) / 1000000).toFixed(1)}M
+                Rp {((Array.isArray(filteredIkan) ? filteredIkan.reduce((sum: number, i: Ikan) => sum + (i.harga * i.stok), 0) : 0) / 1000000).toFixed(1)}M
               </p>
             </div>
             <div className="p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl">
@@ -533,7 +545,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600 font-medium" style={{ fontFamily: 'Hanken Grotesk' }}>
-                Menampilkan <span className="font-bold text-[#00412E]">{filteredIkan.length}</span> ikan
+                                 Menampilkan <span className="font-bold text-[#00412E]">{Array.isArray(filteredIkan) ? filteredIkan.length : 0}</span> ikan
               </span>
               {searchTerm && (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#96BF8A]/10 text-[#00412E] border border-[#96BF8A]/20">
@@ -852,7 +864,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       ) : null}
 
       {/* Empty State */}
-      {filteredIkan.length === 0 && (
+             {Array.isArray(filteredIkan) && filteredIkan.length === 0 && (
         <div className="text-center py-12">
           <Fish className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
