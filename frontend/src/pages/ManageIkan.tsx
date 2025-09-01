@@ -18,7 +18,8 @@ import {
   DollarSign,
   Tag,
   Grid3X3,
-  List
+  List,
+  BarChart3
 } from 'lucide-react';
 import Layout from '../components/Layout';
 
@@ -343,132 +344,263 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
         </div>
       </div>
 
-      {/* Search & Filter Section */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          {/* Search Bar */}
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="🔍 Cari nama ikan, kategori, atau deskripsi..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#96BF8A] focus:border-[#96BF8A] transition-all duration-200"
-                style={{ fontFamily: 'Hanken Grotesk' }}
-              />
+      {/* Enhanced Search & Filter Section */}
+      <div className="relative mb-8 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-[#96BF8A]/5 to-[#00412E]/5 rounded-3xl"></div>
+        <div className="absolute top-0 left-0 w-20 h-20 bg-[#96BF8A]/10 rounded-full -translate-y-10 -translate-x-10"></div>
+        <div className="absolute bottom-0 right-0 w-16 h-16 bg-[#00412E]/10 rounded-full translate-y-8 translate-x-8"></div>
+        
+        {/* Main Container */}
+        <div className="relative z-10 bg-white/90 backdrop-blur-sm rounded-3xl p-6 lg:p-8 border border-white/50 shadow-xl">
+          {/* Top Section - Search & Quick Actions */}
+          <div className="flex flex-col lg:flex-row gap-4 mb-6">
+            {/* Enhanced Search Bar */}
+            <div className="flex-1">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#96BF8A]/20 to-[#00412E]/20 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-sm"></div>
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#96BF8A] group-focus-within:text-[#00412E] transition-colors duration-200" size={20} />
+                  <input
+                    type="text"
+                    placeholder="🔍 Cari nama ikan, kategori, atau deskripsi..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 bg-gray-50/80 border border-gray-200/50 rounded-2xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] focus:bg-white transition-all duration-300 placeholder:text-gray-500 text-gray-800 shadow-sm hover:shadow-md"
+                    style={{ fontFamily: 'Hanken Grotesk' }}
+                  />
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                    <kbd className="hidden lg:inline-flex items-center px-2 py-1 text-xs font-medium text-gray-400 bg-white/80 rounded-md border border-gray-200">
+                      ⌘K
+                    </kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons Row */}
+            <div className="flex flex-wrap gap-3">
+              {/* Filter Toggle Button */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`group inline-flex items-center px-4 py-4 text-sm font-semibold rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl ${
+                  showFilters 
+                    ? 'bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white shadow-[#96BF8A]/25' 
+                    : 'bg-white text-[#00412E] border border-[#96BF8A]/20 hover:border-[#96BF8A]/40 hover:bg-[#96BF8A]/5'
+                }`}
+              >
+                <Filter size={18} className={`mr-2 transition-transform duration-300 ${showFilters ? 'rotate-180' : 'group-hover:rotate-12'}`} />
+                <span className="hidden sm:inline">Filter</span>
+                {showFilters ? <ChevronUp size={18} className="ml-2 animate-bounce" /> : <ChevronDown size={18} className="ml-2" />}
+              </button>
+
+              {/* View Mode Toggle */}
+              <div className="flex items-center bg-gray-100/80 backdrop-blur-sm rounded-2xl p-1.5 border border-gray-200/50 shadow-lg">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-3 rounded-xl transition-all duration-200 ${
+                    viewMode === 'grid' 
+                      ? 'bg-white text-[#00412E] shadow-lg scale-105 border border-[#96BF8A]/20' 
+                      : 'text-gray-500 hover:text-[#00412E] hover:bg-white/50'
+                  }`}
+                  title="Grid View"
+                >
+                  <Grid3X3 size={18} />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-3 rounded-xl transition-all duration-200 ${
+                    viewMode === 'list' 
+                      ? 'bg-white text-[#00412E] shadow-lg scale-105 border border-[#96BF8A]/20' 
+                      : 'text-gray-500 hover:text-[#00412E] hover:bg-white/50'
+                  }`}
+                  title="List View"
+                >
+                  <List size={18} />
+                </button>
+              </div>
+
+              {/* Export Button */}
+              <button className="group inline-flex items-center px-4 py-4 text-sm font-semibold text-[#00412E] bg-white hover:bg-[#96BF8A]/5 rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 border border-gray-200/50 hover:border-[#96BF8A]/30 shadow-lg hover:shadow-xl">
+                <Download className="w-4 h-4 mr-2 group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                <span className="hidden sm:inline">Export</span>
+              </button>
             </div>
           </div>
 
-          {/* Filter Toggle */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="inline-flex items-center px-4 py-3 text-sm font-medium text-[#00412E] bg-[#96BF8A]/10 hover:bg-[#96BF8A]/20 rounded-xl transition-all duration-200 border border-[#96BF8A]/20 hover:border-[#96BF8A]/30"
-          >
-            <Filter size={18} className="mr-2" />
-            Filter
-            {showFilters ? <ChevronUp size={18} className="ml-2" /> : <ChevronDown size={18} className="ml-2" />}
-          </button>
-
-          {/* View Mode Toggle */}
-          <div className="flex items-center bg-gray-100 rounded-xl p-1">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition-all duration-200 ${
-                viewMode === 'grid' 
-                  ? 'bg-white text-[#00412E] shadow-sm' 
-                  : 'text-gray-500 hover:text-[#00412E]'
-              }`}
-            >
-              <Grid3X3 size={20} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg transition-all duration-200 ${
-                viewMode === 'list' 
-                  ? 'bg-white text-[#00412E] shadow-sm' 
-                  : 'text-gray-500 hover:text-[#00412E]'
-              }`}
-            >
-              <List size={20} />
-            </button>
+          {/* Results Summary */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-600 font-medium" style={{ fontFamily: 'Hanken Grotesk' }}>
+                Menampilkan <span className="font-bold text-[#00412E]">{mockIkan.length}</span> ikan
+              </span>
+              {searchTerm && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#96BF8A]/10 text-[#00412E] border border-[#96BF8A]/20">
+                  <Search className="w-3 h-3 mr-1" />
+                  "{searchTerm}"
+                </span>
+              )}
+            </div>
+            
+            {/* Quick Filter Badges */}
+            <div className="flex flex-wrap gap-2">
+              {selectedCategory !== 'all' && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200">
+                  <Tag className="w-3 h-3 mr-1" />
+                  {selectedCategory}
+                  <button 
+                    onClick={() => setSelectedCategory('all')}
+                    className="ml-2 hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              {selectedStatus !== 'all' && (
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                  selectedStatus === 'tersedia' ? 'bg-green-100 text-green-700 border-green-200' :
+                  selectedStatus === 'habis' ? 'bg-red-100 text-red-700 border-red-200' :
+                  'bg-yellow-100 text-yellow-700 border-yellow-200'
+                } border`}>
+                  {getStatusIcon(selectedStatus)}
+                  <span className="ml-1 capitalize">{selectedStatus}</span>
+                  <button 
+                    onClick={() => setSelectedStatus('all')}
+                    className="ml-2 hover:bg-opacity-20 hover:bg-gray-500 rounded-full p-0.5 transition-colors"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* Export Button */}
-          <button className="inline-flex items-center px-4 py-3 text-sm font-medium text-[#00412E] bg-white hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200 hover:border-gray-300">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </button>
-        </div>
-
-        {/* Advanced Filters */}
-        {showFilters && (
-          <div className="mt-6 pt-6 border-t border-gray-100">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Category Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-                  Kategori
-                </label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#96BF8A] focus:border-[#96BF8A] transition-all duration-200"
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category === 'all' ? 'Semua Kategori' : category}
-                    </option>
-                  ))}
-                </select>
+          {/* Advanced Filters Panel */}
+          {showFilters && (
+            <div className="border-t border-gray-200/50 pt-6 animate-in slide-in-from-top-2 duration-300">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold text-[#00412E] mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
+                  🔧 Filter Lanjutan
+                </h3>
+                <p className="text-sm text-gray-600">Gunakan filter di bawah untuk mencari ikan yang lebih spesifik</p>
               </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Category Filter */}
+                <div className="space-y-2">
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Hanken Grotesk' }}>
+                    <Tag className="w-4 h-4 mr-2 text-[#96BF8A]" />
+                    Kategori Ikan
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] focus:bg-white transition-all duration-200 appearance-none cursor-pointer"
+                      style={{ fontFamily: 'Hanken Grotesk' }}
+                    >
+                      {categories.map(category => (
+                        <option key={category} value={category}>
+                          {category === 'all' ? '🐟 Semua Kategori' : `🌊 ${category}`}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                  </div>
+                </div>
 
-              {/* Status Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-                  Status
-                </label>
-                <select
-                  value={selectedStatus}
-                  onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#96BF8A] focus:border-[#96BF8A] transition-all duration-200"
-                >
-                  {statuses.map(status => (
-                    <option key={status} value={status}>
-                      {status === 'all' ? 'Semua Status' : status.charAt(0).toUpperCase() + status.slice(1)}
-                    </option>
-                  ))}
-                </select>
+                {/* Status Filter */}
+                <div className="space-y-2">
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Hanken Grotesk' }}>
+                    <Package className="w-4 h-4 mr-2 text-[#96BF8A]" />
+                    Status Ketersediaan
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] focus:bg-white transition-all duration-200 appearance-none cursor-pointer"
+                      style={{ fontFamily: 'Hanken Grotesk' }}
+                    >
+                      {statuses.map(status => (
+                        <option key={status} value={status}>
+                          {status === 'all' ? '📋 Semua Status' : 
+                           status === 'tersedia' ? '✅ Tersedia' :
+                           status === 'habis' ? '❌ Habis Stok' : 
+                           '⏳ Pre-Order'}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                  </div>
+                </div>
+
+                {/* Sort Filter */}
+                <div className="space-y-2">
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Hanken Grotesk' }}>
+                    <BarChart3 className="w-4 h-4 mr-2 text-[#96BF8A]" />
+                    Urutkan Berdasarkan
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200/50 rounded-l-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] focus:bg-white transition-all duration-200 appearance-none cursor-pointer"
+                        style={{ fontFamily: 'Hanken Grotesk' }}
+                      >
+                        <option value="nama">📝 Nama</option>
+                        <option value="harga">💰 Harga</option>
+                        <option value="stok">📦 Stok</option>
+                        <option value="created_at">📅 Tanggal</option>
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                    </div>
+                    <button
+                      onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                      className={`px-4 py-3 border border-l-0 border-gray-200/50 rounded-r-xl hover:bg-gray-50 transition-all duration-200 ${
+                        sortOrder === 'asc' ? 'bg-[#96BF8A]/10 text-[#00412E]' : 'bg-gray-50 text-gray-600'
+                      }`}
+                      title={sortOrder === 'asc' ? 'Urutan Naik (A-Z, 1-9)' : 'Urutan Turun (Z-A, 9-1)'}
+                    >
+                      {sortOrder === 'asc' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </button>
+                  </div>
+                </div>
               </div>
-
-              {/* Sort Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-                  Urutkan
-                </label>
-                <div className="flex">
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-l-lg focus:ring-2 focus:ring-[#96BF8A] focus:border-[#96BF8A] transition-all duration-200"
+              
+              {/* Filter Actions */}
+              <div className="flex flex-wrap items-center justify-between gap-4 mt-6 pt-4 border-t border-gray-200/50">
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <span>Filter aktif:</span>
+                  <span className="font-semibold text-[#00412E]">
+                    {[selectedCategory !== 'all' ? 1 : 0, selectedStatus !== 'all' ? 1 : 0].reduce((a, b) => a + b, 0)} dari 2
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => {
+                      setSelectedCategory('all');
+                      setSelectedStatus('all');
+                      setSortBy('nama');
+                      setSortOrder('asc');
+                      setSearchTerm('');
+                    }}
+                    className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
                   >
-                    <option value="nama">Nama</option>
-                    <option value="harga">Harga</option>
-                    <option value="stok">Stok</option>
-                    <option value="created_at">Tanggal Dibuat</option>
-                  </select>
-                  <button
-                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                    className="px-3 py-2 border border-l-0 border-gray-200 rounded-r-lg hover:bg-gray-50 transition-colors duration-200"
+                    Reset Semua
+                  </button>
+                  <button 
+                    onClick={() => setShowFilters(false)}
+                    className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#00412E] to-[#96BF8A] hover:from-[#96BF8A] hover:to-[#00412E] rounded-lg transition-all duration-200"
                   >
-                    {sortOrder === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    Terapkan Filter
                   </button>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Content Section */}
