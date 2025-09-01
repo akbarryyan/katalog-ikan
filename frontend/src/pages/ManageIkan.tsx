@@ -162,30 +162,116 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       currentRoute="kelola-ikan"
     >
       <div className="bg-[#E8EAE5] p-6">
-      {/* Test Header */}
-      <div className="mb-8">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-[#00412E] mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-              🐟 Kelola Katalog Ikan
-            </h1>
-            <p className="text-gray-600 text-lg" style={{ fontFamily: 'Hanken Grotesk' }}>
-              Kelola semua data ikan dalam satu tempat yang mudah
-            </p>
+      {/* Enhanced Header Section */}
+      <div className="relative mb-8 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-[#E8EAE5]/30 to-[#96BF8A]/10 rounded-3xl"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#96BF8A]/5 rounded-full -translate-y-16 translate-x-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#00412E]/5 rounded-full translate-y-12 -translate-x-12"></div>
+        
+        {/* Floating Fish Icon */}
+        <div className="absolute top-6 right-8 opacity-10">
+          <Fish className="w-20 h-20 text-[#00412E] animate-pulse" />
+        </div>
+        
+        {/* Main Content */}
+        <div className="relative z-10 bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 border border-white/50 shadow-xl">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            {/* Left Section - Title & Description */}
+            <div className="flex-1">
+              <div className="flex items-center space-x-4 mb-4">
+                {/* Icon Container */}
+                <div className="flex-shrink-0 p-4 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-2xl shadow-lg">
+                  <Fish className="w-8 h-8 text-white" />
+                </div>
+                
+                {/* Title & Subtitle */}
+                <div>
+                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#00412E] leading-tight" style={{ fontFamily: 'Hanken Grotesk' }}>
+                    Kelola Katalog Ikan
+                  </h1>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <div className="w-2 h-2 bg-[#96BF8A] rounded-full animate-pulse"></div>
+                    <p className="text-gray-600 text-base lg:text-lg font-medium" style={{ fontFamily: 'Hanken Grotesk' }}>
+                      Kelola semua data ikan dalam satu tempat yang mudah
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Quick Info Badges */}
+              <div className="flex flex-wrap gap-2 mt-4">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#00412E]/10 text-[#00412E] border border-[#00412E]/20">
+                  <Package className="w-3 h-3 mr-1" />
+                  {mockIkan.length} Total Ikan
+                </span>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  {mockIkan.filter(i => i.status === 'tersedia').length} Tersedia
+                </span>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
+                  <AlertCircle className="w-3 h-3 mr-1" />
+                  {mockIkan.filter(i => i.status === 'habis').length} Habis Stok
+                </span>
+              </div>
+            </div>
+            
+            {/* Right Section - Action Buttons */}
+            <div className="flex-shrink-0">
+              <div className="flex flex-col sm:flex-row gap-3">
+                {/* Primary Action Button */}
+                <button 
+                  onClick={() => onNavigate && onNavigate('tambah-ikan')}
+                  className="group inline-flex items-center justify-center px-6 py-3.5 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-semibold rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+                  <span className="whitespace-nowrap">Tambah Ikan Baru</span>
+                  <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+                
+                {/* Secondary Action Buttons */}
+                <div className="flex gap-2">
+                  <button className="group inline-flex items-center justify-center px-4 py-3.5 bg-white text-[#00412E] font-medium rounded-xl hover:bg-[#96BF8A]/10 transition-all duration-300 hover:scale-105 active:scale-95 border border-[#96BF8A]/20 hover:border-[#96BF8A]/40 shadow-lg hover:shadow-xl">
+                    <Upload className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                    <span className="hidden sm:inline whitespace-nowrap">Import</span>
+                  </button>
+                  
+                  <button className="group inline-flex items-center justify-center px-4 py-3.5 bg-white text-[#00412E] font-medium rounded-xl hover:bg-[#96BF8A]/10 transition-all duration-300 hover:scale-105 active:scale-95 border border-[#96BF8A]/20 hover:border-[#96BF8A]/40 shadow-lg hover:shadow-xl">
+                    <Download className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                    <span className="hidden sm:inline whitespace-nowrap">Export</span>
+                  </button>
+                </div>
+              </div>
+              
+              {/* Quick Stats Summary */}
+              <div className="mt-4 p-3 bg-gradient-to-r from-[#00412E]/5 to-[#96BF8A]/5 rounded-xl border border-[#96BF8A]/20">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600 font-medium">Total Nilai Stok:</span>
+                  <span className="text-[#00412E] font-bold">
+                    {new Intl.NumberFormat('id-ID', {
+                      style: 'currency',
+                      currency: 'IDR',
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0
+                    }).format(mockIkan.reduce((sum, i) => sum + (i.harga * i.stok), 0))}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
           
-          <div className="mt-4 lg:mt-0 flex flex-col sm:flex-row gap-3">
-            <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-medium rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-              <Plus className="w-5 h-5 mr-2" />
-              Tambah Ikan Baru
-            </button>
-            
-            <button className="inline-flex items-center px-6 py-3 bg-white text-[#00412E] font-medium rounded-xl hover:bg-[#96BF8A]/10 transition-all duration-300 hover:scale-105 active:scale-95 border border-[#96BF8A]/20 hover:border-[#96BF8A]/40 shadow-lg">
-              <Upload className="w-5 h-5 mr-2" />
-              Import Data
-            </button>
-            
-
+          {/* Bottom Action Bar - Mobile Friendly */}
+          <div className="mt-6 pt-6 border-t border-gray-200/50 lg:hidden">
+            <div className="flex flex-wrap gap-2 justify-center">
+              <button className="flex-1 min-w-0 inline-flex items-center justify-center px-4 py-2 bg-[#00412E]/10 text-[#00412E] text-sm font-medium rounded-lg hover:bg-[#00412E]/20 transition-all duration-200">
+                <Search className="w-4 h-4 mr-2" />
+                Cari Ikan
+              </button>
+              <button className="flex-1 min-w-0 inline-flex items-center justify-center px-4 py-2 bg-[#96BF8A]/10 text-[#00412E] text-sm font-medium rounded-lg hover:bg-[#96BF8A]/20 transition-all duration-200">
+                <Filter className="w-4 h-4 mr-2" />
+                Filter
+              </button>
+            </div>
           </div>
         </div>
       </div>
