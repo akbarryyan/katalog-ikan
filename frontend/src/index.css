@@ -13,6 +13,36 @@ body {
   overflow-x: hidden;
 }
 
+/* Hide scrollbars but keep scroll functionality */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+/* Modal content scrollbar hiding */
+.modal-content .overflow-y-auto {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.modal-content .overflow-y-auto::-webkit-scrollbar {
+  display: none;
+}
+
+/* Sidebar navigation scrollbar hiding */
+.sidebar-nav {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
+}
+
 /* ULTRA STRONG Sidebar Fixed CSS - Cannot be overridden */
 .sidebar-ultra-fixed {
   position: fixed !important;

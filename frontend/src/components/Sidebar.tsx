@@ -176,12 +176,15 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
           </div>
           
           {/* Navigation Menu */}
-          <nav style={{
-            flex: 1,
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            padding: '1.5rem 0.75rem'
-          }}>
+          <nav 
+            className="hide-scrollbar"
+            style={{
+              flex: 1,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              padding: '1.5rem 0.75rem'
+            }}
+          >
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {menuItems.map((item) => {
                 const Icon = item.icon;

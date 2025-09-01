@@ -54,11 +54,14 @@ const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutPr
         />
 
         {/* Content area - This will scroll */}
-        <div style={{
-          padding: '1.5rem',
-          minHeight: 'calc(100vh - 80px)', // Adjust based on TopBar height
-          overflowY: 'auto'
-        }}>
+        <div 
+          className="hide-scrollbar"
+          style={{
+            padding: '1.5rem',
+            minHeight: 'calc(100vh - 80px)', // Adjust based on TopBar height
+            overflowY: 'auto'
+          }}
+        >
           {children}
         </div>
       </div>
