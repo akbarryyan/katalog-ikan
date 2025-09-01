@@ -42,7 +42,7 @@ const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutPr
         marginLeft: isDesktop ? '18rem' : '0', // Desktop margin for fixed sidebar
         width: isDesktop ? 'calc(100% - 18rem)' : '100%',
         position: 'relative',
-        zIndex: 1,
+        zIndex: 20, // Lower than Sidebar (z-index: 30) and Modal (z-index: 50)
         minHeight: '100vh',
         transition: 'margin-left 0.3s ease-in-out, width 0.3s ease-in-out'
       }}>
