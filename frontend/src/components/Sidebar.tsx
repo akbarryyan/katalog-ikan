@@ -39,22 +39,18 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
 
       {/* Sidebar */}
       <div 
-        className={`fixed top-0 left-0 z-50 w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`sidebar-ultra-fixed transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? 'open' : ''
         }`}
-        style={{ 
-          height: '100vh',
-          minHeight: '100vh',
-          maxHeight: '100vh'
-        }}
       >
         {/* Sidebar Content Container */}
         <div 
-          className="flex flex-col"
-          style={{ 
+          style={{
             height: '100vh',
-            minHeight: '100vh',
-            maxHeight: '100vh'
+            maxHeight: '100vh',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           {/* Sidebar Header */}
@@ -94,10 +90,11 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
           
           {/* Navigation Menu */}
           <nav 
-            className="flex-1 px-3 py-6 overflow-y-auto"
-            style={{ 
-              minHeight: '0',
-              height: 'calc(100vh - 248px)'
+            style={{
+              flex: 1,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              padding: '1.5rem 0.75rem'
             }}
           >
             <ul className="space-y-3">
@@ -144,8 +141,6 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
           </div>
         </div>
       </div>
-
-
     </>
   );
 };

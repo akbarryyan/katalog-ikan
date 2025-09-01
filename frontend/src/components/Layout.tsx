@@ -15,7 +15,7 @@ const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutPr
 
   return (
     <div className="min-h-screen bg-[#E8EAE5]">
-      {/* Sidebar */}
+      {/* Sidebar - Fixed */}
       <Sidebar 
         onLogout={onLogout}
         user={user}
@@ -25,8 +25,8 @@ const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutPr
         setSidebarOpen={setSidebarOpen}
       />
 
-      {/* Main content */}
-      <div className="lg:ml-72">
+      {/* Main content - Scrollable */}
+      <div className="main-content-ultra-scrollable">
         {/* Top bar */}
         <TopBar 
           currentRoute={currentRoute}
@@ -34,8 +34,14 @@ const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutPr
           onMobileMenuClick={() => setSidebarOpen(true)}
         />
 
-        {/* Content area */}
-        <div className="p-8">
+        {/* Content area - This will scroll */}
+        <div 
+          className="p-6"
+          style={{
+            minHeight: 'calc(100vh - 80px)', // Adjust based on TopBar height
+            overflowY: 'auto'
+          }}
+        >
           {children}
         </div>
       </div>

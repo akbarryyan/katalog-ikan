@@ -10,6 +10,108 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ULTRA STRONG Sidebar Fixed CSS - Cannot be overridden */
+.sidebar-ultra-fixed {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  width: 18rem !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  overflow: hidden !important;
+  transform: none !important;
+  will-change: auto !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  -ms-transform: none !important;
+  -o-transform: none !important;
+  transform-style: flat !important;
+  -webkit-transform-style: flat !important;
+  perspective: none !important;
+  -webkit-perspective: none !important;
+  transform-origin: 0 0 !important;
+  -webkit-transform-origin: 0 0 !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  float: none !important;
+  clear: none !important;
+  vertical-align: baseline !important;
+  text-align: left !important;
+  white-space: normal !important;
+  word-wrap: normal !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  hyphens: none !important;
+  direction: ltr !important;
+  unicode-bidi: normal !important;
+  text-orientation: mixed !important;
+  writing-mode: horizontal-tb !important;
+  text-rendering: auto !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  -webkit-text-size-adjust: 100% !important;
+  -ms-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  outline: none !important;
+  border: none !important;
+  background: white !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Force all children to be positioned correctly */
+.sidebar-ultra-fixed * {
+  position: relative !important;
+  float: none !important;
+  clear: none !important;
+}
+
+/* Ensure main content doesn't interfere */
+.main-content-ultra-scrollable {
+  margin-left: 18rem !important;
+  width: calc(100% - 18rem) !important;
+  position: relative !important;
+  z-index: 1 !important;
+  overflow-x: hidden !important;
+  min-height: 100vh !important;
+}
+
+/* Mobile overrides */
+@media (max-width: 1023px) {
+  .sidebar-ultra-fixed {
+    transform: translateX(-100%) !important;
+    -webkit-transform: translateX(-100%) !important;
+    -moz-transform: translateX(-100%) !important;
+    -ms-transform: translateX(-100%) !important;
+    -o-transform: translateX(-100%) !important;
+  }
+  
+  .sidebar-ultra-fixed.open {
+    transform: translateX(0) !important;
+    -webkit-transform: translateX(0) !important;
+    -moz-transform: translateX(0) !important;
+    -ms-transform: translateX(0) !important;
+    -o-transform: translateX(0) !important;
+  }
+  
+  .main-content-ultra-scrollable {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
 }
 
 /* Custom animations for page transitions */
