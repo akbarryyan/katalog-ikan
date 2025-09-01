@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Fish, 
   Plus, 
@@ -18,7 +18,8 @@ import {
   DollarSign,
   Grid3X3,
   List,
-  BarChart3
+  BarChart3,
+  Loader2
 } from 'lucide-react';
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
@@ -40,11 +41,18 @@ interface Ikan {
 interface ManageIkanProps {
   onLogout?: () => void;
   user?: { email: string } | null;
-  onNavigate?: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan') => void;
+  onNavigate?: (route: 'dashboard' | 'tambah-ikan' | 'edit-ikan' | 'kelola-ikan') => void;
 }
 
 const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   
+  // Data state
+  const [ikanList, setIkanList] = useState<Ikan[]>([]);
+  const [filteredIkan, setFilteredIkan] = useState<Ikan[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // UI state
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -57,59 +65,101 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   const [isModalLoading, setIsModalLoading] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
 
-  // Mock data ikan
-  const mockIkan: Ikan[] = [
-    {
-      id: 1,
-      nama: 'Ikan Gurame',
-      harga: 85000,
-      satuanHarga: 'kg',
-      stok: 15,
-      status: 'tersedia',
-      deskripsi: 'Ikan gurame segar dari kolam lokal, daging tebal dan lezat',
-      gambar: '/api/images/gurame.jpg',
-      created_at: '2024-01-15',
-      updated_at: '2024-01-20'
-    },
-    {
-      id: 2,
-      nama: 'Ikan Mas',
-      harga: 52000,
-      satuanHarga: 'kg',
-      stok: 0,
-      status: 'habis',
-      deskripsi: 'Ikan mas merah segar, cocok untuk masakan tradisional',
-      gambar: '/api/images/mas.jpg',
-      created_at: '2024-01-10',
-      updated_at: '2024-01-18'
-    },
-    {
-      id: 3,
-      nama: 'Ikan Kakap',
-      harga: 120000,
-      satuanHarga: 'kg',
-      stok: 8,
-      status: 'tersedia',
-      deskripsi: 'Ikan kakap merah segar dari laut, daging putih dan lembut',
-      gambar: '/api/images/kakap.jpg',
-      created_at: '2024-01-12',
-      updated_at: '2024-01-19'
-    },
-    {
-      id: 4,
-      nama: 'Ikan Lele',
-      harga: 45000,
-      satuanHarga: 'gram',
-      stok: 5,
-      status: 'pre-order',
-      deskripsi: 'Ikan lele segar, cocok untuk berbagai masakan',
-      gambar: '/api/images/lele.jpg',
-      created_at: '2024-01-08',
-      updated_at: '2024-01-16'
-    }
-  ];
-
   const statuses = ['all', 'tersedia', 'habis', 'pre-order'];
+
+  // API Functions
+  const fetchIkan = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await fetch('http://localhost:3001/api/ikan', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setIkanList(data);
+      setFilteredIkan(data);
+    } catch (err) {
+      console.error('Error fetching ikan:', err);
+      setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat mengambil data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteIkan = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/ikan/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Refresh data after deletion
+      await fetchIkan();
+      return true;
+    } catch (err) {
+      console.error('Error deleting ikan:', err);
+      setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat menghapus data');
+      return false;
+    }
+  };
+
+  // Filter and sort data
+  useEffect(() => {
+    let filtered = [...ikanList];
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(ikan =>
+        ikan.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ikan.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ikan.harga.toString().includes(searchTerm)
+      );
+    }
+
+    // Status filter
+    if (selectedStatus !== 'all') {
+      filtered = filtered.filter(ikan => ikan.status === selectedStatus);
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      let aValue: any = a[sortBy as keyof Ikan];
+      let bValue: any = b[sortBy as keyof Ikan];
+
+      if (sortBy === 'created_at' || sortBy === 'updated_at') {
+        aValue = new Date(aValue).getTime();
+        bValue = new Date(bValue).getTime();
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    setFilteredIkan(filtered);
+  }, [ikanList, searchTerm, selectedStatus, sortBy, sortOrder]);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchIkan();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -139,13 +189,17 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
 
   const handleEdit = (ikan: Ikan) => {
     console.log('Edit ikan:', ikan);
-    // TODO: Implement edit functionality
+    if (onNavigate) {
+      onNavigate('edit-ikan');
+    }
   };
 
-  const handleDelete = (ikan: Ikan) => {
+  const handleDelete = async (ikan: Ikan) => {
     if (confirm(`Apakah Anda yakin ingin menghapus ${ikan.nama}?`)) {
-      console.log('Delete ikan:', ikan);
-      // TODO: Implement delete functionality
+      const success = await deleteIkan(ikan.id);
+      if (success) {
+        alert(`${ikan.nama} berhasil dihapus`);
+      }
     }
   };
 
@@ -172,10 +226,28 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     setIsModalLoading(false);
   };
 
-  const handleSaveIkan = (data: any) => {
-    console.log('Data ikan baru:', data);
-    // TODO: Implement save logic
-    handleCloseModal();
+  const handleSaveIkan = async (data: any) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/ikan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Refresh data after successful save
+      await fetchIkan();
+      handleCloseModal();
+      alert('Ikan berhasil ditambahkan!');
+    } catch (err) {
+      console.error('Error saving ikan:', err);
+      alert('Terjadi kesalahan saat menyimpan data ikan');
+    }
   };
 
   return (
@@ -227,15 +299,15 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
               <div className="flex flex-wrap gap-2 mt-4">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#00412E]/10 text-[#00412E] border border-[#00412E]/20">
                   <Package className="w-3 h-3 mr-1" />
-                  {mockIkan.length} Total Ikan
+                  {filteredIkan.length} Total Ikan
                 </span>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
                   <CheckCircle className="w-3 h-3 mr-1" />
-                  {mockIkan.filter(i => i.status === 'tersedia').length} Tersedia
+                  {filteredIkan.filter((i: Ikan) => i.status === 'tersedia').length} Tersedia
                 </span>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
                   <AlertCircle className="w-3 h-3 mr-1" />
-                  {mockIkan.filter(i => i.status === 'habis').length} Habis Stok
+                  {filteredIkan.filter((i: Ikan) => i.status === 'habis').length} Habis Stok
                 </span>
               </div>
             </div>
@@ -287,7 +359,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                       currency: 'IDR',
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0
-                    }).format(mockIkan.reduce((sum, i) => sum + (i.harga * i.stok), 0))}
+                    }).format(filteredIkan.reduce((sum: number, i: Ikan) => sum + (i.harga * i.stok), 0))}
                   </span>
                 </div>
               </div>
@@ -319,7 +391,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 Total Ikan
               </p>
               <p className="text-3xl font-bold text-[#00412E] mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                {mockIkan.length}
+                {filteredIkan.length}
               </p>
             </div>
             <div className="p-3 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-xl">
@@ -335,7 +407,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 Tersedia
               </p>
               <p className="text-3xl font-bold text-green-600 mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                {mockIkan.filter(i => i.status === 'tersedia').length}
+                {filteredIkan.filter((i: Ikan) => i.status === 'tersedia').length}
               </p>
             </div>
             <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
@@ -351,7 +423,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 Habis Stok
               </p>
               <p className="text-3xl font-bold text-red-600 mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                {mockIkan.filter(i => i.status === 'habis').length}
+                {filteredIkan.filter((i: Ikan) => i.status === 'habis').length}
               </p>
             </div>
             <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl">
@@ -367,7 +439,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 Total Nilai
               </p>
               <p className="text-3xl font-bold text-[#00412E] mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                Rp {(mockIkan.reduce((sum, i) => sum + (i.harga * i.stok), 0) / 1000000).toFixed(1)}M
+                Rp {(filteredIkan.reduce((sum: number, i: Ikan) => sum + (i.harga * i.stok), 0) / 1000000).toFixed(1)}M
               </p>
             </div>
             <div className="p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl">
@@ -465,7 +537,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600 font-medium" style={{ fontFamily: 'Hanken Grotesk' }}>
-                Menampilkan <span className="font-bold text-[#00412E]">{mockIkan.length}</span> ikan
+                Menampilkan <span className="font-bold text-[#00412E]">{filteredIkan.length}</span> ikan
               </span>
               {searchTerm && (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#96BF8A]/10 text-[#00412E] border border-[#96BF8A]/20">
@@ -601,11 +673,40 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
         </div>
       </div>
 
+      {/* Loading State */}
+      {isLoading && (
+        <div className="text-center py-12">
+          <Loader2 className="w-16 h-16 text-[#96BF8A] mx-auto mb-4 animate-spin" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
+            Memuat data ikan...
+          </h3>
+          <p className="text-gray-500">Mohon tunggu sebentar</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !isLoading && (
+        <div className="text-center py-12">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
+            Terjadi kesalahan
+          </h3>
+          <p className="text-gray-500 mb-6">{error}</p>
+          <button 
+            onClick={fetchIkan}
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-medium rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
+          >
+            <Loader2 className="w-5 h-5 mr-2" />
+            Coba Lagi
+          </button>
+        </div>
+      )}
+
       {/* Content Section */}
-      {viewMode === 'grid' ? (
+      {!isLoading && !error && viewMode === 'grid' ? (
         /* Grid View */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {mockIkan.map((ikan) => (
+          {filteredIkan.map((ikan: Ikan) => (
             <div key={ikan.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden group">
               {/* Image Placeholder */}
               <div className="h-48 bg-gradient-to-br from-[#00412E] to-[#96BF8A] flex items-center justify-center">
@@ -664,7 +765,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
             </div>
           ))}
         </div>
-      ) : (
+      ) : !isLoading && !error ? (
         /* List View */
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
@@ -692,7 +793,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {mockIkan.map((ikan) => (
+                {filteredIkan.map((ikan: Ikan) => (
                   <tr key={ikan.id} className="hover:bg-gray-50 transition-colors duration-200">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -752,10 +853,10 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
             </table>
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Empty State */}
-      {mockIkan.length === 0 && (
+      {filteredIkan.length === 0 && (
         <div className="text-center py-12">
           <Fish className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
