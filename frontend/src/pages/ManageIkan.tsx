@@ -16,7 +16,6 @@ import {
   Clock,
   Package,
   DollarSign,
-  Tag,
   Grid3X3,
   List,
   BarChart3
@@ -28,9 +27,8 @@ import FormTambahIkan from '../components/FormTambahIkan';
 interface Ikan {
   id: number;
   nama: string;
-  kategori: string;
-  ukuran: string;
   harga: number;
+  satuanHarga: 'kg' | 'gram';
   stok: number;
   status: 'tersedia' | 'habis' | 'pre-order';
   deskripsi: string;
@@ -49,7 +47,6 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [sortBy, setSortBy] = useState('nama');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -65,9 +62,8 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     {
       id: 1,
       nama: 'Ikan Gurame',
-      kategori: 'Air Tawar',
-      ukuran: 'Sedang',
       harga: 85000,
+      satuanHarga: 'kg',
       stok: 15,
       status: 'tersedia',
       deskripsi: 'Ikan gurame segar dari kolam lokal, daging tebal dan lezat',
@@ -78,9 +74,8 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     {
       id: 2,
       nama: 'Ikan Mas',
-      kategori: 'Air Tawar',
-      ukuran: 'Kecil',
       harga: 52000,
+      satuanHarga: 'kg',
       stok: 0,
       status: 'habis',
       deskripsi: 'Ikan mas merah segar, cocok untuk masakan tradisional',
@@ -91,9 +86,8 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     {
       id: 3,
       nama: 'Ikan Kakap',
-      kategori: 'Air Laut',
-      ukuran: 'Besar',
       harga: 120000,
+      satuanHarga: 'kg',
       stok: 8,
       status: 'tersedia',
       deskripsi: 'Ikan kakap merah segar dari laut, daging putih dan lembut',
@@ -104,9 +98,8 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     {
       id: 4,
       nama: 'Ikan Lele',
-      kategori: 'Air Tawar',
-      ukuran: 'Sedang',
       harga: 45000,
+      satuanHarga: 'gram',
       stok: 5,
       status: 'pre-order',
       deskripsi: 'Ikan lele segar, cocok untuk berbagai masakan',
@@ -116,7 +109,6 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     }
   ];
 
-  const categories = ['all', 'Air Tawar', 'Air Laut'];
   const statuses = ['all', 'tersedia', 'habis', 'pre-order'];
 
   const getStatusColor = (status: string) => {
@@ -404,7 +396,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#96BF8A] group-focus-within:text-[#00412E] transition-colors duration-200" size={20} />
                   <input
                     type="text"
-                    placeholder="🔍 Cari nama ikan, kategori, atau deskripsi..."
+                    placeholder="🔍 Cari nama ikan, harga, atau deskripsi..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-12 pr-4 py-4 bg-gray-50/80 border border-gray-200/50 rounded-2xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] focus:bg-white transition-all duration-300 placeholder:text-gray-500 text-gray-800 shadow-sm hover:shadow-md"
@@ -485,18 +477,6 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
             
             {/* Quick Filter Badges */}
             <div className="flex flex-wrap gap-2">
-              {selectedCategory !== 'all' && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200">
-                  <Tag className="w-3 h-3 mr-1" />
-                  {selectedCategory}
-                  <button 
-                    onClick={() => setSelectedCategory('all')}
-                    className="ml-2 hover:bg-blue-200 rounded-full p-0.5 transition-colors"
-                  >
-                    ×
-                  </button>
-                </span>
-              )}
               {selectedStatus !== 'all' && (
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                   selectedStatus === 'tersedia' ? 'bg-green-100 text-green-700 border-green-200' :
@@ -526,29 +506,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 <p className="text-sm text-gray-600">Gunakan filter di bawah untuk mencari ikan yang lebih spesifik</p>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Category Filter */}
-                <div className="space-y-2">
-                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-3" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    <Tag className="w-4 h-4 mr-2 text-[#96BF8A]" />
-                    Kategori Ikan
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] focus:bg-white transition-all duration-200 appearance-none cursor-pointer"
-                      style={{ fontFamily: 'Hanken Grotesk' }}
-                    >
-                      {categories.map(category => (
-                        <option key={category} value={category}>
-                          {category === 'all' ? '🐟 Semua Kategori' : `🌊 ${category}`}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                 {/* Status Filter */}
                 <div className="space-y-2">
@@ -615,13 +573,12 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <span>Filter aktif:</span>
                   <span className="font-semibold text-[#00412E]">
-                    {[selectedCategory !== 'all' ? 1 : 0, selectedStatus !== 'all' ? 1 : 0].reduce((a, b) => a + b, 0)} dari 2
+                    {selectedStatus !== 'all' ? 1 : 0} dari 1
                   </span>
                 </div>
                 <div className="flex gap-2">
                   <button 
                     onClick={() => {
-                      setSelectedCategory('all');
                       setSelectedStatus('all');
                       setSortBy('nama');
                       setSortOrder('asc');
@@ -685,16 +642,12 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center text-sm text-gray-600">
-                    <Tag className="w-4 h-4 mr-2" />
-                    {ikan.kategori}
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    {formatPrice(ikan.harga)} / {ikan.satuanHarga}
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
                     <Package className="w-4 h-4 mr-2" />
-                    {ikan.ukuran}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <DollarSign className="w-4 h-4 mr-2" />
-                    {formatPrice(ikan.harga)}
+                    Stok: {ikan.stok}
                   </div>
                 </div>
                 
@@ -722,7 +675,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                     Ikan
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    Kategori
+                    Satuan Harga
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
                     Harga
@@ -750,13 +703,13 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                           <div className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Hanken Grotesk' }}>
                             {ikan.nama}
                           </div>
-                          <div className="text-sm text-gray-500">{ikan.ukuran}</div>
+                          <div className="text-sm text-gray-500">{formatPrice(ikan.harga)} / {ikan.satuanHarga}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {ikan.kategori}
+                        {ikan.satuanHarga}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
