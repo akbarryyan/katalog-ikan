@@ -170,12 +170,8 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     setTimeout(() => {
       setIsButtonLoading(false);
       setIsModalOpen(true);
-      setIsModalLoading(true);
-      
-      // Simulate modal loading for 1.5 seconds
-      setTimeout(() => {
-        setIsModalLoading(false);
-      }, 1500);
+      // Modal langsung tampil form tanpa loading
+      setIsModalLoading(false);
     }, 1500);
   };
 
