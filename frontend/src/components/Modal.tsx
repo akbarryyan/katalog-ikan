@@ -31,6 +31,20 @@ const Modal = ({
     xl: 'max-w-6xl'
   };
 
+  // Set CSS custom property for max-width
+  useEffect(() => {
+    if (isOpen) {
+      const maxWidth = sizeClasses[size].replace('max-w-', '');
+      const widthMap: Record<string, string> = {
+        'md': '28rem',
+        'lg': '56rem',
+        'xl': '72rem',
+        'sm': '24rem'
+      };
+      document.documentElement.style.setProperty('--modal-max-width', widthMap[maxWidth] || '42rem');
+    }
+  }, [isOpen, size]);
+
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
@@ -51,7 +65,7 @@ const Modal = ({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 modal-center">
+    <div className="modal-overlay-alt">
       {/* Backdrop with blur effect */}
       <div 
         className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${
@@ -61,13 +75,13 @@ const Modal = ({
       />
       
       {/* Modal Container */}
-      <div className={`relative w-full ${sizeClasses[size]} transform transition-all duration-300 ${
+      <div className={`modal-wrapper-alt transition-all duration-300 ${
         isAnimating 
-          ? 'opacity-100 scale-100 translate-y-0' 
-          : 'opacity-0 scale-95 translate-y-4'
+          ? 'opacity-100 scale-100' 
+          : 'opacity-0 scale-95'
       }`}>
         {/* Modal Content */}
-        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden modal-container flex flex-col">
+        <div className="modal-content">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-[#00412E]/5 to-[#96BF8A]/5 flex-shrink-0">
             <h2 className="text-xl font-bold text-[#00412E]" style={{ fontFamily: 'Hanken Grotesk' }}>

@@ -203,3 +203,212 @@ body {
 .modal-container::-webkit-scrollbar-thumb:hover {
   background: #00412E;
 }
+
+/* Enhanced modal positioning */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.modal-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: var(--modal-max-width, 42rem);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateZ(0);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid #f3f4f6;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+/* Ensure perfect centering */
+.modal-overlay {
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modal-wrapper {
+  margin: auto;
+  transform-origin: center center;
+}
+
+/* Force perfect vertical centering */
+.modal-overlay {
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh;
+  height: 100vh;
+}
+
+.modal-wrapper {
+  margin: 0 auto;
+  transform-origin: center center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Alternative centering method */
+.modal-overlay-alt {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.modal-wrapper-alt {
+  width: 100%;
+  max-width: var(--modal-max-width, 42rem);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Force perfect centering */
+.modal-overlay-alt {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 50 !important;
+  padding: 1rem !important;
+}
+
+.modal-wrapper-alt {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+}
+
+/* Additional centering fixes */
+.modal-overlay-alt {
+  overflow: hidden;
+}
+
+.modal-wrapper-alt {
+  z-index: 51;
+  pointer-events: auto;
+}
+
+/* Ensure modal content is properly sized */
+.modal-content {
+  width: 100%;
+  height: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ultimate centering solution */
+.modal-overlay-alt {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 50 !important;
+  padding: 1rem !important;
+  overflow: hidden;
+}
+
+.modal-wrapper-alt {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 51 !important;
+  pointer-events: auto !important;
+  width: calc(100% - 2rem) !important;
+  max-width: var(--modal-max-width, 42rem) !important;
+}
+
+/* Perfect centering with viewport units */
+.modal-overlay-alt {
+  min-height: 100vh;
+  height: 100vh;
+}
+
+.modal-wrapper-alt {
+  top: 50vh !important;
+  left: 50vw !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* Alternative flexbox centering */
+.modal-overlay-alt {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column;
+}
+
+.modal-wrapper-alt {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  margin: auto !important;
+}
+
+/* Clean and simple centering */
+.modal-overlay-alt {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 50 !important;
+  padding: 1rem !important;
+}
+
+.modal-wrapper-alt {
+  position: relative !important;
+  width: 100% !important;
+  max-width: var(--modal-max-width, 42rem) !important;
+  max-height: 90vh !important;
+  margin: 0 auto !important;
+}
