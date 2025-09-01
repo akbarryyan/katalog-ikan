@@ -9,9 +9,8 @@ interface FormTambahIkanProps {
 const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
   const [formData, setFormData] = useState({
     nama: '',
-    kategori: 'air_tawar',
-    ukuran: 'sedang',
     harga: '',
+    satuanHarga: 'kg',
     stok: '',
     status: 'tersedia',
     deskripsi: '',
@@ -111,41 +110,7 @@ const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
         )}
       </div>
 
-      {/* Kategori & Ukuran Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-            🌊 Kategori <span className="text-red-500">*</span>
-          </label>
-          <select
-            value={formData.kategori}
-            onChange={(e) => handleInputChange('kategori', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] transition-all duration-200 appearance-none cursor-pointer bg-white"
-            style={{ fontFamily: 'Hanken Grotesk' }}
-          >
-            <option value="air_tawar">🌊 Air Tawar</option>
-            <option value="air_laut">🌊 Air Laut</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-            📏 Ukuran <span className="text-red-500">*</span>
-          </label>
-          <select
-            value={formData.ukuran}
-            onChange={(e) => handleInputChange('ukuran', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] transition-all duration-200 appearance-none cursor-pointer bg-white"
-            style={{ fontFamily: 'Hanken Grotesk' }}
-          >
-            <option value="kecil">📏 Kecil</option>
-            <option value="sedang">📏 Sedang</option>
-            <option value="besar">📏 Besar</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Harga & Stok Row */}
+      {/* Harga & Satuan Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
@@ -174,26 +139,42 @@ const FormTambahIkan = ({ onSave, onCancel }: FormTambahIkanProps) => {
 
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-            📦 Stok <span className="text-red-500">*</span>
+            ⚖️ Satuan Harga
           </label>
-          <input
-            type="number"
-            value={formData.stok}
-            onChange={(e) => handleInputChange('stok', e.target.value)}
-            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] transition-all duration-200 ${
-              errors.stok ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white'
-            }`}
-            placeholder="0"
-            min="0"
+          <select
+            value={formData.satuanHarga}
+            onChange={(e) => handleInputChange('satuanHarga', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] transition-all duration-200 appearance-none cursor-pointer bg-white"
             style={{ fontFamily: 'Hanken Grotesk' }}
-          />
-          {errors.stok && (
-            <div className="flex items-center mt-2 text-sm text-red-600">
-              <AlertCircle className="w-4 h-4 mr-1" />
-              {errors.stok}
-            </div>
-          )}
+          >
+            <option value="kg">⚖️ Per Kilogram (kg)</option>
+            <option value="gram">⚖️ Per Gram (g)</option>
+          </select>
         </div>
+      </div>
+
+      {/* Stok */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
+          📦 Stok <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="number"
+          value={formData.stok}
+          onChange={(e) => handleInputChange('stok', e.target.value)}
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] transition-all duration-200 ${
+            errors.stok ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white'
+          }`}
+          placeholder="0"
+          min="0"
+          style={{ fontFamily: 'Hanken Grotesk' }}
+        />
+        {errors.stok && (
+          <div className="flex items-center mt-2 text-sm text-red-600">
+            <AlertCircle className="w-4 h-4 mr-1" />
+            {errors.stok}
+          </div>
+        )}
       </div>
 
       {/* Status */}
