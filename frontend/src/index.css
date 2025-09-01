@@ -169,3 +169,37 @@ body {
 .animate-fade-out {
   animation: fadeOut 0.3s ease-out;
 }
+
+/* Modal centering utilities */
+.modal-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.modal-container {
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #96BF8A #E8EAE5;
+}
+
+.modal-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-container::-webkit-scrollbar-track {
+  background: #E8EAE5;
+  border-radius: 3px;
+}
+
+.modal-container::-webkit-scrollbar-thumb {
+  background: #96BF8A;
+  border-radius: 3px;
+}
+
+.modal-container::-webkit-scrollbar-thumb:hover {
+  background: #00412E;
+}

@@ -51,7 +51,7 @@ const Modal = ({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 modal-center">
       {/* Backdrop with blur effect */}
       <div 
         className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${
@@ -67,24 +67,24 @@ const Modal = ({
           : 'opacity-0 scale-95 translate-y-4'
       }`}>
         {/* Modal Content */}
-        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden modal-container flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-[#00412E]/5 to-[#96BF8A]/5">
+          <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-[#00412E]/5 to-[#96BF8A]/5 flex-shrink-0">
             <h2 className="text-xl font-bold text-[#00412E]" style={{ fontFamily: 'Hanken Grotesk' }}>
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200 hover:scale-110"
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-300 hover:scale-110"
             >
               <X size={20} />
             </button>
           </div>
           
           {/* Body */}
-          <div className="relative">
+          <div className="relative flex-1 overflow-y-auto">
             {showLoading ? (
-              <div className="p-12">
+              <div className="p-12 flex items-center justify-center min-h-[300px]">
                 <LoadingSpinner message={loadingMessage} size="md" />
               </div>
             ) : (

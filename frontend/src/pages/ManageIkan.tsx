@@ -58,6 +58,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalLoading, setIsModalLoading] = useState(false);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   // Mock data ikan
   const mockIkan: Ikan[] = [
@@ -163,13 +164,19 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
 
   // Modal handlers
   const handleOpenModal = () => {
-    setIsModalOpen(true);
-    setIsModalLoading(true);
+    setIsButtonLoading(true);
     
-    // Simulate loading for 2 seconds
+    // Simulate button loading for 1.5 seconds
     setTimeout(() => {
-      setIsModalLoading(false);
-    }, 2000);
+      setIsButtonLoading(false);
+      setIsModalOpen(true);
+      setIsModalLoading(true);
+      
+      // Simulate modal loading for 1.5 seconds
+      setTimeout(() => {
+        setIsModalLoading(false);
+      }, 1500);
+    }, 1500);
   };
 
   const handleCloseModal = () => {
@@ -251,11 +258,21 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 {/* Primary Action Button */}
                 <button 
                   onClick={handleOpenModal}
-                  className="group inline-flex items-center justify-center px-6 py-3.5 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-semibold rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  disabled={isButtonLoading}
+                  className="group inline-flex items-center justify-center px-6 py-3.5 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-semibold rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-80 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:-translate-y-0"
                 >
-                  <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-                  <span className="whitespace-nowrap">Tambah Ikan Baru</span>
-                  <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  {isButtonLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      <span className="whitespace-nowrap">Memuat...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+                      <span className="whitespace-nowrap">Tambah Ikan Baru</span>
+                      <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </>
+                  )}
                 </button>
                 
                 {/* Secondary Action Buttons */}
