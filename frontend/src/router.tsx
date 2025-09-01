@@ -5,6 +5,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import FormIkan from './components/FormIkan';
 import TabelIkan from './components/TabelIkan';
 import ManageIkan from './pages/ManageIkan';
+import PageTransition from './components/PageTransition';
 
 // Route types
 export type Route = 'login' | 'dashboard' | 'tambah-ikan' | 'edit-ikan' | 'kelola-ikan';
@@ -15,6 +16,8 @@ export const Router = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{ email: string } | null>(null);
   const [editData, setEditData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('Memuat halaman...');
 
   // Check login status on mount
   useEffect(() => {
@@ -63,16 +66,46 @@ export const Router = () => {
   // Navigation functions
   const navigate = (route: Route) => {
     console.log('Navigating to:', route);
-    setCurrentRoute(route);
     
-    // Update URL based on route
-    if (route === 'dashboard') {
-      window.history.pushState({}, '', '/');
-      console.log('URL updated to: /');
-    } else {
-      window.history.pushState({}, '', `/${route}`);
-      console.log('URL updated to:', `/${route}`);
+    // Set loading state
+    setIsLoading(true);
+    
+    // Set appropriate loading message based on route
+    switch (route) {
+      case 'dashboard':
+        setLoadingMessage('Memuat Dashboard...');
+        break;
+      case 'kelola-ikan':
+        setLoadingMessage('Memuat Kelola Ikan...');
+        break;
+      case 'tambah-ikan':
+        setLoadingMessage('Memuat Form Tambah Ikan...');
+        break;
+      case 'edit-ikan':
+        setLoadingMessage('Memuat Form Edit Ikan...');
+        break;
+      default:
+        setLoadingMessage('Memuat halaman...');
     }
+    
+    // Simulate loading time for smooth transition
+    setTimeout(() => {
+      setCurrentRoute(route);
+      
+      // Update URL based on route
+      if (route === 'dashboard') {
+        window.history.pushState({}, '', '/');
+        console.log('URL updated to: /');
+      } else {
+        window.history.pushState({}, '', `/${route}`);
+        console.log('URL updated to:', `/${route}`);
+      }
+      
+      // Hide loading after a short delay for smooth transition
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 200);
+    }, 800); // Total loading time: 800ms + 200ms = 1 second
   };
 
   const navigateToEdit = (ikan: any) => {
@@ -89,16 +122,29 @@ export const Router = () => {
     setIsLoggedIn(true);
     localStorage.setItem('adminLoggedIn', 'true');
     localStorage.setItem('adminUser', JSON.stringify(userData));
-    navigate('dashboard');
+    
+    // Set loading for login transition
+    setIsLoading(true);
+    setLoadingMessage('Memuat Dashboard...');
+    
+    setTimeout(() => {
+      navigate('dashboard');
+    }, 500);
   };
 
   // Logout handler
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUser(null);
-    localStorage.removeItem('adminLoggedIn');
-    localStorage.removeItem('adminUser');
-    setCurrentRoute('login');
+    setIsLoading(true);
+    setLoadingMessage('Logging out...');
+    
+    setTimeout(() => {
+      setIsLoggedIn(false);
+      setUser(null);
+      localStorage.removeItem('adminLoggedIn');
+      localStorage.removeItem('adminUser');
+      setCurrentRoute('login');
+      setIsLoading(false);
+    }, 800);
   };
 
   // Route protection
@@ -114,56 +160,64 @@ export const Router = () => {
 
     case 'dashboard':
       return (
-        <AdminDashboard 
-          onLogout={handleLogout} 
-          user={user}
-          onNavigate={navigate}
-        />
+        <PageTransition isLoading={isLoading} loadingMessage={loadingMessage}>
+          <AdminDashboard 
+            onLogout={handleLogout} 
+            user={user}
+            onNavigate={navigate}
+          />
+        </PageTransition>
       );
 
     case 'tambah-ikan':
       return (
-        <FormIkan
-          mode="add"
-          onCancel={() => navigate('dashboard')}
-          onSave={(data) => {
-            console.log('Data ikan baru:', data);
-            // TODO: Implement save logic
-            navigate('dashboard');
-          }}
-        />
+        <PageTransition isLoading={isLoading} loadingMessage={loadingMessage}>
+          <FormIkan
+            mode="add"
+            onCancel={() => navigate('dashboard')}
+            onSave={(data) => {
+              console.log('Data ikan baru:', data);
+              // TODO: Implement save logic
+              navigate('dashboard');
+            }}
+          />
+        </PageTransition>
       );
 
     case 'edit-ikan':
       return (
-        <FormIkan
-          mode="edit"
-          onCancel={() => navigate('dashboard')}
-          onSave={(data) => {
-            console.log('Data ikan yang diedit:', data);
-            // TODO: Implement edit logic
-            navigate('dashboard');
-          }}
-          initialData={editData || {
-            nama: '',
-            harga: '',
-            stok: 'tersedia',
-            kategori: 'air_tawar',
-            ukuran: 'sedang',
-            deskripsi: '',
-            gambar: null
-          }}
-        />
+        <PageTransition isLoading={isLoading} loadingMessage={loadingMessage}>
+          <FormIkan
+            mode="edit"
+            onCancel={() => navigate('dashboard')}
+            onSave={(data) => {
+              console.log('Data ikan yang diedit:', data);
+              // TODO: Implement edit logic
+              navigate('dashboard');
+            }}
+            initialData={editData || {
+              nama: '',
+              harga: '',
+              stok: 'tersedia',
+              kategori: 'air_tawar',
+              ukuran: 'sedang',
+              deskripsi: '',
+              gambar: null
+            }}
+          />
+        </PageTransition>
       );
 
     case 'kelola-ikan':
       console.log('Rendering ManageIkan route');
       return (
-        <ManageIkan 
-          onLogout={handleLogout}
-          user={user}
-          onNavigate={navigate}
-        />
+        <PageTransition isLoading={isLoading} loadingMessage={loadingMessage}>
+          <ManageIkan 
+            onLogout={handleLogout}
+            user={user}
+            onNavigate={navigate}
+          />
+        </PageTransition>
       );
 
     default:
