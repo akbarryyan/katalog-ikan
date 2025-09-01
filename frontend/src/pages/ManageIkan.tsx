@@ -678,6 +678,178 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
               </div>
             </div>
           )}
+
+          {/* Content Section - Data Ikan */}
+          {!isLoading && !error && (
+            <div className="border-t border-gray-200/50 pt-6">
+              {viewMode === 'grid' ? (
+                /* Grid View */
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filteredIkan.map((ikan: Ikan) => (
+                    <div key={ikan.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden group">
+                      {/* Image Placeholder */}
+                      <div className="h-48 bg-gradient-to-br from-[#00412E] to-[#96BF8A] flex items-center justify-center">
+                        <Fish className="w-16 h-16 text-white opacity-80" />
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-3">
+                          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-[#00412E] transition-colors duration-200" style={{ fontFamily: 'Hanken Grotesk' }}>
+                            {ikan.nama}
+                          </h3>
+                          <div className="flex space-x-1">
+                            <button
+                              onClick={() => handleView(ikan)}
+                              className="p-2 text-gray-400 hover:text-[#00412E] hover:bg-[#96BF8A]/10 rounded-lg transition-all duration-200"
+                            >
+                              <Eye size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleEdit(ikan)}
+                              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                            >
+                              <Edit3 size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(ikan)}
+                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2 mb-4">
+                          <div className="flex items-center text-sm text-gray-600">
+                            <DollarSign className="w-4 h-4 mr-2" />
+                            {formatPrice(ikan.harga)} / {ikan.satuanHarga}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Package className="w-4 h-4 mr-2" />
+                            Stok: {ikan.stok}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(ikan.status)}`}>
+                            {getStatusIcon(ikan.status)}
+                            <span className="ml-1 capitalize">{ikan.status}</span>
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            Stok: {ikan.stok}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                /* List View */
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
+                            Ikan
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
+                            Satuan Harga
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
+                            Harga
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
+                            Stok
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
+                            Status
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
+                            Aksi
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {filteredIkan.map((ikan: Ikan) => (
+                          <tr key={ikan.id} className="hover:bg-gray-50 transition-colors duration-200">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="w-10 h-10 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-lg flex items-center justify-center mr-3">
+                                  <Fish className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Hanken Grotesk' }}>
+                                    {ikan.nama}
+                                  </div>
+                                  <div className="text-sm text-gray-500">{formatPrice(ikan.harga)} / {ikan.satuanHarga}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {ikan.satuanHarga}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {formatPrice(ikan.harga)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {ikan.stok}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(ikan.status)}`}>
+                                {getStatusIcon(ikan.status)}
+                                <span className="ml-1 capitalize">{ikan.status}</span>
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => handleView(ikan)}
+                                  className="text-[#00412E] hover:text-[#96BF8A] transition-colors duration-200"
+                                >
+                                  <Eye size={16} />
+                                </button>
+                                <button
+                                  onClick={() => handleEdit(ikan)}
+                                  className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                                >
+                                  <Edit3 size={16} />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(ikan)}
+                                  className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Empty State */}
+              {Array.isArray(filteredIkan) && filteredIkan.length === 0 && (
+                <div className="text-center py-12">
+                  <Fish className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
+                    Belum ada data ikan
+                  </h3>
+                  <p className="text-gray-500 mb-6">Mulai dengan menambahkan ikan pertama ke katalog</p>
+                  <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-medium rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg">
+                    <Plus className="w-5 h-5 mr-2" />
+                    Tambah Ikan Pertama
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -710,173 +882,9 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
         </div>
       )}
 
-      {/* Content Section */}
-      {!isLoading && !error && viewMode === 'grid' ? (
-        /* Grid View */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredIkan.map((ikan: Ikan) => (
-            <div key={ikan.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden group">
-              {/* Image Placeholder */}
-              <div className="h-48 bg-gradient-to-br from-[#00412E] to-[#96BF8A] flex items-center justify-center">
-                <Fish className="w-16 h-16 text-white opacity-80" />
-              </div>
-              
-              {/* Content */}
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-[#00412E] transition-colors duration-200" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    {ikan.nama}
-                  </h3>
-                  <div className="flex space-x-1">
-                    <button
-                      onClick={() => handleView(ikan)}
-                      className="p-2 text-gray-400 hover:text-[#00412E] hover:bg-[#96BF8A]/10 rounded-lg transition-all duration-200"
-                    >
-                      <Eye size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleEdit(ikan)}
-                      className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                    >
-                      <Edit3 size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(ikan)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <DollarSign className="w-4 h-4 mr-2" />
-                    {formatPrice(ikan.harga)} / {ikan.satuanHarga}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Package className="w-4 h-4 mr-2" />
-                    Stok: {ikan.stok}
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(ikan.status)}`}>
-                    {getStatusIcon(ikan.status)}
-                    <span className="ml-1 capitalize">{ikan.status}</span>
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    Stok: {ikan.stok}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : !isLoading && !error ? (
-        /* List View */
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    Ikan
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    Satuan Harga
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    Harga
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    Stok
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    Aksi
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredIkan.map((ikan: Ikan) => (
-                  <tr key={ikan.id} className="hover:bg-gray-50 transition-colors duration-200">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-lg flex items-center justify-center mr-3">
-                          <Fish className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Hanken Grotesk' }}>
-                            {ikan.nama}
-                          </div>
-                          <div className="text-sm text-gray-500">{formatPrice(ikan.harga)} / {ikan.satuanHarga}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {ikan.satuanHarga}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatPrice(ikan.harga)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {ikan.stok}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(ikan.status)}`}>
-                        {getStatusIcon(ikan.status)}
-                        <span className="ml-1 capitalize">{ikan.status}</span>
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleView(ikan)}
-                          className="text-[#00412E] hover:text-[#96BF8A] transition-colors duration-200"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(ikan)}
-                          className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                        >
-                          <Edit3 size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(ikan)}
-                          className="text-red-600 hover:text-red-800 transition-colors duration-200"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : null}
 
-      {/* Empty State */}
-             {Array.isArray(filteredIkan) && filteredIkan.length === 0 && (
-        <div className="text-center py-12">
-          <Fish className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-            Belum ada data ikan
-          </h3>
-          <p className="text-gray-500 mb-6">Mulai dengan menambahkan ikan pertama ke katalog</p>
-          <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-medium rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg">
-            <Plus className="w-5 h-5 mr-2" />
-            Tambah Ikan Pertama
-          </button>
-        </div>
-      )}
+
+
 
       {/* Modal Tambah/Edit Ikan */}
       <Modal
