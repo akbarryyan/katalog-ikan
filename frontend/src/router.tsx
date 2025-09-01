@@ -89,7 +89,7 @@ export const Router = () => {
     setIsLoggedIn(true);
     localStorage.setItem('adminLoggedIn', 'true');
     localStorage.setItem('adminUser', JSON.stringify(userData));
-    setCurrentRoute('dashboard');
+    navigate('dashboard');
   };
 
   // Logout handler
@@ -159,7 +159,11 @@ export const Router = () => {
     case 'kelola-ikan':
       console.log('Rendering ManageIkan route');
       return (
-        <ManageIkan />
+        <ManageIkan 
+          onLogout={handleLogout}
+          user={user}
+          onNavigate={navigate}
+        />
       );
 
     default:
