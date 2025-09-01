@@ -22,6 +22,8 @@ import {
   BarChart3
 } from 'lucide-react';
 import Layout from '../components/Layout';
+import Modal from '../components/Modal';
+import FormTambahIkan from '../components/FormTambahIkan';
 
 interface Ikan {
   id: number;
@@ -52,6 +54,10 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   const [sortBy, setSortBy] = useState('nama');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalLoading, setIsModalLoading] = useState(false);
 
   // Mock data ikan
   const mockIkan: Ikan[] = [
@@ -155,6 +161,28 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     // TODO: Implement view functionality
   };
 
+  // Modal handlers
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    setIsModalLoading(true);
+    
+    // Simulate loading for 2 seconds
+    setTimeout(() => {
+      setIsModalLoading(false);
+    }, 2000);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setIsModalLoading(false);
+  };
+
+  const handleSaveIkan = (data: any) => {
+    console.log('Data ikan baru:', data);
+    // TODO: Implement save logic
+    handleCloseModal();
+  };
+
   return (
     <Layout 
       onLogout={onLogout || (() => {})}
@@ -222,7 +250,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
               <div className="flex flex-col sm:flex-row gap-3">
                 {/* Primary Action Button */}
                 <button 
-                  onClick={() => onNavigate && onNavigate('tambah-ikan')}
+                  onClick={handleOpenModal}
                   className="group inline-flex items-center justify-center px-6 py-3.5 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-semibold rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
@@ -774,6 +802,21 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
           </button>
         </div>
       )}
+
+      {/* Modal Tambah Ikan */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title="🐟 Tambah Ikan Baru"
+        size="lg"
+        showLoading={isModalLoading}
+        loadingMessage="Memuat form tambah ikan..."
+      >
+        <FormTambahIkan
+          onSave={handleSaveIkan}
+          onCancel={handleCloseModal}
+        />
+      </Modal>
       </div>
     </Layout>
   );
