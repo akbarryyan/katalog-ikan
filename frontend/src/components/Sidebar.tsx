@@ -50,7 +50,7 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
             right: 0,
             bottom: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 40
+            zIndex: 5
           }}
           className="lg:hidden"
           onClick={() => setSidebarOpen(false)}
@@ -67,7 +67,7 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
           height: '100vh',
           backgroundColor: 'white',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          zIndex: 30, // Lower than modal overlay (z-index: 50) so it gets blurred
+          zIndex: 10, // Much lower than modal overlay (z-index: 100000) so it gets blurred
           overflow: 'hidden',
           transform: getTransform(),
           transition: 'transform 0.3s ease-in-out'

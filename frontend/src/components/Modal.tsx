@@ -65,21 +65,21 @@ const Modal = ({
   if (!isVisible) return null;
 
   return (
-    <div className="modal-overlay-alt">
-      {/* Backdrop with blur effect */}
-      <div 
-        className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${
-          isAnimating ? 'opacity-100' : 'opacity-0'
-        }`}
-        onClick={onClose}
-      />
-      
+    <div 
+      className={`modal-overlay-alt transition-opacity duration-300 ${
+        isAnimating ? 'opacity-100' : 'opacity-0'
+      }`} 
+      onClick={onClose}
+    >
       {/* Modal Container */}
-      <div className={`modal-wrapper-alt transition-all duration-300 ${
-        isAnimating 
-          ? 'opacity-100 scale-100' 
-          : 'opacity-0 scale-95'
-      }`}>
+      <div 
+        className={`modal-wrapper-alt transition-all duration-300 ${
+          isAnimating 
+            ? 'opacity-100 scale-100' 
+            : 'opacity-0 scale-95'
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Modal Content */}
         <div className="modal-content">
           {/* Header */}

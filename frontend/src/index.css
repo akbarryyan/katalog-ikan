@@ -51,7 +51,7 @@ body {
   bottom: 0 !important;
   width: 18rem !important;
   height: 100vh !important;
-  z-index: 99999 !important;
+  z-index: 10 !important;
   overflow: hidden !important;
   transform: none !important;
   will-change: auto !important;
@@ -115,7 +115,7 @@ body {
   margin-left: 18rem !important;
   width: calc(100% - 18rem) !important;
   position: relative !important;
-  z-index: 1 !important;
+  z-index: 5 !important;
   overflow-x: hidden !important;
   min-height: 100vh !important;
 }
@@ -411,7 +411,7 @@ body {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  z-index: 9999 !important;
+  z-index: 100000 !important;
   padding: 1rem !important;
   overflow: hidden !important;
   background-color: rgba(0, 0, 0, 0.2) !important;
@@ -429,7 +429,7 @@ body {
   max-width: 42rem !important;
   max-height: 90vh !important;
   margin: 0 auto !important;
-  z-index: 10000 !important;
+  z-index: 100001 !important;
   pointer-events: auto !important;
   /* Force centering */
   transform: translateZ(0) !important;
@@ -462,7 +462,7 @@ body {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  z-index: 9999 !important;
+  z-index: 100000 !important;
   padding: 1rem !important;
   overflow: hidden !important;
   background-color: rgba(0, 0, 0, 0.2) !important;
@@ -493,7 +493,7 @@ body.modal-open {
   max-width: 42rem !important;
   max-height: 90vh !important;
   margin: 0 auto !important;
-  z-index: 10000 !important;
+  z-index: 100001 !important;
   pointer-events: auto !important;
   transform: translateZ(0) !important;
   will-change: transform !important;
