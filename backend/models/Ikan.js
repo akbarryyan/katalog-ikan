@@ -1,6 +1,20 @@
 const db = require('../config/database');
 
 class Ikan {
+  // Helper function to map database fields to frontend format
+  static mapDatabaseToFrontend(ikan) {
+    if (!ikan) return ikan;
+    
+    return {
+      ...ikan,
+      satuanHarga: ikan.satuan_harga || ikan.satuanHarga || 'kg'
+    };
+  }
+
+  // Helper function to map multiple ikan records
+  static mapDatabaseToFrontendArray(ikans) {
+    return ikans.map(ikan => this.mapDatabaseToFrontend(ikan));
+  }
   // Get all ikan
   static async getAll() {
     try {
@@ -8,7 +22,7 @@ class Ikan {
         SELECT * FROM fishs 
         ORDER BY created_at DESC
       `);
-      return rows;
+      return this.mapDatabaseToFrontendArray(rows);
     } catch (error) {
       throw error;
     }
@@ -21,7 +35,7 @@ class Ikan {
         SELECT * FROM fishs 
         WHERE id = ?
       `, [id]);
-      return rows[0];
+      return this.mapDatabaseToFrontend(rows[0]);
     } catch (error) {
       throw error;
     }
@@ -33,7 +47,7 @@ class Ikan {
       const { nama, harga, satuanHarga, stok, status, deskripsi, gambar } = ikanData;
       
       const [result] = await db.execute(`
-        INSERT INTO fishs (nama, harga, satuanHarga, stok, status, deskripsi, gambar, created_at, updated_at)
+        INSERT INTO fishs (nama, harga, satuan_harga, stok, status, deskripsi, gambar, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
       `, [nama, harga, satuanHarga, stok, status, deskripsi, gambar || null]);
       
@@ -52,7 +66,7 @@ class Ikan {
       
       const [result] = await db.execute(`
         UPDATE fishs 
-        SET nama = ?, harga = ?, satuanHarga = ?, stok = ?, status = ?, deskripsi = ?, gambar = ?, updated_at = NOW()
+        SET nama = ?, harga = ?, satuan_harga = ?, stok = ?, status = ?, deskripsi = ?, gambar = ?, updated_at = NOW()
         WHERE id = ?
       `, [nama, harga, satuanHarga, stok, status, deskripsi, gambar || null, id]);
       
@@ -94,7 +108,7 @@ class Ikan {
         WHERE nama LIKE ? OR deskripsi LIKE ? OR harga LIKE ?
         ORDER BY created_at DESC
       `, [`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`]);
-      return rows;
+      return this.mapDatabaseToFrontendArray(rows);
     } catch (error) {
       throw error;
     }
@@ -108,7 +122,7 @@ class Ikan {
         WHERE status = ?
         ORDER BY created_at DESC
       `, [status]);
-      return rows;
+      return this.mapDatabaseToFrontendArray(rows);
     } catch (error) {
       throw error;
     }
