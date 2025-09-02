@@ -24,6 +24,7 @@ import {
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
 import FormTambahIkan from '../components/FormTambahIkan';
+import ConfirmModal from '../components/ConfirmModal';
 
 interface Ikan {
   id: number;
@@ -64,7 +65,16 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalLoading, setIsModalLoading] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
+  
+  // Delete confirmation modal state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [ikanToDelete, setIkanToDelete] = useState<Ikan | null>(null);
+  
+
   const [editData, setEditData] = useState<Ikan | null>(null);
+  
+  // Force TypeScript to recognize the variables
 
   const statuses = ['all', 'tersedia', 'habis', 'pre-order'];
 
@@ -208,13 +218,33 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     setIsModalLoading(false);
   };
 
-  const handleDelete = async (ikan: Ikan) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus ${ikan.nama}?`)) {
-      const success = await deleteIkan(ikan.id);
+  const handleDelete = (ikan: Ikan) => {
+    setIkanToDelete(ikan);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!ikanToDelete) return;
+    
+    try {
+      setDeleteLoading(true);
+      const success = await deleteIkan(ikanToDelete.id);
       if (success) {
-        alert(`${ikan.nama} berhasil dihapus`);
+        setIsDeleteModalOpen(false);
+        setIkanToDelete(null);
+        // Show success notification (you can add toast notification here)
+        console.log(`${ikanToDelete.nama} berhasil dihapus`);
       }
+    } catch (error) {
+      console.error('Error deleting ikan:', error);
+    } finally {
+      setDeleteLoading(false);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setIkanToDelete(null);
   };
 
   const handleView = (ikan: Ikan) => {
@@ -259,6 +289,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   };
 
   return (
+    <>
     <Layout 
       onLogout={onLogout || (() => {})}
       user={user || null}
@@ -712,7 +743,11 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                               <Edit3 size={16} />
                             </button>
                             <button
-                              onClick={() => handleDelete(ikan)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleDelete(ikan);
+                              }}
                               className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                             >
                               <Trash2 size={16} />
@@ -819,7 +854,11 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                                   <Edit3 size={16} />
                                 </button>
                                 <button
-                                  onClick={() => handleDelete(ikan)}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDelete(ikan);
+                                  }}
                                   className="text-red-600 hover:text-red-800 transition-colors duration-200"
                                 >
                                   <Trash2 size={16} />
@@ -904,6 +943,20 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       </Modal>
       </div>
     </Layout>
+
+    {/* Delete Confirmation Modal - Outside Layout */}
+    <ConfirmModal
+      isOpen={isDeleteModalOpen}
+      onClose={handleCancelDelete}
+      onConfirm={handleConfirmDelete}
+      title="🗑️ Hapus Data Ikan"
+      message={`Apakah Anda yakin ingin menghapus data ikan "${ikanToDelete?.nama}"? Tindakan ini tidak dapat dibatalkan.`}
+      confirmText="Ya, Hapus"
+      cancelText="Batal"
+      type="danger"
+      loading={deleteLoading}
+    />
+    </>
   );
 };
 
