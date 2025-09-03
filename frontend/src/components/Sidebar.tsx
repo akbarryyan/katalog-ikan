@@ -19,12 +19,25 @@ interface SidebarProps {
 
 const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [websiteName, setWebsiteName] = useState('Ikan Oni');
+  const [isMobile, setIsMobile] = useState(false);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3, color: 'from-[#00412E] to-[#96BF8A]' },
     { id: 'kelola-ikan', label: 'Kelola Ikan', icon: Fish, color: 'from-[#00412E] to-[#96BF8A]' },
     { id: 'settings', label: 'Settings', icon: Settings, color: 'from-[#00412E] to-[#96BF8A]' },
   ];
+
+  // Check screen size for responsive z-index
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // Load website name from settings API
   useEffect(() => {
@@ -84,7 +97,7 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
             right: 0,
             bottom: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 5
+            zIndex: 9998
           }}
           className="lg:hidden"
           onClick={() => setSidebarOpen(false)}
@@ -101,7 +114,7 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
           height: '100vh',
           backgroundColor: 'white',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          zIndex: 10, // Much lower than modal overlay (z-index: 100000) so it gets blurred
+          zIndex: isMobile ? 9999 : 10, // Higher z-index for mobile
           overflow: 'hidden',
           transform: getTransform(),
           transition: 'transform 0.3s ease-in-out'
