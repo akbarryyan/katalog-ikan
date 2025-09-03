@@ -6,7 +6,7 @@ interface LayoutProps {
   children: React.ReactNode;
   onLogout: () => void;
   user: { email: string } | null;
-  onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan') => void;
+  onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan' | 'settings') => void;
   currentRoute: string;
 }
 

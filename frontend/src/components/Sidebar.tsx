@@ -1,27 +1,61 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Fish, 
   LogOut,
   X,
   Users,
-  BarChart3
+  BarChart3,
+  Settings
 } from 'lucide-react';
 
 interface SidebarProps {
   onLogout: () => void;
   user: { email: string } | null;
-  onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan') => void;
+  onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan' | 'settings') => void;
   currentRoute: string;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
 
 const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSidebarOpen }: SidebarProps) => {
+  const [websiteName, setWebsiteName] = useState('Ikan Oni');
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3, color: 'from-[#00412E] to-[#96BF8A]' },
     { id: 'kelola-ikan', label: 'Kelola Ikan', icon: Fish, color: 'from-[#00412E] to-[#96BF8A]' },
+    { id: 'settings', label: 'Settings', icon: Settings, color: 'from-[#00412E] to-[#96BF8A]' },
   ];
+
+  // Load website name from settings API
+  useEffect(() => {
+    const loadWebsiteName = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/settings/website');
+        const result = await response.json();
+        
+        if (result.success && result.data.websiteName) {
+          setWebsiteName(result.data.websiteName);
+        }
+      } catch (error) {
+        console.error('Error loading website name:', error);
+        // Keep default name if API fails
+      }
+    };
+
+    loadWebsiteName();
+
+    // Listen for settings changes (when user updates settings)
+    const handleSettingsChange = () => {
+      loadWebsiteName();
+    };
+
+    // Add event listener for custom settings update event
+    window.addEventListener('settingsUpdated', handleSettingsChange);
+
+    return () => {
+      window.removeEventListener('settingsUpdated', handleSettingsChange);
+    };
+  }, []);
 
   const handleLogout = () => {
     onLogout();
@@ -111,7 +145,7 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
                 color: '#00412E',
                 fontFamily: 'Hanken Grotesk'
               }}>
-                Ikan Oni
+                {websiteName}
               </h1>
             </div>
             <button
@@ -195,6 +229,8 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
                       onClick={() => {
                         if (item.id === 'kelola-ikan') {
                           onNavigate('kelola-ikan');
+                        } else if (item.id === 'settings') {
+                          onNavigate('settings');
                         } else {
                           onNavigate('dashboard');
                         }

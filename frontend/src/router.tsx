@@ -3,12 +3,13 @@ import { useState, useEffect } from 'react';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import FormIkan from './components/FormIkan';
-import TabelIkan from './components/TabelIkan';
+
 import ManageIkan from './pages/ManageIkan';
+import Settings from './pages/Settings';
 import PageTransition from './components/PageTransition';
 
 // Route types
-export type Route = 'login' | 'dashboard' | 'tambah-ikan' | 'edit-ikan' | 'kelola-ikan';
+export type Route = 'login' | 'dashboard' | 'tambah-ikan' | 'edit-ikan' | 'kelola-ikan' | 'settings';
 
 // Router component
 export const Router = () => {
@@ -34,7 +35,7 @@ export const Router = () => {
         setCurrentRoute('dashboard');
       } else {
         const route = path.substring(1) as Route;
-        if (['dashboard', 'tambah-ikan', 'edit-ikan', 'kelola-ikan'].includes(route)) {
+        if (['dashboard', 'tambah-ikan', 'edit-ikan', 'kelola-ikan', 'settings'].includes(route)) {
           setCurrentRoute(route);
         } else {
           setCurrentRoute('dashboard');
@@ -51,7 +52,7 @@ export const Router = () => {
         setCurrentRoute('dashboard');
       } else {
         const route = path.substring(1) as Route;
-        if (['dashboard', 'tambah-ikan', 'edit-ikan', 'kelola-ikan'].includes(route)) {
+        if (['dashboard', 'tambah-ikan', 'edit-ikan', 'kelola-ikan', 'settings'].includes(route)) {
           setCurrentRoute(route);
         } else {
           setCurrentRoute('dashboard');
@@ -84,6 +85,9 @@ export const Router = () => {
       case 'edit-ikan':
         setLoadingMessage('Memuat Form Edit Ikan...');
         break;
+      case 'settings':
+        setLoadingMessage('Memuat Pengaturan...');
+        break;
       default:
         setLoadingMessage('Memuat halaman...');
     }
@@ -108,10 +112,7 @@ export const Router = () => {
     }, 800); // Total loading time: 800ms + 200ms = 1 second
   };
 
-  const navigateToEdit = (ikan: any) => {
-    setEditData(ikan);
-    setCurrentRoute('edit-ikan');
-  };
+
 
   // Login handler
   const handleLogin = (credentials: { email: string; password: string }) => {
@@ -213,6 +214,18 @@ export const Router = () => {
       return (
         <PageTransition isLoading={isLoading} loadingMessage={loadingMessage}>
           <ManageIkan 
+            onLogout={handleLogout}
+            user={user}
+            onNavigate={navigate}
+          />
+        </PageTransition>
+      );
+
+    case 'settings':
+      console.log('Rendering Settings route');
+      return (
+        <PageTransition isLoading={isLoading} loadingMessage={loadingMessage}>
+          <Settings 
             onLogout={handleLogout}
             user={user}
             onNavigate={navigate}

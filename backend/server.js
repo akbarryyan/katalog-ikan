@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const adminRoutes = require('./routes/adminRoutes');
 const ikanRoutes = require('./routes/ikanRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -17,6 +18,7 @@ app.use('/uploads', express.static('uploads'));
 // Routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/ikan', ikanRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

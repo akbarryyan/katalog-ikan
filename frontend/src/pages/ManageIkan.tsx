@@ -42,7 +42,7 @@ interface Ikan {
 interface ManageIkanProps {
   onLogout?: () => void;
   user?: { email: string } | null;
-  onNavigate?: (route: 'dashboard' | 'tambah-ikan' | 'edit-ikan' | 'kelola-ikan') => void;
+  onNavigate?: (route: 'dashboard' | 'tambah-ikan' | 'edit-ikan' | 'kelola-ikan' | 'settings') => void;
 }
 
 const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
