@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
-import FormIkan from './components/FormIkan';
 
 import ManageIkan from './pages/ManageIkan';
 import Settings from './pages/Settings';
@@ -16,7 +15,6 @@ export const Router = () => {
   const [currentRoute, setCurrentRoute] = useState<Route>('login');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{ email: string } | null>(null);
-  const [editData, setEditData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Memuat halaman...');
 
@@ -166,45 +164,6 @@ export const Router = () => {
             onLogout={handleLogout} 
             user={user}
             onNavigate={navigate}
-          />
-        </PageTransition>
-      );
-
-    case 'tambah-ikan':
-      return (
-        <PageTransition isLoading={isLoading} loadingMessage={loadingMessage}>
-          <FormIkan
-            mode="add"
-            onCancel={() => navigate('dashboard')}
-            onSave={(data) => {
-              console.log('Data ikan baru:', data);
-              // TODO: Implement save logic
-              navigate('dashboard');
-            }}
-          />
-        </PageTransition>
-      );
-
-    case 'edit-ikan':
-      return (
-        <PageTransition isLoading={isLoading} loadingMessage={loadingMessage}>
-          <FormIkan
-            mode="edit"
-            onCancel={() => navigate('dashboard')}
-            onSave={(data) => {
-              console.log('Data ikan yang diedit:', data);
-              // TODO: Implement edit logic
-              navigate('dashboard');
-            }}
-            initialData={editData || {
-              nama: '',
-              harga: '',
-              stok: 'tersedia',
-              kategori: 'air_tawar',
-              ukuran: 'sedang',
-              deskripsi: '',
-              gambar: null
-            }}
           />
         </PageTransition>
       );
