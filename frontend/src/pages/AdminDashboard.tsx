@@ -6,7 +6,6 @@ import {
   Package,
   AlertCircle,
   BarChart3,
-  Users,
   DollarSign,
   Clock
 } from 'lucide-react';
@@ -15,11 +14,11 @@ import Layout from '../components/Layout';
 interface AdminDashboardProps {
   onLogout: () => void;
   user: { email: string } | null;
-  onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan') => void;
+  onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan' | 'settings') => void;
 }
 
 const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab] = useState('dashboard');
 
   return (
     <Layout 
