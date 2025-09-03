@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const IkanController = require('../controllers/ikanController');
+const upload = require('../middleware/upload');
 
 // GET /api/ikan - Get all ikan
 router.get('/', IkanController.getAllIkan);
@@ -15,10 +16,10 @@ router.get('/status/:status', IkanController.getIkanByStatus);
 router.get('/:id', IkanController.getIkanById);
 
 // POST /api/ikan - Create new ikan
-router.post('/', IkanController.createIkan);
+router.post('/', upload.single('gambar'), IkanController.createIkan);
 
 // PUT /api/ikan/:id - Update ikan
-router.put('/:id', IkanController.updateIkan);
+router.put('/:id', upload.single('gambar'), IkanController.updateIkan);
 
 // DELETE /api/ikan/:id - Delete ikan
 router.delete('/:id', IkanController.deleteIkan);

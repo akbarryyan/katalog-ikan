@@ -1,0 +1,26 @@
+# Always remember this MySQL database schema for this project:
+
+Database Schema:
+
+Database name: ikan_oni
+
+admin:
+    - id (INT, PK, AUTO_INCREMENT)
+    - email (VARCHAR)
+    - password (VARCHAR)
+    - nama_lengkap (VARCHAR)
+    - status (ENUM: 'active', 'nonaktif')
+    - created_at (DATETIME)
+    - updated_at (DATETIME)
+
+fishs:
+    - id (INT, PK, AUTO_INCREMENT)
+    - nama (VARCHAR) # nama ikan
+    - harga (DECIMAL: 10, 2) # harga ikan dalam IDR
+    - satuan_harga (ENUM: 'kg', 'gram') # satuan harga (kg atau gram)
+    - stok (VARCHAR) # jumlah stok tersedia
+    - status (ENUM: 'tersedia', 'habis') # status ketersediaan
+    - deskripsi (TEXT) # deskripsi detail ikan
+    - gambar (VARCHAR) # path/url gambar ikan
+    - created_at (DATETIME)
+    - updated_at (DATETIME)

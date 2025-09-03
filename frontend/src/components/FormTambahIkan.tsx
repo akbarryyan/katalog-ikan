@@ -103,16 +103,19 @@ const FormTambahIkan = ({ onSave, onCancel, mode = 'add', initialData }: FormTam
     setIsSubmitting(true);
     
     try {
-      // Prepare data for API
-      const ikanData = {
-        nama: formData.nama.trim(),
-        harga: parseInt(formData.harga),
-        satuanHarga: formData.satuanHarga,
-        stok: parseInt(formData.stok),
-        status: formData.status,
-        deskripsi: formData.deskripsi.trim(),
-        gambar: formData.gambar ? formData.gambar.name : null // For now, just send filename
-      };
+      // Prepare FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('nama', formData.nama.trim());
+      formDataToSend.append('harga', formData.harga.toString());
+      formDataToSend.append('satuanHarga', formData.satuanHarga);
+      formDataToSend.append('stok', formData.stok.toString());
+      formDataToSend.append('status', formData.status);
+      formDataToSend.append('deskripsi', formData.deskripsi.trim());
+      
+      // Add image file if selected
+      if (formData.gambar) {
+        formDataToSend.append('gambar', formData.gambar);
+      }
 
       // Call API to save ikan
       const url = mode === 'edit' && initialData?.id 
@@ -121,10 +124,7 @@ const FormTambahIkan = ({ onSave, onCancel, mode = 'add', initialData }: FormTam
       
       const response = await fetch(url, {
         method: mode === 'edit' ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(ikanData),
+        body: formDataToSend // Use FormData instead of JSON
       });
 
       if (!response.ok) {

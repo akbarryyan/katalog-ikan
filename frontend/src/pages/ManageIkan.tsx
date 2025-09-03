@@ -718,9 +718,28 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {filteredIkan.map((ikan: Ikan) => (
                     <div key={ikan.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                      {/* Image Placeholder */}
-                      <div className="h-48 bg-gradient-to-br from-[#00412E] to-[#96BF8A] flex items-center justify-center">
-                        <Fish className="w-16 h-16 text-white opacity-80" />
+                      {/* Fish Image */}
+                      <div className="h-48 bg-gradient-to-br from-[#00412E] to-[#96BF8A] flex items-center justify-center overflow-hidden">
+                        {ikan.gambar ? (
+                          <img 
+                            src={`http://localhost:3001${ikan.gambar}`} 
+                            alt={ikan.nama}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback to placeholder if image fails to load
+                              e.currentTarget.style.display = 'none';
+                              const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                              if (nextElement) {
+                                nextElement.style.display = 'flex';
+                              }
+                            }}
+                          />
+                        ) : null}
+                        <div 
+                          className={`w-full h-full flex items-center justify-center ${ikan.gambar ? 'hidden' : 'flex'}`}
+                        >
+                          <Fish className="w-16 h-16 text-white opacity-80" />
+                        </div>
                       </div>
                       
                       {/* Content */}
@@ -811,8 +830,27 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                           <tr key={ikan.id} className="hover:bg-gray-50 transition-colors duration-200">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="w-10 h-10 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-lg flex items-center justify-center mr-3">
-                                  <Fish className="w-6 h-6 text-white" />
+                                <div className="w-12 h-12 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-lg flex items-center justify-center mr-3 overflow-hidden">
+                                  {ikan.gambar ? (
+                                    <img 
+                                      src={`http://localhost:3001${ikan.gambar}`} 
+                                      alt={ikan.nama}
+                                      className="w-full h-full object-cover rounded-lg"
+                                      onError={(e) => {
+                                        // Fallback to placeholder if image fails to load
+                                        e.currentTarget.style.display = 'none';
+                                        const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                                        if (nextElement) {
+                                          nextElement.style.display = 'flex';
+                                        }
+                                      }}
+                                    />
+                                  ) : null}
+                                  <div 
+                                    className={`w-full h-full flex items-center justify-center ${ikan.gambar ? 'hidden' : 'flex'}`}
+                                  >
+                                    <Fish className="w-6 h-6 text-white" />
+                                  </div>
                                 </div>
                                 <div>
                                   <div className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Hanken Grotesk' }}>
@@ -920,10 +958,6 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
           </button>
         </div>
       )}
-
-
-
-
 
       {/* Modal Tambah/Edit Ikan */}
       <Modal

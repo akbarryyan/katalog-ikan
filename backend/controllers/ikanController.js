@@ -1,4 +1,6 @@
 const Ikan = require('../models/Ikan');
+const path = require('path');
+const fs = require('fs');
 
 class IkanController {
   // Get all ikan
@@ -53,6 +55,11 @@ class IkanController {
   static async createIkan(req, res) {
     try {
       const ikanData = req.body;
+      
+      // Handle uploaded image
+      if (req.file) {
+        ikanData.gambar = `/uploads/ikan/${req.file.filename}`;
+      }
       
       // Validation
       if (!ikanData.nama || !ikanData.harga || !ikanData.stok || !ikanData.deskripsi) {
@@ -119,7 +126,21 @@ class IkanController {
       const { id } = req.params;
       const ikanData = req.body;
       
-      // Check if ikan exists
+      // Handle uploaded image
+      if (req.file) {
+        // Delete old image if exists
+        const existingIkan = await Ikan.getById(id);
+        if (existingIkan && existingIkan.gambar) {
+          const oldImagePath = path.join(__dirname, '..', existingIkan.gambar);
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+          }
+        }
+        
+        ikanData.gambar = `/uploads/ikan/${req.file.filename}`;
+      }
+      
+      // Check if ikan exists (get fresh data after potential image deletion)
       const existingIkan = await Ikan.getById(id);
       if (!existingIkan) {
         return res.status(404).json({
@@ -199,6 +220,14 @@ class IkanController {
           success: false,
           message: 'Ikan tidak ditemukan'
         });
+      }
+      
+      // Delete image file if exists
+      if (existingIkan.gambar) {
+        const imagePath = path.join(__dirname, '..', existingIkan.gambar);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        }
       }
       
       await Ikan.delete(id);
