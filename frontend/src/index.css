@@ -43,6 +43,29 @@ body {
   display: none;
 }
 
+/* Mobile sidebar overlay blur effect */
+.mobile-sidebar-overlay {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.3);
+  transition: backdrop-filter 0.3s ease, background-color 0.3s ease;
+}
+
+/* Ensure blur works on all browsers */
+@supports (backdrop-filter: blur(8px)) {
+  .mobile-sidebar-overlay {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* Fallback for browsers that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(8px)) {
+  .mobile-sidebar-overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+}
+
 /* ULTRA STRONG Sidebar Fixed CSS - Cannot be overridden */
 .sidebar-ultra-fixed {
   position: fixed !important;
