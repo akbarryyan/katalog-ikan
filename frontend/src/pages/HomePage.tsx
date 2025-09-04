@@ -91,11 +91,6 @@ const HomePage: React.FC = () => {
     return `Rp ${harga.toLocaleString('id-ID')}/${satuan}`;
   };
 
-  // Navigate to admin
-  const goToAdmin = () => {
-    window.location.href = '/sys';
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -128,42 +123,111 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{settings.websiteName}</h1>
-              <p className="text-sm text-gray-600">{settings.websiteDescription}</p>
+            {/* Logo & Brand */}
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-[#00412E] rounded-lg flex items-center justify-center">
+                <span className="text-white text-xl">🐟</span>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Hanken Grotesk' }}>
+                  {settings.websiteName}
+                </h1>
+                <p className="text-sm text-gray-600 hidden sm:block">
+                  {settings.websiteDescription}
+                </p>
+              </div>
             </div>
-            <button
-              onClick={goToAdmin}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-            >
-              Admin Login
-            </button>
+            
+            {/* Navigation */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <a href="#home" className="text-gray-700 hover:text-[#00412E] font-medium transition-colors">
+                Beranda
+              </a>
+              <a href="#products" className="text-gray-700 hover:text-[#00412E] font-medium transition-colors">
+                Produk
+              </a>
+              <a href="#about" className="text-gray-700 hover:text-[#00412E] font-medium transition-colors">
+                Tentang
+              </a>
+              <a href="#contact" className="text-gray-700 hover:text-[#00412E] font-medium transition-colors">
+                Kontak
+              </a>
+            </nav>
+            
+            {/* CTA Button */}
+            <div className="flex items-center space-x-4">
+              <button className="bg-[#00412E] text-white px-4 py-2 rounded-lg hover:bg-[#00412E]/90 transition-colors text-sm font-medium">
+                Pesan Sekarang
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'Hanken Grotesk' }}>
+              Ikan Segar Berkualitas Tinggi
+            </h2>
+            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+              Temukan berbagai jenis ikan segar terbaik dengan harga terjangkau
+            </p>
+            
+            {/* Quick Stats */}
+            <div className="flex flex-wrap justify-center gap-8 mb-8">
+              <div className="text-center">
+                <div className="text-3xl font-bold">{Array.isArray(filteredIkan) ? filteredIkan.length : 0}</div>
+                <div className="text-sm text-white/80">Jenis Ikan</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold">{Array.isArray(filteredIkan) ? filteredIkan.filter((i: Ikan) => i.status === 'tersedia').length : 0}</div>
+                <div className="text-sm text-white/80">Tersedia</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold">100%</div>
+                <div className="text-sm text-white/80">Segar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search and Filter */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        {/* Search and Filter Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
+              Temukan Ikan Segar Favorit Anda
+            </h2>
+            <p className="text-gray-600">Pilih dari berbagai jenis ikan segar berkualitas tinggi</p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Cari ikan..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Cari ikan... (contoh: salmon, tuna, gurame)"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00412E] focus:border-transparent transition-all duration-200"
+                />
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  🔍
+                </div>
+              </div>
             </div>
             <div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as 'all' | 'tersedia' | 'habis')}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00412E] focus:border-transparent transition-all duration-200 bg-white"
               >
                 <option value="all">Semua Status</option>
                 <option value="tersedia">Tersedia</option>
@@ -175,83 +239,101 @@ const HomePage: React.FC = () => {
 
         {/* Ikan Grid */}
         {filteredIkan.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">🐟</div>
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">
+          <div className="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-100">
+            <div className="text-gray-400 text-8xl mb-6">🐟</div>
+            <h3 className="text-2xl font-bold text-gray-700 mb-3" style={{ fontFamily: 'Hanken Grotesk' }}>
               {searchTerm || statusFilter !== 'all' ? 'Tidak ada ikan yang sesuai' : 'Belum ada ikan tersedia'}
             </h3>
-            <p className="text-gray-500">
+            <p className="text-gray-500 text-lg max-w-md mx-auto">
               {searchTerm || statusFilter !== 'all' 
-                ? 'Coba ubah kata kunci pencarian atau filter' 
-                : 'Silakan hubungi admin untuk menambah stok ikan'
+                ? 'Coba ubah kata kunci pencarian atau filter untuk menemukan ikan yang Anda cari' 
+                : 'Kami sedang mempersiapkan stok ikan segar terbaik untuk Anda'
               }
             </p>
+            {(searchTerm || statusFilter !== 'all') && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setStatusFilter('all');
+                }}
+                className="mt-6 bg-[#00412E] text-white px-6 py-3 rounded-xl hover:bg-[#00412E]/90 transition-colors font-medium"
+              >
+                Reset Filter
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredIkan.map((ikan) => (
-              <div key={ikan.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div key={ikan.id} className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#00412E]/20">
                 {/* Image */}
-                <div className="aspect-w-16 aspect-h-12 bg-gray-200">
+                <div className="relative overflow-hidden">
                   {ikan.gambar ? (
                     <img
                       src={`http://localhost:3001${ikan.gambar}`}
                       alt={ikan.nama}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgNTBMMTUwIDEwMEgxMDBMMTAwIDUwWiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNNTAgMTAwTDEwMCA1MEwxNTAgMTAwSDUwWiIgZmlsbD0iIzlDQTNBRiIvPgo8dGV4dCB4PSIxMDAiIHk9IjE0MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzZCNzI4MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0Ij7wn5SPPC90ZXh0Pgo8L3N2Zz4K';
                       }}
                     />
                   ) : (
-                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                      <span className="text-4xl">🐟</span>
+                    <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                      <span className="text-6xl opacity-50">🐟</span>
                     </div>
                   )}
+                  
+                  {/* Status Badge */}
+                  <div className="absolute top-3 right-3">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                      ikan.status === 'tersedia' 
+                        ? 'bg-green-500 text-white' 
+                        : 'bg-red-500 text-white'
+                    }`}>
+                      {ikan.status === 'tersedia' ? '✅ Tersedia' : '❌ Habis'}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{ikan.nama}</h3>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#00412E] transition-colors" style={{ fontFamily: 'Hanken Grotesk' }}>
+                    {ikan.nama}
+                  </h3>
                   
-                  <div className="mb-3">
-                    <span className="text-2xl font-bold text-blue-600">
+                  <div className="mb-4">
+                    <span className="text-3xl font-bold text-[#00412E]">
                       {formatHarga(ikan.harga, ikan.satuanHarga)}
                     </span>
                   </div>
 
-                  <div className="mb-3">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      ikan.status === 'tersedia' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {ikan.status === 'tersedia' ? '✅ Tersedia' : '❌ Habis'}
-                    </span>
-                    <span className="ml-2 text-sm text-gray-600">
-                      Stok: {ikan.stok}
-                    </span>
+                  <div className="mb-4">
+                    <div className="flex items-center text-sm text-gray-600 mb-2">
+                      <span className="mr-2">📦</span>
+                      <span>Stok: <span className="font-semibold">{ikan.stok}</span></span>
+                    </div>
                   </div>
 
                   {ikan.deskripsi && (
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-4">
                       {ikan.deskripsi}
                     </p>
                   )}
 
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center pt-4 border-t border-gray-100">
                     <span className="text-xs text-gray-500">
                       {new Date(ikan.created_at).toLocaleDateString('id-ID')}
                     </span>
                     <button
                       disabled={ikan.status !== 'tersedia'}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${
                         ikan.status === 'tersedia'
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          ? 'bg-[#00412E] text-white hover:bg-[#00412E]/90 hover:scale-105 shadow-lg hover:shadow-xl'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                     >
-                      {ikan.status === 'tersedia' ? 'Pesan' : 'Tidak Tersedia'}
+                      {ikan.status === 'tersedia' ? '🛒 Pesan Sekarang' : 'Tidak Tersedia'}
                     </button>
                   </div>
                 </div>
@@ -262,16 +344,75 @@ const HomePage: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8 mt-12">
+      <footer className="bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white py-12 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2">{settings.websiteName}</h3>
-            <p className="text-gray-300 mb-4">{settings.websiteDescription}</p>
-            <p className="text-sm text-gray-400">{settings.contactInfo}</p>
-            <div className="mt-4 pt-4 border-t border-gray-700">
-              <p className="text-xs text-gray-500">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Company Info */}
+            <div className="text-center md:text-left">
+              <div className="flex items-center justify-center md:justify-start mb-4">
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-2xl">🐟</span>
+                </div>
+                <h3 className="text-2xl font-bold" style={{ fontFamily: 'Hanken Grotesk' }}>
+                  {settings.websiteName}
+                </h3>
+              </div>
+              <p className="text-white/90 mb-4 text-lg">
+                {settings.websiteDescription}
+              </p>
+              <p className="text-white/80 text-sm">
+                {settings.contactInfo}
+              </p>
+            </div>
+            
+            {/* Quick Links */}
+            <div className="text-center md:text-left">
+              <h4 className="text-lg font-semibold mb-4" style={{ fontFamily: 'Hanken Grotesk' }}>
+                Layanan Kami
+              </h4>
+              <ul className="space-y-2 text-white/80">
+                <li>🐟 Ikan Segar Berkualitas</li>
+                <li>🚚 Pengiriman Cepat</li>
+                <li>💯 Garansi Kualitas</li>
+                <li>📞 Layanan 24/7</li>
+              </ul>
+            </div>
+            
+            {/* Contact Info */}
+            <div className="text-center md:text-left">
+              <h4 className="text-lg font-semibold mb-4" style={{ fontFamily: 'Hanken Grotesk' }}>
+                Hubungi Kami
+              </h4>
+              <div className="space-y-3 text-white/80">
+                <div className="flex items-center justify-center md:justify-start">
+                  <span className="mr-2">📧</span>
+                  <span>admin@ikanoni.com</span>
+                </div>
+                <div className="flex items-center justify-center md:justify-start">
+                  <span className="mr-2">📱</span>
+                  <span>+62 812-3456-7890</span>
+                </div>
+                <div className="flex items-center justify-center md:justify-start">
+                  <span className="mr-2">📍</span>
+                  <span>Jakarta, Indonesia</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Bottom Bar */}
+          <div className="mt-8 pt-6 border-t border-white/20">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <p className="text-white/70 text-sm mb-2 md:mb-0">
                 © 2024 {settings.websiteName}. All rights reserved.
               </p>
+              <div className="flex space-x-4 text-white/70 text-sm">
+                <span>Privacy Policy</span>
+                <span>•</span>
+                <span>Terms of Service</span>
+                <span>•</span>
+                <span>FAQ</span>
+              </div>
             </div>
           </div>
         </div>
