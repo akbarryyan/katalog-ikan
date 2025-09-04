@@ -1,3 +1,6 @@
+import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
+
 // Utility untuk testing upload di browser console
 export const browserTestUpload = () => {
   console.log('🧪 Browser Upload Test Utility');
@@ -37,27 +40,22 @@ export const testUploadWithFile = async () => {
         formData.append('deskripsi', 'Ikan test untuk upload gambar');
         formData.append('gambar', file);
 
-        const response = await fetch('http://localhost:3001/api/ikan', {
-          method: 'POST',
-          body: formData
+        const response = await axios.post(API_ENDPOINTS.ikan, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         });
 
-        const result = await response.json();
+        const result = response.data;
         
-        if (response.ok) {
-          console.log('✅ Upload berhasil!');
-          console.log('📊 Response:', result);
-          
-          if (result.data && result.data.gambar) {
-            console.log('🖼️  Gambar URL:', `http://localhost:3001${result.data.gambar}`);
-          }
-          
-          resolve(result);
-        } else {
-          console.log('❌ Upload gagal!');
-          console.log('📊 Error:', result);
-          reject(new Error(result.message || 'Upload failed'));
+        console.log('✅ Upload berhasil!');
+        console.log('📊 Response:', result);
+        
+        if (result.data && result.data.gambar) {
+          console.log('🖼️  Gambar URL:', `http://localhost:3001${result.data.gambar}`);
         }
+        
+        resolve(result);
       } catch (error) {
         console.error('💥 Error:', error);
         reject(error);
@@ -104,27 +102,22 @@ export const testUploadWithTestImage = async () => {
     formData.append('deskripsi', 'Ikan test untuk upload gambar');
     formData.append('gambar', file);
 
-    const response = await fetch('http://localhost:3001/api/ikan', {
-      method: 'POST',
-      body: formData
+    const response = await axios.post(API_ENDPOINTS.ikan, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
 
-    const result = await response.json();
+    const result = response.data;
     
-    if (response.ok) {
-      console.log('✅ Upload berhasil!');
-      console.log('📊 Response:', result);
-      
-      if (result.data && result.data.gambar) {
-        console.log('🖼️  Gambar URL:', `http://localhost:3001${result.data.gambar}`);
-      }
-      
-      return result;
-    } else {
-      console.log('❌ Upload gagal!');
-      console.log('📊 Error:', result);
-      throw new Error(result.message || 'Upload failed');
+    console.log('✅ Upload berhasil!');
+    console.log('📊 Response:', result);
+    
+    if (result.data && result.data.gambar) {
+      console.log('🖼️  Gambar URL:', `http://localhost:3001${result.data.gambar}`);
     }
+    
+    return result;
   } catch (error) {
     console.error('💥 Error:', error);
     throw error;

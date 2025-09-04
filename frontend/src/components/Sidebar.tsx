@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
   Fish, 
   LogOut,
@@ -7,6 +8,7 @@ import {
   BarChart3,
   Settings
 } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api';
 
 interface SidebarProps {
   onLogout: () => void;
@@ -43,11 +45,10 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
   useEffect(() => {
     const loadWebsiteName = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/settings/website');
-        const result = await response.json();
+        const response = await axios.get(API_ENDPOINTS.settings);
         
-        if (result.success && result.data.websiteName) {
-          setWebsiteName(result.data.websiteName);
+        if (response.data.success && response.data.data.websiteName) {
+          setWebsiteName(response.data.data.websiteName);
         }
       } catch (error) {
         console.error('Error loading website name:', error);

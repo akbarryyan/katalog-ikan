@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
   Fish, 
   Plus, 
@@ -22,6 +23,7 @@ import {
   Loader2
 } from 'lucide-react';
 import Layout from '../components/Layout';
+import { API_ENDPOINTS } from '../config/api';
 import Modal from '../components/Modal';
 import FormTambahIkan from '../components/FormTambahIkan';
 import ConfirmModal from '../components/ConfirmModal';
@@ -84,22 +86,11 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       setIsLoading(true);
       setError(null);
       
-      const response = await fetch('http://localhost:3001/api/ikan', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
-      console.log('API Response:', responseData);
+      const response = await axios.get(API_ENDPOINTS.ikan);
+      console.log('API Response:', response.data);
       
       // Pastikan data adalah array dan ambil dari response yang benar
-      const data = responseData.data || responseData;
+      const data = response.data.data || response.data;
       
       if (Array.isArray(data)) {
         setIkanList(data);
@@ -120,16 +111,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
 
   const deleteIkan = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/ikan/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      await axios.delete(`${API_ENDPOINTS.ikan}/${id}`);
 
       // Refresh data after deletion
       await fetchIkan();

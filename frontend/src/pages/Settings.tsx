@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
   Settings as SettingsIcon, 
   Save, 
@@ -12,6 +13,7 @@ import {
   Loader2
 } from 'lucide-react';
 import Layout from '../components/Layout';
+import { API_ENDPOINTS } from '../config/api';
 
 interface SettingsProps {
   onLogout?: () => void;
@@ -56,14 +58,13 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
       setIsLoading(true);
       console.log('Loading settings from API...');
       
-      const response = await fetch('http://localhost:3001/api/settings/website');
-      const result = await response.json();
+      const response = await axios.get(API_ENDPOINTS.settings);
       
-      if (result.success) {
-        setSettings(result.data);
-        console.log('Settings loaded successfully:', result.data);
+      if (response.data.success) {
+        setSettings(response.data.data);
+        console.log('Settings loaded successfully:', response.data.data);
       } else {
-        throw new Error(result.message || 'Failed to load settings');
+        throw new Error(response.data.message || 'Failed to load settings');
       }
     } catch (error) {
       console.error('Error loading settings:', error);
@@ -87,24 +88,16 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
 
       console.log('Saving settings to API...', settings);
       
-      const response = await fetch('http://localhost:3001/api/settings/website', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(settings)
-      });
+      const response = await axios.put(API_ENDPOINTS.settings, settings);
 
-      const result = await response.json();
-
-      if (result.success) {
+      if (response.data.success) {
         setMessage({ type: 'success', text: 'Pengaturan berhasil disimpan!' });
-        console.log('Settings saved successfully:', result.data);
+        console.log('Settings saved successfully:', response.data.data);
         
         // Dispatch custom event to notify other components
         window.dispatchEvent(new CustomEvent('settingsUpdated'));
       } else {
-        throw new Error(result.message || 'Failed to save settings');
+        throw new Error(response.data.message || 'Failed to save settings');
       }
       
       // Clear message after 3 seconds
@@ -127,24 +120,17 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
 
       console.log('Resetting settings to default...');
       
-      const response = await fetch('http://localhost:3001/api/settings/reset', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
+      const response = await axios.post(`${API_ENDPOINTS.settings}/reset`);
 
-      const result = await response.json();
-
-      if (result.success) {
-        setSettings(result.data);
+      if (response.data.success) {
+        setSettings(response.data.data);
         setMessage({ type: 'success', text: 'Pengaturan berhasil direset ke default!' });
-        console.log('Settings reset successfully:', result.data);
+        console.log('Settings reset successfully:', response.data.data);
         
         // Dispatch custom event to notify other components
         window.dispatchEvent(new CustomEvent('settingsUpdated'));
       } else {
-        throw new Error(result.message || 'Failed to reset settings');
+        throw new Error(response.data.message || 'Failed to reset settings');
       }
       
       // Clear message after 3 seconds

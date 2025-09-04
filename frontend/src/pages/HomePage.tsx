@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 // Interface untuk data ikan
 interface Ikan {
@@ -37,14 +39,8 @@ const HomePage: React.FC = () => {
   const fetchIkan = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/api/ikan');
-      
-      if (!response.ok) {
-        throw new Error('Gagal mengambil data ikan');
-      }
-      
-      const data = await response.json();
-      setIkanList(data.data || []);
+      const response = await axios.get(API_ENDPOINTS.ikan);
+      setIkanList(response.data.data || []);
     } catch (err) {
       console.error('Error fetching ikan:', err);
       setError('Gagal mengambil data ikan');
@@ -56,17 +52,13 @@ const HomePage: React.FC = () => {
   // Fetch settings website
   const fetchSettings = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/settings/website');
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.data) {
-          setSettings({
-            websiteName: data.data.websiteName || 'Ikan Oni',
-            websiteDescription: data.data.websiteDescription || 'Toko Ikan Segar Terpercaya',
-            contactInfo: data.data.contactInfo || 'Hubungi kami untuk pemesanan'
-          });
-        }
+      const response = await axios.get(API_ENDPOINTS.settings);
+      if (response.data.success && response.data.data) {
+        setSettings({
+          websiteName: response.data.data.websiteName || 'Ikan Oni',
+          websiteDescription: response.data.data.websiteDescription || 'Toko Ikan Segar Terpercaya',
+          contactInfo: response.data.data.contactInfo || 'Hubungi kami untuk pemesanan'
+        });
       }
     } catch (err) {
       console.error('Error fetching settings:', err);
