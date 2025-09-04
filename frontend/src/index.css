@@ -440,9 +440,30 @@ body {
   background-color: rgba(0, 0, 0, 0.2) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
-  /* Ensure it's always in viewport */
+  /* Force hardware acceleration and prevent any parent interference */
   transform: translateZ(0) !important;
   will-change: transform !important;
+  /* Prevent any parent container from affecting positioning */
+  margin: 0 !important;
+  /* Ensure it's always in viewport */
+  inset: 0 !important;
+  /* Force modal to be in viewport center - Override any conflicting styles */
+  border: none !important;
+  outline: none !important;
+  /* Ensure it's not affected by any parent transforms or positioning */
+  isolation: isolate !important;
+  contain: layout style paint !important;
+  /* Force modal to always be visible */
+  visibility: visible !important;
+  opacity: 1 !important;
+  /* Prevent any scroll interference */
+  overscroll-behavior: contain !important;
+  /* Force positioning */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
 }
 
 /* Modal Wrapper - Perfect centering in viewport */
@@ -473,34 +494,7 @@ body {
   border: 1px solid #f3f4f6 !important;
 }
 
-/* Force modal to be in viewport center - Override any conflicting styles */
-.modal-overlay-alt {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 100000 !important;
-  padding: 1rem !important;
-  overflow: hidden !important;
-  background-color: rgba(0, 0, 0, 0.2) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  transform: translateZ(0) !important;
-  will-change: transform !important;
-  /* Prevent any parent container from affecting positioning */
-  margin: 0 !important;
-  border: none !important;
-  outline: none !important;
-  /* Ensure it's not affected by any parent transforms or positioning */
-  isolation: isolate !important;
-  contain: layout style paint !important;
-}
+
 
 /* Prevent body scroll when modal is open */
 body.modal-open {

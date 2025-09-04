@@ -202,22 +202,46 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
           <div className="relative z-10 bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 border border-white/50 shadow-xl">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               <div className="flex-1">
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="flex-shrink-0 p-4 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-2xl shadow-lg">
-                    <SettingsIcon className="w-8 h-8 text-white" />
-                  </div>
-                  
-                  <div>
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#00412E] leading-tight" style={{ fontFamily: 'Hanken Grotesk' }}>
-                      Pengaturan Website
-                    </h1>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <div className="w-2 h-2 bg-[#96BF8A] rounded-full animate-pulse"></div>
-                      <p className="text-gray-600 text-base lg:text-lg font-medium" style={{ fontFamily: 'Hanken Grotesk' }}>
-                        Kelola pengaturan website dan aplikasi
-                      </p>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-shrink-0 p-4 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-2xl shadow-lg">
+                      <SettingsIcon className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    <div>
+                      <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#00412E] leading-tight" style={{ fontFamily: 'Hanken Grotesk' }}>
+                        Pengaturan Website
+                      </h1>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <div className="w-2 h-2 bg-[#96BF8A] rounded-full animate-pulse"></div>
+                        <p className="text-gray-600 text-base lg:text-lg font-medium" style={{ fontFamily: 'Hanken Grotesk' }}>
+                          Kelola pengaturan website dan aplikasi
+                        </p>
+                      </div>
                     </div>
                   </div>
+                  
+                  {/* Back to Website Button */}
+                  <div className="hidden lg:block">
+                    <button
+                      onClick={() => window.location.href = '/'}
+                      className="bg-[#00412E]/10 hover:bg-[#00412E]/20 text-[#00412E] px-4 py-2 rounded-lg transition-all duration-200 border border-[#00412E]/20 hover:border-[#00412E]/40 flex items-center space-x-2"
+                    >
+                      <span>🌐</span>
+                      <span className="text-sm font-medium">Kembali ke Website</span>
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Mobile Back to Website Button */}
+                <div className="lg:hidden mb-4">
+                  <button
+                    onClick={() => window.location.href = '/'}
+                    className="w-full bg-[#00412E]/10 hover:bg-[#00412E]/20 text-[#00412E] px-4 py-3 rounded-lg transition-all duration-200 border border-[#00412E]/20 hover:border-[#00412E]/40 flex items-center justify-center space-x-2"
+                  >
+                    <span>🌐</span>
+                    <span className="text-sm font-medium">Kembali ke Website</span>
+                  </button>
                 </div>
               </div>
             </div>

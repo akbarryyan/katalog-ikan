@@ -48,24 +48,48 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex-1">
                   {/* Greeting with Time-based Message */}
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                      <span className="text-2xl">👋</span>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                        <span className="text-2xl">👋</span>
+                      </div>
+                      <div>
+                        <h2 className="text-2xl lg:text-4xl font-bold mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
+                          Selamat {(() => {
+                            const hour = new Date().getHours();
+                            if (hour < 12) return 'Pagi';
+                            if (hour < 15) return 'Siang';
+                            if (hour < 18) return 'Sore';
+                            return 'Malam';
+                          })()}, Admin!
+                        </h2>
+                        <p className="text-[#E8EAE5] text-base lg:text-lg opacity-90" style={{ fontFamily: 'Hanken Grotesk' }}>
+                          Kelola katalog ikan dan pantau performa penjualan Anda dengan mudah
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-2xl lg:text-4xl font-bold mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-                        Selamat {(() => {
-                          const hour = new Date().getHours();
-                          if (hour < 12) return 'Pagi';
-                          if (hour < 15) return 'Siang';
-                          if (hour < 18) return 'Sore';
-                          return 'Malam';
-                        })()}, Admin!
-                      </h2>
-                      <p className="text-[#E8EAE5] text-base lg:text-lg opacity-90" style={{ fontFamily: 'Hanken Grotesk' }}>
-                        Kelola katalog ikan dan pantau performa penjualan Anda dengan mudah
-                      </p>
+                    
+                    {/* Back to Website Button */}
+                    <div className="hidden lg:block">
+                      <button
+                        onClick={() => window.location.href = '/'}
+                        className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg transition-all duration-200 border border-white/30 hover:border-white/50 flex items-center space-x-2"
+                      >
+                        <span>🌐</span>
+                        <span className="text-sm font-medium">Kembali ke Website</span>
+                      </button>
                     </div>
+                  </div>
+                  
+                  {/* Mobile Back to Website Button */}
+                  <div className="lg:hidden mb-4">
+                    <button
+                      onClick={() => window.location.href = '/'}
+                      className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-3 rounded-lg transition-all duration-200 border border-white/30 hover:border-white/50 flex items-center justify-center space-x-2"
+                    >
+                      <span>🌐</span>
+                      <span className="text-sm font-medium">Kembali ke Website</span>
+                    </button>
                   </div>
                   
                   {/* Quick Stats - Jumlah Ikan */}

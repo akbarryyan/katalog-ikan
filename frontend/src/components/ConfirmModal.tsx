@@ -30,17 +30,72 @@ const ConfirmModal = ({
   useEffect(() => {
     if (isOpen) {
       setIsAnimating(true);
-      // Prevent body scroll when modal is open
-      document.body.classList.add('modal-open');
+      
+      // Store current scroll position
+      const scrollY = window.scrollY;
+      document.body.setAttribute('data-scroll-y', scrollY.toString());
+      
+      // Lock body scroll completely
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+      document.body.style.margin = '0';
+      document.body.style.padding = '0';
+      
+      // Force scroll to top to ensure modal is visible
+      window.scrollTo(0, 0);
+      
+      // Additional viewport centering
+      setTimeout(() => {
+        const modalOverlay = document.querySelector('.modal-overlay-alt') as HTMLElement;
+        if (modalOverlay) {
+          // Force modal to be in viewport center
+          modalOverlay.style.position = 'fixed';
+          modalOverlay.style.top = '0';
+          modalOverlay.style.left = '0';
+          modalOverlay.style.right = '0';
+          modalOverlay.style.bottom = '0';
+          modalOverlay.style.zIndex = '100000';
+        }
+      }, 10);
     } else {
       setIsAnimating(false);
-      // Restore body scroll when modal is closed
-      document.body.classList.remove('modal-open');
+      
+      // Restore body scroll and position
+      const scrollY = document.body.getAttribute('data-scroll-y') || '0';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      document.body.style.overflow = '';
+      document.body.style.margin = '';
+      document.body.style.padding = '';
+      document.body.removeAttribute('data-scroll-y');
+      
+      // Restore scroll position
+      window.scrollTo(0, parseInt(scrollY));
     }
 
-    // Cleanup function to remove class when component unmounts
+    // Cleanup function to restore scroll when component unmounts
     return () => {
-      document.body.classList.remove('modal-open');
+      const scrollY = document.body.getAttribute('data-scroll-y') || '0';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      document.body.style.overflow = '';
+      document.body.style.margin = '';
+      document.body.style.padding = '';
+      document.body.removeAttribute('data-scroll-y');
+      window.scrollTo(0, parseInt(scrollY));
     };
   }, [isOpen]);
 
