@@ -355,14 +355,14 @@ const HomePage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredIkan.map((ikan) => (
-              <div key={ikan.id} className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#00412E]/20">
-                {/* Image */}
-                <div className="relative overflow-hidden">
+              <div key={ikan.id} className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-[#00412E]/30 overflow-hidden">
+                {/* Card Header - Image */}
+                <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
                   {ikan.gambar ? (
                     <img
                       src={`http://localhost:3001${ikan.gambar}`}
                       alt={ikan.nama}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgNTBMMTUwIDEwMEgxMDBMMTAwIDUwWiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNNTAgMTAwTDEwMCA1MEwxNTAgMTAwSDUwWiIgZmlsbD0iIzlDQTNBRiIvPgo8dGV4dCB4PSIxMDAiIHk9IjE0MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzZCNzI4MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0Ij7wn5SPPC90ZXh0Pgo8L3N2Zz4K';
@@ -375,8 +375,8 @@ const HomePage: React.FC = () => {
                   )}
                   
                   {/* Status Badge */}
-                  <div className="absolute top-3 right-3">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                  <div className="absolute top-4 right-4">
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold shadow-lg ${
                       ikan.status === 'tersedia' 
                         ? 'bg-green-500 text-white' 
                         : 'bg-red-500 text-white'
@@ -384,40 +384,61 @@ const HomePage: React.FC = () => {
                       {ikan.status === 'tersedia' ? '✅ Tersedia' : '❌ Habis'}
                     </span>
                   </div>
+                  
+                  {/* Overlay Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
 
-                {/* Content */}
+                {/* Card Body */}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#00412E] transition-colors" style={{ fontFamily: 'Hanken Grotesk' }}>
+                  {/* Title */}
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#00412E] transition-colors duration-200" style={{ fontFamily: 'Hanken Grotesk' }}>
                     {ikan.nama}
                   </h3>
                   
+                  {/* Price */}
                   <div className="mb-4">
                     <span className="text-3xl font-bold text-[#00412E]">
                       {formatHarga(ikan.harga, ikan.satuanHarga)}
                     </span>
                   </div>
 
+                  {/* Stock Info */}
                   <div className="mb-4">
-                    <div className="flex items-center text-sm text-gray-600 mb-2">
-                      <span className="mr-2">📦</span>
-                      <span>Stok: <span className="font-semibold">{ikan.stok}</span></span>
+                    <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
+                      <div className="flex items-center">
+                        <span className="mr-2">📦</span>
+                        <span>Stok</span>
+                      </div>
+                      <span className="font-semibold text-gray-900">{ikan.stok}</span>
                     </div>
                   </div>
 
+                  {/* Description */}
                   {ikan.deskripsi && (
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-4">
-                      {ikan.deskripsi}
-                    </p>
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                        {ikan.deskripsi}
+                      </p>
+                    </div>
                   )}
 
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <span className="text-xs text-gray-500">
-                      {new Date(ikan.created_at).toLocaleDateString('id-ID')}
-                    </span>
+                  {/* Card Footer */}
+                  <div className="pt-4 border-t border-gray-100">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-xs text-gray-500">
+                        {new Date(ikan.created_at).toLocaleDateString('id-ID')}
+                      </span>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <span className="mr-1">⭐</span>
+                        <span>4.8</span>
+                      </div>
+                    </div>
+                    
+                    {/* Action Button */}
                     <button
                       disabled={ikan.status !== 'tersedia'}
-                      className={`px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${
+                      className={`w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 ${
                         ikan.status === 'tersedia'
                           ? 'bg-[#00412E] text-white hover:bg-[#00412E]/90 hover:scale-105 shadow-lg hover:shadow-xl'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
