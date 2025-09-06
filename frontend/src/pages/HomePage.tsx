@@ -656,29 +656,6 @@ const HomePage: React.FC = () => {
               </div>
             </div>
             
-            {/* Newsletter Section */}
-            <div className="mt-12 pt-8 border-t border-white/20">
-              <div className="text-center mb-8">
-                <h4 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-                  📧 Berlangganan Newsletter
-                </h4>
-                <p className="text-white/80 text-lg">Dapatkan info terbaru tentang produk dan promo menarik</p>
-              </div>
-              
-              <div className="max-w-md mx-auto">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="email"
-                    placeholder="Masukkan email Anda"
-                    className="flex-1 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-200"
-                  />
-                  <button className="px-6 py-3 bg-white text-[#00412E] font-bold rounded-xl hover:bg-white/90 transition-all duration-200 hover:scale-105 shadow-lg">
-                    Berlangganan
-                  </button>
-                </div>
-              </div>
-            </div>
-            
             {/* Bottom Bar - Enhanced */}
             <div className="mt-12 pt-8 border-t border-white/20">
               <div className="flex flex-col lg:flex-row justify-between items-center">
