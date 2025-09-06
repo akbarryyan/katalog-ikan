@@ -85,6 +85,22 @@ const HomePage: React.FC = () => {
     return `Rp ${formattedHarga}/${satuan}`;
   };
 
+  // Redirect ke WhatsApp dengan template chat
+  const handleWhatsAppOrder = (ikan: Ikan) => {
+    const phoneNumber = '6281234567890'; // Ganti dengan nomor WhatsApp yang benar
+    const message = `Halo! Saya tertarik untuk memesan ikan:
+
+🐟 *${ikan.nama}*
+💰 Harga: ${formatHarga(ikan.harga, ikan.satuanHarga)}
+📦 Stok: ${ikan.stok} unit
+📝 Deskripsi: ${ikan.deskripsi}
+
+Apakah ikan ini masih tersedia? Terima kasih!`;
+
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -348,7 +364,9 @@ const HomePage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredIkan.map((ikan) => (
+            {filteredIkan.map((ikan) => {
+              console.log('Rendering ikan:', ikan.nama, 'Status:', ikan.status);
+              return (
               <div key={ikan.id} className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-[#00412E]/30 overflow-hidden">
                 {/* Card Header - Image */}
                 <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
@@ -384,7 +402,7 @@ const HomePage: React.FC = () => {
                 </div>
 
                 {/* Card Body */}
-                <div className="p-6 flex flex-col h-full">
+                <div className="p-6 flex flex-col">
                   {/* Header Section */}
                   <div className="mb-4">
                     {/* Title */}
@@ -470,24 +488,18 @@ const HomePage: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Card Footer */}
-                  <div className="mt-auto pt-4 border-t border-gray-100">
-                    {/* Date Info */}
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="flex items-center text-xs text-gray-500">
-                        <span className="mr-1">📅</span>
-                        <span>Ditambahkan {new Date(ikan.created_at).toLocaleDateString('id-ID')}</span>
-                      </div>
-                      <div className="flex items-center text-xs text-gray-500">
-                        <span className="mr-1">🕒</span>
-                        <span>Updated {new Date(ikan.updated_at).toLocaleDateString('id-ID')}</span>
-                      </div>
-                    </div>
-                    
-                    {/* Action Button */}
+                  {/* Card Footer - Simplified */}
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    {/* WhatsApp Button */}
                     <button
+                      onClick={() => {
+                        console.log('Button clicked, ikan status:', ikan.status);
+                        if (ikan.status === 'tersedia') {
+                          handleWhatsAppOrder(ikan);
+                        }
+                      }}
                       disabled={ikan.status !== 'tersedia'}
-                      className={`w-full py-4 rounded-xl text-sm font-bold transition-all duration-200 flex items-center justify-center ${
+                      className={`w-full py-4 rounded-xl text-sm font-bold transition-all duration-200 flex items-center justify-center mb-4 ${
                         ikan.status === 'tersedia'
                           ? 'bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white hover:from-[#00412E]/90 hover:to-[#96BF8A]/90 hover:scale-105 shadow-lg hover:shadow-xl'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -495,8 +507,8 @@ const HomePage: React.FC = () => {
                     >
                       {ikan.status === 'tersedia' ? (
                         <>
-                          <span className="mr-2">🛒</span>
-                          <span>Pesan Sekarang</span>
+                          <span className="mr-2">📱</span>
+                          <span>Pesan via WhatsApp</span>
                         </>
                       ) : (
                         <>
@@ -505,10 +517,23 @@ const HomePage: React.FC = () => {
                         </>
                       )}
                     </button>
+                    
+                    {/* Date Info */}
+                    <div className="flex justify-between items-center text-xs text-gray-400">
+                      <div className="flex items-center">
+                        <span className="mr-1">📅</span>
+                        <span>Ditambahkan {new Date(ikan.created_at).toLocaleDateString('id-ID')}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="mr-1">🕒</span>
+                        <span>Updated {new Date(ikan.updated_at).toLocaleDateString('id-ID')}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
