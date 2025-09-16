@@ -410,24 +410,20 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                   <div className="flex flex-wrap gap-2 mt-4">
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#00412E]/10 text-[#00412E] border border-[#00412E]/20">
                       <Package className="w-3 h-3 mr-1" />
-                      {Array.isArray(filteredIkan)
-                        ? filteredIkan.length
-                        : 0}{" "}
-                      Total Ikan
+                      {Array.isArray(ikanList) ? ikanList.length : 0} Total Ikan
                     </span>
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
                       <CheckCircle className="w-3 h-3 mr-1" />
-                      {Array.isArray(filteredIkan)
-                        ? filteredIkan.filter(
-                            (i: Ikan) => i.status === "tersedia"
-                          ).length
+                      {Array.isArray(ikanList)
+                        ? ikanList.filter((i: Ikan) => i.status === "tersedia")
+                            .length
                         : 0}{" "}
                       Tersedia
                     </span>
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
                       <AlertCircle className="w-3 h-3 mr-1" />
-                      {Array.isArray(filteredIkan)
-                        ? filteredIkan.filter((i: Ikan) => i.status === "habis")
+                      {Array.isArray(ikanList)
+                        ? ikanList.filter((i: Ikan) => i.status === "habis")
                             .length
                         : 0}{" "}
                       Habis Stok
@@ -488,7 +484,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                         {formatPrice(
                           dashboardStats.totalValue > 0
                             ? dashboardStats.totalValue
-                            : calculateTotalPriceSum(filteredIkan)
+                            : calculateTotalPriceSum(ikanList)
                         )}
                       </span>
                     </div>
@@ -527,7 +523,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                     className="text-3xl font-bold text-[#00412E] mt-1"
                     style={{ fontFamily: "Hanken Grotesk" }}
                   >
-                    {dashboardStats.totalIkan}
+                    {Array.isArray(ikanList) ? ikanList.length : 0}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-xl">
@@ -549,7 +545,10 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                     className="text-3xl font-bold text-green-600 mt-1"
                     style={{ fontFamily: "Hanken Grotesk" }}
                   >
-                    {dashboardStats.tersedia}
+                    {Array.isArray(ikanList)
+                      ? ikanList.filter((i: Ikan) => i.status === "tersedia")
+                          .length
+                      : 0}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
@@ -571,7 +570,10 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                     className="text-3xl font-bold text-red-600 mt-1"
                     style={{ fontFamily: "Hanken Grotesk" }}
                   >
-                    {dashboardStats.habis}
+                    {Array.isArray(ikanList)
+                      ? ikanList.filter((i: Ikan) => i.status === "habis")
+                          .length
+                      : 0}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl">
@@ -596,7 +598,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                     {formatPrice(
                       dashboardStats.totalValue > 0
                         ? dashboardStats.totalValue
-                        : calculateTotalPriceSum(filteredIkan)
+                        : calculateTotalPriceSum(ikanList)
                     )}
                   </p>
                 </div>
