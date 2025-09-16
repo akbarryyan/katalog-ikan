@@ -70,6 +70,9 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
       setIsLoading(true);
       console.log("Loading settings from API...");
 
+      // Add longer delay to see skeleton loading clearly
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       const response = await axios.get(API_ENDPOINTS.settings);
 
       if (response.data.success) {
@@ -101,6 +104,9 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
       console.log("Saving settings to API...", settings);
       console.log("🔍 websiteTitle value:", settings.websiteTitle);
       console.log("📡 API Endpoint:", API_ENDPOINTS.settings);
+
+      // Add delay for better UX feedback
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const response = await axios.put(API_ENDPOINTS.settings, settings);
 
@@ -141,6 +147,9 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
 
       console.log("Resetting settings to default...");
 
+      // Add delay for better UX feedback
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+
       const response = await axios.post(`${API_ENDPOINTS.settings}/reset`);
 
       if (response.data.success) {
@@ -177,16 +186,153 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
         onNavigate={onNavigate || (() => {})}
         currentRoute="settings"
       >
-        <div className="bg-[#E8EAE5] p-6 min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <Loader2 className="w-16 h-16 text-[#96BF8A] mx-auto mb-4 animate-spin" />
-            <h3
-              className="text-lg font-medium text-gray-900 mb-2"
-              style={{ fontFamily: "Hanken Grotesk" }}
-            >
-              Memuat pengaturan...
-            </h3>
-            <p className="text-gray-500">Mohon tunggu sebentar</p>
+        <div className="bg-[#E8EAE5] p-6">
+          {/* Header Section Skeleton */}
+          <div className="relative mb-8 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-[#E8EAE5]/30 to-[#96BF8A]/10 rounded-3xl"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#96BF8A]/5 rounded-full -translate-y-16 translate-x-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#00412E]/5 rounded-full translate-y-12 -translate-x-12"></div>
+
+            <div className="absolute top-6 right-8 opacity-10">
+              <SettingsIcon className="w-20 h-20 text-[#00412E] animate-pulse" />
+            </div>
+
+            <div className="relative z-10 bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 border border-white/50 shadow-xl">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0 p-4 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-2xl shadow-lg animate-pulse">
+                        <div className="w-8 h-8 bg-white/20 rounded"></div>
+                      </div>
+
+                      <div>
+                        <div className="h-8 bg-gray-200 rounded-lg w-64 mb-2 animate-pulse"></div>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <div className="w-2 h-2 bg-[#96BF8A] rounded-full animate-pulse"></div>
+                          <div className="h-5 bg-gray-200 rounded w-48 animate-pulse"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Settings Form Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Settings Skeleton */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Website Information Skeleton */}
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 animate-pulse">
+                <div className="flex items-center mb-6">
+                  <div className="w-6 h-6 bg-gray-200 rounded mr-3"></div>
+                  <div className="h-6 bg-gray-200 rounded w-40"></div>
+                </div>
+
+                <div className="space-y-4">
+                  {[1, 2, 3, 4].map((index) => (
+                    <div key={index}>
+                      <div className="h-4 bg-gray-200 rounded w-32 mb-2"></div>
+                      <div className="h-12 bg-gray-100 rounded-xl w-full"></div>
+                      {index === 2 && (
+                        <div className="h-3 bg-gray-100 rounded w-64 mt-1"></div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact Information Skeleton */}
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 animate-pulse">
+                <div className="flex items-center mb-6">
+                  <div className="w-6 h-6 bg-gray-200 rounded mr-3"></div>
+                  <div className="h-6 bg-gray-200 rounded w-36"></div>
+                </div>
+
+                <div className="space-y-4">
+                  {[1, 2, 3].map((index) => (
+                    <div key={index}>
+                      <div className="h-4 bg-gray-200 rounded w-28 mb-2"></div>
+                      <div
+                        className={`h-12 bg-gray-100 rounded-xl w-full ${
+                          index === 3 ? "h-20" : ""
+                        }`}
+                      ></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar Skeleton */}
+            <div className="space-y-6">
+              {/* Color Settings Skeleton */}
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 animate-pulse">
+                <div className="flex items-center mb-6">
+                  <div className="w-6 h-6 bg-gray-200 rounded mr-3"></div>
+                  <div className="h-6 bg-gray-200 rounded w-24"></div>
+                </div>
+
+                <div className="space-y-4">
+                  {[1, 2].map((index) => (
+                    <div key={index}>
+                      <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                        <div className="flex-1 h-10 bg-gray-100 rounded-lg"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions Skeleton */}
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 animate-pulse">
+                <div className="flex items-center mb-6">
+                  <div className="w-6 h-6 bg-gray-200 rounded mr-3"></div>
+                  <div className="h-6 bg-gray-200 rounded w-16"></div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="h-12 bg-gray-200 rounded-xl w-full"></div>
+                  <div className="h-12 bg-gray-100 rounded-xl w-full"></div>
+                </div>
+              </div>
+
+              {/* Preview Skeleton */}
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 animate-pulse">
+                <div className="flex items-center mb-6">
+                  <div className="w-6 h-6 bg-gray-200 rounded mr-3"></div>
+                  <div className="h-6 bg-gray-200 rounded w-20"></div>
+                </div>
+
+                <div className="space-y-3">
+                  {[1, 2, 3].map((index) => (
+                    <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                      <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+                      <div
+                        className={`h-5 bg-gray-200 rounded ${
+                          index === 1 ? "w-32" : index === 2 ? "w-48" : "w-40"
+                        }`}
+                      ></div>
+                    </div>
+                  ))}
+                  <div className="flex space-x-2">
+                    <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                    <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Loading Indicator */}
+          <div className="fixed bottom-8 right-8 z-50">
+            <div className="bg-white rounded-full p-4 shadow-lg border border-gray-200 animate-pulse">
+              <Loader2 className="w-6 h-6 text-[#96BF8A] animate-spin" />
+            </div>
           </div>
         </div>
       </Layout>
