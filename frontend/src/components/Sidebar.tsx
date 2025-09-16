@@ -1,32 +1,49 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { 
-  Fish, 
-  LogOut,
-  X,
-  Users,
-  BarChart3,
-  Settings
-} from 'lucide-react';
-import { API_ENDPOINTS } from '../config/api';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Fish, LogOut, X, Users, BarChart3, Settings } from "lucide-react";
+import { API_ENDPOINTS } from "../config/api";
 
 interface SidebarProps {
   onLogout: () => void;
   user: { email: string } | null;
-  onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan' | 'settings') => void;
+  onNavigate: (
+    route: "dashboard" | "tambah-ikan" | "kelola-ikan" | "settings"
+  ) => void;
   currentRoute: string;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
 
-const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSidebarOpen }: SidebarProps) => {
-  const [websiteName, setWebsiteName] = useState('Ikan Oni');
+const Sidebar = ({
+  onLogout,
+  user,
+  onNavigate,
+  currentRoute,
+  sidebarOpen,
+  setSidebarOpen,
+}: SidebarProps) => {
+  const [websiteName, setWebsiteName] = useState("Ikan Oni");
   const [isMobile, setIsMobile] = useState(false);
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3, color: 'from-[#00412E] to-[#96BF8A]' },
-    { id: 'kelola-ikan', label: 'Kelola Ikan', icon: Fish, color: 'from-[#00412E] to-[#96BF8A]' },
-    { id: 'settings', label: 'Settings', icon: Settings, color: 'from-[#00412E] to-[#96BF8A]' },
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      icon: BarChart3,
+      color: "from-[#00412E] to-[#96BF8A]",
+    },
+    {
+      id: "kelola-ikan",
+      label: "Kelola Ikan",
+      icon: Fish,
+      color: "from-[#00412E] to-[#96BF8A]",
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: Settings,
+      color: "from-[#00412E] to-[#96BF8A]",
+    },
   ];
 
   // Check screen size for responsive z-index
@@ -36,9 +53,9 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
     };
 
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
 
-    return () => window.removeEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   // Load website name from settings API
@@ -46,12 +63,12 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
     const loadWebsiteName = async () => {
       try {
         const response = await axios.get(API_ENDPOINTS.settings);
-        
+
         if (response.data.success && response.data.data.websiteName) {
           setWebsiteName(response.data.data.websiteName);
         }
       } catch (error) {
-        console.error('Error loading website name:', error);
+        console.error("Error loading website name:", error);
         // Keep default name if API fails
       }
     };
@@ -64,10 +81,10 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
     };
 
     // Add event listener for custom settings update event
-    window.addEventListener('settingsUpdated', handleSettingsChange);
+    window.addEventListener("settingsUpdated", handleSettingsChange);
 
     return () => {
-      window.removeEventListener('settingsUpdated', handleSettingsChange);
+      window.removeEventListener("settingsUpdated", handleSettingsChange);
     };
   }, []);
 
@@ -79,10 +96,10 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
   const getTransform = () => {
     if (window.innerWidth >= 1024) {
       // Desktop: always visible
-      return 'translateX(0)';
+      return "translateX(0)";
     } else {
       // Mobile: based on sidebarOpen state
-      return sidebarOpen ? 'translateX(0)' : 'translateX(-100%)';
+      return sidebarOpen ? "translateX(0)" : "translateX(-100%)";
     }
   };
 
@@ -90,14 +107,14 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
     <>
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           style={{
-            position: 'fixed',
+            position: "fixed",
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: 9998
+            zIndex: 9998,
           }}
           className="lg:hidden mobile-sidebar-overlay"
           onClick={() => setSidebarOpen(false)}
@@ -105,134 +122,183 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
       )}
 
       {/* Sidebar */}
-      <div 
+      <div
         style={{
-          position: 'fixed',
+          position: "fixed",
           top: 0,
           left: 0,
-          width: '18rem',
-          height: '100vh',
-          backgroundColor: 'white',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          zIndex: isMobile ? 9999 : 10, // Higher z-index for mobile
-          overflow: 'hidden',
+          bottom: 0,
+          right: "auto",
+          width: "18rem",
+          backgroundColor: "white",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+          zIndex: isMobile ? 9999 : 1000, // Increased z-index
+          overflow: "hidden",
           transform: getTransform(),
-          transition: 'transform 0.3s ease-in-out'
+          transition: "transform 0.3s ease-in-out",
         }}
       >
         {/* Sidebar Content Container */}
-        <div 
+        <div
           style={{
-            height: '100vh',
-            display: 'flex',
-            flexDirection: 'column'
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            width: "100%",
+            overflow: "hidden",
+            position: "relative",
+            zIndex: 1,
           }}
         >
           {/* Sidebar Header */}
-          <div style={{
-            flexShrink: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            height: '5rem',
-            padding: '0 1.5rem',
-            borderBottom: '1px solid #f3f4f6',
-            backgroundColor: 'white'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem'
-            }}>
-              <div style={{
-                padding: '0.75rem',
-                background: 'linear-gradient(to bottom right, #00412E, #96BF8A)',
-                borderRadius: '0.75rem',
-                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-              }}>
-                <Fish style={{ color: 'white', width: '24px', height: '24px' }} />
+          <div
+            style={{
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              height: "5rem",
+              padding: "0 1.5rem",
+              borderBottom: "1px solid #f3f4f6",
+              backgroundColor: "white",
+              position: "relative",
+              zIndex: 2,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+              }}
+            >
+              <div
+                style={{
+                  padding: "0.75rem",
+                  background:
+                    "linear-gradient(to bottom right, #00412E, #96BF8A)",
+                  borderRadius: "0.75rem",
+                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <Fish
+                  style={{ color: "white", width: "24px", height: "24px" }}
+                />
               </div>
-              <h1 style={{
-                fontSize: '1.25rem',
-                fontWeight: 'bold',
-                color: '#00412E',
-                fontFamily: 'Hanken Grotesk'
-              }}>
+              <h1
+                style={{
+                  fontSize: "1.25rem",
+                  fontWeight: "bold",
+                  color: "#00412E",
+                  fontFamily: "Hanken Grotesk",
+                }}
+              >
                 {websiteName}
               </h1>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
               style={{
-                padding: '0.5rem',
-                borderRadius: '0.5rem',
-                color: '#9ca3af',
-                backgroundColor: 'transparent',
-                border: 'none',
-                cursor: 'pointer'
+                padding: "0.5rem",
+                borderRadius: "0.5rem",
+                color: "#9ca3af",
+                backgroundColor: "transparent",
+                border: "none",
+                cursor: "pointer",
               }}
               className="lg:hidden"
             >
-              <X style={{ width: '20px', height: '20px' }} />
+              <X style={{ width: "20px", height: "20px" }} />
             </button>
           </div>
-          
+
           {/* User Info */}
-          <div style={{
-            flexShrink: 0,
-            padding: '1.5rem',
-            borderBottom: '1px solid #f3f4f6',
-            backgroundColor: 'white'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem'
-            }}>
-              <div style={{
-                width: '3rem',
-                height: '3rem',
-                background: 'linear-gradient(to bottom right, #00412E, #96BF8A)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-              }}>
-                <Users style={{ color: 'white', width: '22px', height: '22px' }} />
+          <div
+            style={{
+              flexShrink: 0,
+              padding: "1.5rem",
+              borderBottom: "1px solid #f3f4f6",
+              backgroundColor: "white",
+              position: "relative",
+              zIndex: 2,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+              }}
+            >
+              <div
+                style={{
+                  width: "3rem",
+                  height: "3rem",
+                  background:
+                    "linear-gradient(to bottom right, #00412E, #96BF8A)",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <Users
+                  style={{ color: "white", width: "22px", height: "22px" }}
+                />
               </div>
               <div>
-                <p style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#111827',
-                  fontFamily: 'Hanken Grotesk'
-                }}>
-                  {user?.email || 'Admin'}
+                <p
+                  style={{
+                    fontSize: "0.875rem",
+                    fontWeight: "600",
+                    color: "#111827",
+                    fontFamily: "Hanken Grotesk",
+                  }}
+                >
+                  {user?.email || "Admin"}
                 </p>
-                <p style={{
-                  fontSize: '0.75rem',
-                  color: '#96BF8A',
-                  fontWeight: '500',
-                  fontFamily: 'Hanken Grotesk'
-                }}>
+                <p
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#96BF8A",
+                    fontWeight: "500",
+                    fontFamily: "Hanken Grotesk",
+                  }}
+                >
                   Administrator
                 </p>
               </div>
             </div>
           </div>
-          
+
           {/* Navigation Menu */}
-          <nav 
+          <nav
             className="hide-scrollbar"
             style={{
               flex: 1,
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              padding: '1.5rem 0.75rem'
+              minHeight: 0, // Important for flex child scrolling
+              overflowY: "auto",
+              overflowX: "hidden",
+              padding: "1.5rem 0.75rem",
+              display: "flex",
+              flexDirection: "column",
+              position: "relative",
+              zIndex: 2,
+              backgroundColor: "white",
             }}
           >
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.75rem",
+                flex: 1,
+              }}
+            >
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = currentRoute === item.id;
@@ -240,40 +306,42 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
                   <li key={item.id}>
                     <button
                       onClick={() => {
-                        if (item.id === 'kelola-ikan') {
-                          onNavigate('kelola-ikan');
-                        } else if (item.id === 'settings') {
-                          onNavigate('settings');
+                        if (item.id === "kelola-ikan") {
+                          onNavigate("kelola-ikan");
+                        } else if (item.id === "settings") {
+                          onNavigate("settings");
                         } else {
-                          onNavigate('dashboard');
+                          onNavigate("dashboard");
                         }
                       }}
                       style={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '0.75rem 1rem',
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        borderRadius: '0.75rem',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        background: isActive 
-                          ? 'linear-gradient(to right, #00412E, #96BF8A)' 
-                          : 'transparent',
-                        color: isActive ? 'white' : '#4b5563',
-                        boxShadow: isActive ? '0 10px 15px -3px rgba(150, 191, 138, 0.25)' : 'none'
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "0.75rem 1rem",
+                        fontSize: "0.875rem",
+                        fontWeight: "500",
+                        borderRadius: "0.75rem",
+                        border: "none",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        background: isActive
+                          ? "linear-gradient(to right, #00412E, #96BF8A)"
+                          : "transparent",
+                        color: isActive ? "white" : "#4b5563",
+                        boxShadow: isActive
+                          ? "0 10px 15px -3px rgba(150, 191, 138, 0.25)"
+                          : "none",
                       }}
                     >
-                      <Icon 
-                        style={{ 
-                          width: '20px', 
-                          height: '20px', 
-                          marginRight: '0.75rem',
-                          transform: isActive ? 'scale(1.1)' : 'scale(1)',
-                          transition: 'transform 0.2s'
-                        }} 
+                      <Icon
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          marginRight: "0.75rem",
+                          transform: isActive ? "scale(1.1)" : "scale(1)",
+                          transition: "transform 0.2s",
+                        }}
                       />
                       {item.label}
                     </button>
@@ -282,32 +350,43 @@ const Sidebar = ({ onLogout, user, onNavigate, currentRoute, sidebarOpen, setSid
               })}
             </ul>
           </nav>
-          
+
           {/* Logout Button */}
-          <div style={{
-            flexShrink: 0,
-            padding: '1rem',
-            borderTop: '1px solid #f3f4f6',
-            backgroundColor: '#f9fafb'
-          }}>
+          <div
+            style={{
+              flexShrink: 0,
+              padding: "1rem",
+              borderTop: "1px solid #f3f4f6",
+              backgroundColor: "#f9fafb",
+              marginTop: "auto", // Push to bottom
+              position: "relative",
+              zIndex: 2,
+            }}
+          >
             <button
               onClick={handleLogout}
               style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '0.75rem 1rem',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#ef4444',
-                backgroundColor: 'transparent',
-                border: 'none',
-                borderRadius: '0.75rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                padding: "0.75rem 1rem",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "#ef4444",
+                backgroundColor: "transparent",
+                border: "none",
+                borderRadius: "0.75rem",
+                cursor: "pointer",
+                transition: "all 0.2s",
               }}
             >
-              <LogOut style={{ width: '20px', height: '20px', marginRight: '0.75rem' }} />
+              <LogOut
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  marginRight: "0.75rem",
+                }}
+              />
               Keluar
             </button>
           </div>
