@@ -109,7 +109,6 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
 
   const fetchIkan = async () => {
     try {
-      setIsLoading(true);
       setError(null);
 
       const response = await axios.get(API_ENDPOINTS.ikan);
@@ -156,8 +155,6 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
           ? err.message
           : "Terjadi kesalahan saat mengambil data"
       );
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -220,8 +217,20 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
 
   // Fetch data on component mount
   useEffect(() => {
-    fetchIkan();
-    fetchDashboardStats();
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        // Add small delay to see skeleton loading
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await Promise.all([fetchIkan(), fetchDashboardStats()]);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   const getStatusColor = (status: string) => {
@@ -293,12 +302,15 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       if (success) {
         setIsDeleteModalOpen(false);
         setIkanToDelete(null);
+        setIsLoading(true);
         await fetchDashboardStats(); // Refresh dashboard stats setelah delete
+        setIsLoading(false);
         // Show success notification (you can add toast notification here)
         console.log(`${ikanToDelete.nama} berhasil dihapus`);
       }
     } catch (error) {
       console.error("Error deleting ikan:", error);
+      setIsLoading(false);
     } finally {
       setDeleteLoading(false);
     }
@@ -337,8 +349,9 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     try {
       // Data sudah disimpan oleh FormTambahIkan component
       // Sekarang kita hanya perlu refresh data dan close modal
-      await fetchIkan();
-      await fetchDashboardStats(); // Refresh dashboard stats juga
+      setIsLoading(true);
+      await Promise.all([fetchIkan(), fetchDashboardStats()]);
+      setIsLoading(false);
       handleCloseModal();
 
       // Show success message
@@ -348,6 +361,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       alert(successMessage);
     } catch (err) {
       console.error("Error handling save result:", err);
+      setIsLoading(false);
       alert("Terjadi kesalahan saat memproses hasil penyimpanan");
     }
   };
@@ -408,26 +422,42 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
 
                   {/* Quick Info Badges */}
                   <div className="flex flex-wrap gap-2 mt-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#00412E]/10 text-[#00412E] border border-[#00412E]/20">
-                      <Package className="w-3 h-3 mr-1" />
-                      {Array.isArray(ikanList) ? ikanList.length : 0} Total Ikan
-                    </span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      {Array.isArray(ikanList)
-                        ? ikanList.filter((i: Ikan) => i.status === "tersedia")
-                            .length
-                        : 0}{" "}
-                      Tersedia
-                    </span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
-                      <AlertCircle className="w-3 h-3 mr-1" />
-                      {Array.isArray(ikanList)
-                        ? ikanList.filter((i: Ikan) => i.status === "habis")
-                            .length
-                        : 0}{" "}
-                      Habis Stok
-                    </span>
+                    {isLoading ? (
+                      // Skeleton Loading for Badges
+                      <>
+                        {[1, 2, 3].map((index) => (
+                          <div key={index} className="animate-pulse">
+                            <div className="h-6 bg-gray-200 rounded-full w-24"></div>
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      // Actual Badges
+                      <>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#00412E]/10 text-[#00412E] border border-[#00412E]/20">
+                          <Package className="w-3 h-3 mr-1" />
+                          {Array.isArray(ikanList) ? ikanList.length : 0} Total
+                          Ikan
+                        </span>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          {Array.isArray(ikanList)
+                            ? ikanList.filter(
+                                (i: Ikan) => i.status === "tersedia"
+                              ).length
+                            : 0}{" "}
+                          Tersedia
+                        </span>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
+                          <AlertCircle className="w-3 h-3 mr-1" />
+                          {Array.isArray(ikanList)
+                            ? ikanList.filter((i: Ikan) => i.status === "habis")
+                                .length
+                            : 0}{" "}
+                          Habis Stok
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -480,13 +510,19 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                       <span className="text-gray-600 font-medium">
                         Total Nilai:
                       </span>
-                      <span className="text-[#00412E] font-bold">
-                        {formatPrice(
-                          dashboardStats.totalValue > 0
-                            ? dashboardStats.totalValue
-                            : calculateTotalPriceSum(ikanList)
-                        )}
-                      </span>
+                      {isLoading ? (
+                        <div className="animate-pulse">
+                          <div className="h-4 bg-gray-200 rounded-md w-20"></div>
+                        </div>
+                      ) : (
+                        <span className="text-[#00412E] font-bold">
+                          {formatPrice(
+                            dashboardStats.totalValue > 0
+                              ? dashboardStats.totalValue
+                              : calculateTotalPriceSum(ikanList)
+                          )}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -510,103 +546,127 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p
-                    className="text-sm font-medium text-gray-600"
-                    style={{ fontFamily: "Hanken Grotesk" }}
+            {isLoading ? (
+              // Skeleton Loading States
+              <>
+                {[1, 2, 3, 4].map((index) => (
+                  <div
+                    key={index}
+                    className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 animate-pulse"
                   >
-                    Total Ikan
-                  </p>
-                  <p
-                    className="text-3xl font-bold text-[#00412E] mt-1"
-                    style={{ fontFamily: "Hanken Grotesk" }}
-                  >
-                    {Array.isArray(ikanList) ? ikanList.length : 0}
-                  </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-200 rounded-md mb-3 w-20"></div>
+                        <div className="h-8 bg-gray-200 rounded-md w-16"></div>
+                      </div>
+                      <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            ) : (
+              // Actual Stats Cards
+              <>
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p
+                        className="text-sm font-medium text-gray-600"
+                        style={{ fontFamily: "Hanken Grotesk" }}
+                      >
+                        Total Ikan
+                      </p>
+                      <p
+                        className="text-3xl font-bold text-[#00412E] mt-1"
+                        style={{ fontFamily: "Hanken Grotesk" }}
+                      >
+                        {Array.isArray(ikanList) ? ikanList.length : 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-xl">
+                      <Fish className="text-white" size={24} />
+                    </div>
+                  </div>
                 </div>
-                <div className="p-3 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-xl">
-                  <Fish className="text-white" size={24} />
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p
-                    className="text-sm font-medium text-gray-600"
-                    style={{ fontFamily: "Hanken Grotesk" }}
-                  >
-                    Tersedia
-                  </p>
-                  <p
-                    className="text-3xl font-bold text-green-600 mt-1"
-                    style={{ fontFamily: "Hanken Grotesk" }}
-                  >
-                    {Array.isArray(ikanList)
-                      ? ikanList.filter((i: Ikan) => i.status === "tersedia")
-                          .length
-                      : 0}
-                  </p>
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p
+                        className="text-sm font-medium text-gray-600"
+                        style={{ fontFamily: "Hanken Grotesk" }}
+                      >
+                        Tersedia
+                      </p>
+                      <p
+                        className="text-3xl font-bold text-green-600 mt-1"
+                        style={{ fontFamily: "Hanken Grotesk" }}
+                      >
+                        {Array.isArray(ikanList)
+                          ? ikanList.filter(
+                              (i: Ikan) => i.status === "tersedia"
+                            ).length
+                          : 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
+                      <CheckCircle className="text-white" size={24} />
+                    </div>
+                  </div>
                 </div>
-                <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
-                  <CheckCircle className="text-white" size={24} />
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p
-                    className="text-sm font-medium text-gray-600"
-                    style={{ fontFamily: "Hanken Grotesk" }}
-                  >
-                    Habis Stok
-                  </p>
-                  <p
-                    className="text-3xl font-bold text-red-600 mt-1"
-                    style={{ fontFamily: "Hanken Grotesk" }}
-                  >
-                    {Array.isArray(ikanList)
-                      ? ikanList.filter((i: Ikan) => i.status === "habis")
-                          .length
-                      : 0}
-                  </p>
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p
+                        className="text-sm font-medium text-gray-600"
+                        style={{ fontFamily: "Hanken Grotesk" }}
+                      >
+                        Habis Stok
+                      </p>
+                      <p
+                        className="text-3xl font-bold text-red-600 mt-1"
+                        style={{ fontFamily: "Hanken Grotesk" }}
+                      >
+                        {Array.isArray(ikanList)
+                          ? ikanList.filter((i: Ikan) => i.status === "habis")
+                              .length
+                          : 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl">
+                      <AlertCircle className="text-white" size={24} />
+                    </div>
+                  </div>
                 </div>
-                <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl">
-                  <AlertCircle className="text-white" size={24} />
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p
-                    className="text-sm font-medium text-gray-600"
-                    style={{ fontFamily: "Hanken Grotesk" }}
-                  >
-                    Total Nilai
-                  </p>
-                  <p
-                    className="text-3xl font-bold text-[#00412E] mt-1"
-                    style={{ fontFamily: "Hanken Grotesk" }}
-                  >
-                    {formatPrice(
-                      dashboardStats.totalValue > 0
-                        ? dashboardStats.totalValue
-                        : calculateTotalPriceSum(ikanList)
-                    )}
-                  </p>
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p
+                        className="text-sm font-medium text-gray-600"
+                        style={{ fontFamily: "Hanken Grotesk" }}
+                      >
+                        Total Nilai
+                      </p>
+                      <p
+                        className="text-3xl font-bold text-[#00412E] mt-1"
+                        style={{ fontFamily: "Hanken Grotesk" }}
+                      >
+                        {formatPrice(
+                          dashboardStats.totalValue > 0
+                            ? dashboardStats.totalValue
+                            : calculateTotalPriceSum(ikanList)
+                        )}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl">
+                      <DollarSign className="text-white" size={24} />
+                    </div>
+                  </div>
                 </div>
-                <div className="p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl">
-                  <DollarSign className="text-white" size={24} />
-                </div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
 
           {/* Enhanced Search & Filter Section */}
@@ -886,317 +946,421 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
               )}
 
               {/* Content Section - Data Ikan */}
-              {!isLoading && !error && (
-                <div className="border-t border-gray-200/50 pt-6">
-                  {viewMode === "grid" ? (
-                    /* Grid View */
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                      {filteredIkan.map((ikan: Ikan) => (
-                        <div
-                          key={ikan.id}
-                          className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
-                        >
-                          {/* Fish Image */}
-                          <div className="h-48 bg-gradient-to-br from-[#00412E] to-[#96BF8A] flex items-center justify-center overflow-hidden">
-                            {ikan.gambar ? (
-                              <img
-                                src={`http://localhost:3001${ikan.gambar}`}
-                                alt={ikan.nama}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  // Fallback to placeholder if image fails to load
-                                  e.currentTarget.style.display = "none";
-                                  const nextElement = e.currentTarget
-                                    .nextElementSibling as HTMLElement;
-                                  if (nextElement) {
-                                    nextElement.style.display = "flex";
-                                  }
-                                }}
-                              />
-                            ) : null}
-                            <div
-                              className={`w-full h-full flex items-center justify-center ${
-                                ikan.gambar ? "hidden" : "flex"
-                              }`}
-                            >
-                              <Fish className="w-16 h-16 text-white opacity-80" />
+              <div className="border-t border-gray-200/50 pt-6">
+                {isLoading ? (
+                  // Skeleton Loading for Content
+                  <div>
+                    {viewMode === "grid" ? (
+                      // Grid Skeleton
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
+                          <div
+                            key={index}
+                            className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden animate-pulse"
+                          >
+                            {/* Image Skeleton */}
+                            <div className="h-48 bg-gray-200"></div>
+                            {/* Content Skeleton */}
+                            <div className="p-6">
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="h-6 bg-gray-200 rounded-md w-3/4"></div>
+                                <div className="flex space-x-1">
+                                  <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                                  <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                                  <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                                </div>
+                              </div>
+                              <div className="space-y-2 mb-4">
+                                <div className="h-4 bg-gray-200 rounded-md w-1/2"></div>
+                                <div className="h-4 bg-gray-200 rounded-md w-1/3"></div>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div className="h-6 bg-gray-200 rounded-full w-20"></div>
+                                <div className="h-4 bg-gray-200 rounded-md w-12"></div>
+                              </div>
                             </div>
                           </div>
-
-                          {/* Content */}
-                          <div className="p-6">
-                            <div className="flex items-start justify-between mb-3">
-                              <h3
-                                className="text-lg font-semibold text-gray-900 group-hover:text-[#00412E] transition-colors duration-200"
-                                style={{ fontFamily: "Hanken Grotesk" }}
-                              >
-                                {ikan.nama}
-                              </h3>
-                              <div className="flex space-x-1">
-                                <button
-                                  onClick={() => handleView(ikan)}
-                                  className="p-2 text-gray-400 hover:text-[#00412E] hover:bg-[#96BF8A]/10 rounded-lg transition-all duration-200"
-                                >
-                                  <Eye size={16} />
-                                </button>
-                                <button
-                                  onClick={() => handleEdit(ikan)}
-                                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                                >
-                                  <Edit3 size={16} />
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleDelete(ikan);
-                                  }}
-                                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                                >
-                                  <Trash2 size={16} />
-                                </button>
-                              </div>
-                            </div>
-
-                            <div className="space-y-2 mb-4">
-                              <div className="flex items-center text-sm text-gray-600">
-                                <DollarSign className="w-4 h-4 mr-2" />
-                                {formatPrice(ikan.harga)} / {ikan.satuanHarga}
-                              </div>
-                              <div className="flex items-center text-sm text-gray-600">
-                                <Package className="w-4 h-4 mr-2" />
-                                Stok: {ikan.stok}
-                              </div>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                              <span
-                                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                                  ikan.status
-                                )}`}
-                              >
-                                {getStatusIcon(ikan.status)}
-                                <span className="ml-1 capitalize">
-                                  {ikan.status}
-                                </span>
-                              </span>
-                              <span className="text-sm text-gray-500">
-                                Stok: {ikan.stok}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    /* List View */
-                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th
-                                className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                style={{ fontFamily: "Hanken Grotesk" }}
-                              >
-                                Ikan
-                              </th>
-                              <th
-                                className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                style={{ fontFamily: "Hanken Grotesk" }}
-                              >
-                                Satuan Harga
-                              </th>
-                              <th
-                                className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                style={{ fontFamily: "Hanken Grotesk" }}
-                              >
-                                Harga
-                              </th>
-                              <th
-                                className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                style={{ fontFamily: "Hanken Grotesk" }}
-                              >
-                                Stok
-                              </th>
-                              <th
-                                className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                style={{ fontFamily: "Hanken Grotesk" }}
-                              >
-                                Status
-                              </th>
-                              <th
-                                className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                style={{ fontFamily: "Hanken Grotesk" }}
-                              >
-                                Aksi
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {filteredIkan.map((ikan: Ikan) => (
-                              <tr
-                                key={ikan.id}
-                                className="hover:bg-gray-50 transition-colors duration-200"
-                              >
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <div className="flex items-center">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-lg flex items-center justify-center mr-3 overflow-hidden">
-                                      {ikan.gambar ? (
-                                        <img
-                                          src={`http://localhost:3001${ikan.gambar}`}
-                                          alt={ikan.nama}
-                                          className="w-full h-full object-cover rounded-lg"
-                                          onError={(e) => {
-                                            // Fallback to placeholder if image fails to load
-                                            e.currentTarget.style.display =
-                                              "none";
-                                            const nextElement = e.currentTarget
-                                              .nextElementSibling as HTMLElement;
-                                            if (nextElement) {
-                                              nextElement.style.display =
-                                                "flex";
-                                            }
-                                          }}
-                                        />
-                                      ) : null}
-                                      <div
-                                        className={`w-full h-full flex items-center justify-center ${
-                                          ikan.gambar ? "hidden" : "flex"
-                                        }`}
-                                      >
-                                        <Fish className="w-6 h-6 text-white" />
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div
-                                        className="text-sm font-medium text-gray-900"
-                                        style={{ fontFamily: "Hanken Grotesk" }}
-                                      >
-                                        {ikan.nama}
-                                      </div>
-                                      <div className="text-sm text-gray-500">
-                                        {formatPrice(ikan.harga)} /{" "}
-                                        {ikan.satuanHarga}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    {ikan.satuanHarga}
-                                  </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {formatPrice(ikan.harga)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {ikan.stok}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <span
-                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                                      ikan.status
-                                    )}`}
-                                  >
-                                    {getStatusIcon(ikan.status)}
-                                    <span className="ml-1 capitalize">
-                                      {ikan.status}
-                                    </span>
-                                  </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                  <div className="flex space-x-2">
-                                    <button
-                                      onClick={() => handleView(ikan)}
-                                      className="text-[#00412E] hover:text-[#96BF8A] transition-colors duration-200"
-                                    >
-                                      <Eye size={16} />
-                                    </button>
-                                    <button
-                                      onClick={() => handleEdit(ikan)}
-                                      className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                                    >
-                                      <Edit3 size={16} />
-                                    </button>
-                                    <button
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        handleDelete(ikan);
-                                      }}
-                                      className="text-red-600 hover:text-red-800 transition-colors duration-200"
-                                    >
-                                      <Trash2 size={16} />
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                        ))}
                       </div>
-                    </div>
-                  )}
+                    ) : (
+                      // List Skeleton
+                      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                        <div className="overflow-x-auto">
+                          <table className="w-full">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Ikan
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Satuan Harga
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Harga
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Stok
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Status
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Aksi
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {[1, 2, 3, 4, 5].map((index) => (
+                                <tr key={index} className="animate-pulse">
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center">
+                                      <div className="w-12 h-12 bg-gray-200 rounded-lg mr-3"></div>
+                                      <div>
+                                        <div className="h-4 bg-gray-200 rounded-md w-24 mb-1"></div>
+                                        <div className="h-3 bg-gray-200 rounded-md w-16"></div>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="h-6 bg-gray-200 rounded-full w-12"></div>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="h-4 bg-gray-200 rounded-md w-16"></div>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="h-4 bg-gray-200 rounded-md w-8"></div>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="h-6 bg-gray-200 rounded-full w-16"></div>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex space-x-2">
+                                      <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                                      <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                                      <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : error ? (
+                  // Error State
+                  <div className="text-center py-12">
+                    <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                    <h3
+                      className="text-lg font-medium text-gray-900 mb-2"
+                      style={{ fontFamily: "Hanken Grotesk" }}
+                    >
+                      Terjadi kesalahan
+                    </h3>
+                    <p className="text-gray-500 mb-6">{error}</p>
+                    <button
+                      onClick={async () => {
+                        setIsLoading(true);
+                        setError(null);
+                        try {
+                          await Promise.all([
+                            fetchIkan(),
+                            fetchDashboardStats(),
+                          ]);
+                        } catch (err) {
+                          console.error("Error retrying:", err);
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }}
+                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-medium rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
+                    >
+                      <Loader2 className="w-5 h-5 mr-2" />
+                      Coba Lagi
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    {viewMode === "grid" ? (
+                      /* Grid View */
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {filteredIkan.map((ikan: Ikan) => (
+                          <div
+                            key={ikan.id}
+                            className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
+                          >
+                            {/* Fish Image */}
+                            <div className="h-48 bg-gradient-to-br from-[#00412E] to-[#96BF8A] flex items-center justify-center overflow-hidden">
+                              {ikan.gambar ? (
+                                <img
+                                  src={`http://localhost:3001${ikan.gambar}`}
+                                  alt={ikan.nama}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    // Fallback to placeholder if image fails to load
+                                    e.currentTarget.style.display = "none";
+                                    const nextElement = e.currentTarget
+                                      .nextElementSibling as HTMLElement;
+                                    if (nextElement) {
+                                      nextElement.style.display = "flex";
+                                    }
+                                  }}
+                                />
+                              ) : null}
+                              <div
+                                className={`w-full h-full flex items-center justify-center ${
+                                  ikan.gambar ? "hidden" : "flex"
+                                }`}
+                              >
+                                <Fish className="w-16 h-16 text-white opacity-80" />
+                              </div>
+                            </div>
 
-                  {/* Empty State */}
-                  {Array.isArray(filteredIkan) && filteredIkan.length === 0 && (
-                    <div className="text-center py-12">
-                      <Fish className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <h3
-                        className="text-lg font-medium text-gray-900 mb-2"
-                        style={{ fontFamily: "Hanken Grotesk" }}
-                      >
-                        Belum ada data ikan
-                      </h3>
-                      <p className="text-gray-500 mb-6">
-                        Mulai dengan menambahkan ikan pertama ke katalog
-                      </p>
-                      <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-medium rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg">
-                        <Plus className="w-5 h-5 mr-2" />
-                        Tambah Ikan Pertama
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
+                            {/* Content */}
+                            <div className="p-6">
+                              <div className="flex items-start justify-between mb-3">
+                                <h3
+                                  className="text-lg font-semibold text-gray-900 group-hover:text-[#00412E] transition-colors duration-200"
+                                  style={{ fontFamily: "Hanken Grotesk" }}
+                                >
+                                  {ikan.nama}
+                                </h3>
+                                <div className="flex space-x-1">
+                                  <button
+                                    onClick={() => handleView(ikan)}
+                                    className="p-2 text-gray-400 hover:text-[#00412E] hover:bg-[#96BF8A]/10 rounded-lg transition-all duration-200"
+                                  >
+                                    <Eye size={16} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleEdit(ikan)}
+                                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                                  >
+                                    <Edit3 size={16} />
+                                  </button>
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleDelete(ikan);
+                                    }}
+                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="space-y-2 mb-4">
+                                <div className="flex items-center text-sm text-gray-600">
+                                  <DollarSign className="w-4 h-4 mr-2" />
+                                  {formatPrice(ikan.harga)} / {ikan.satuanHarga}
+                                </div>
+                                <div className="flex items-center text-sm text-gray-600">
+                                  <Package className="w-4 h-4 mr-2" />
+                                  Stok: {ikan.stok}
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                                    ikan.status
+                                  )}`}
+                                >
+                                  {getStatusIcon(ikan.status)}
+                                  <span className="ml-1 capitalize">
+                                    {ikan.status}
+                                  </span>
+                                </span>
+                                <span className="text-sm text-gray-500">
+                                  Stok: {ikan.stok}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      /* List View */
+                      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                        <div className="overflow-x-auto">
+                          <table className="w-full">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th
+                                  className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  style={{ fontFamily: "Hanken Grotesk" }}
+                                >
+                                  Ikan
+                                </th>
+                                <th
+                                  className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  style={{ fontFamily: "Hanken Grotesk" }}
+                                >
+                                  Satuan Harga
+                                </th>
+                                <th
+                                  className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  style={{ fontFamily: "Hanken Grotesk" }}
+                                >
+                                  Harga
+                                </th>
+                                <th
+                                  className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  style={{ fontFamily: "Hanken Grotesk" }}
+                                >
+                                  Stok
+                                </th>
+                                <th
+                                  className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  style={{ fontFamily: "Hanken Grotesk" }}
+                                >
+                                  Status
+                                </th>
+                                <th
+                                  className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  style={{ fontFamily: "Hanken Grotesk" }}
+                                >
+                                  Aksi
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {filteredIkan.map((ikan: Ikan) => (
+                                <tr
+                                  key={ikan.id}
+                                  className="hover:bg-gray-50 transition-colors duration-200"
+                                >
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center">
+                                      <div className="w-12 h-12 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-lg flex items-center justify-center mr-3 overflow-hidden">
+                                        {ikan.gambar ? (
+                                          <img
+                                            src={`http://localhost:3001${ikan.gambar}`}
+                                            alt={ikan.nama}
+                                            className="w-full h-full object-cover rounded-lg"
+                                            onError={(e) => {
+                                              // Fallback to placeholder if image fails to load
+                                              e.currentTarget.style.display =
+                                                "none";
+                                              const nextElement = e
+                                                .currentTarget
+                                                .nextElementSibling as HTMLElement;
+                                              if (nextElement) {
+                                                nextElement.style.display =
+                                                  "flex";
+                                              }
+                                            }}
+                                          />
+                                        ) : null}
+                                        <div
+                                          className={`w-full h-full flex items-center justify-center ${
+                                            ikan.gambar ? "hidden" : "flex"
+                                          }`}
+                                        >
+                                          <Fish className="w-6 h-6 text-white" />
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <div
+                                          className="text-sm font-medium text-gray-900"
+                                          style={{
+                                            fontFamily: "Hanken Grotesk",
+                                          }}
+                                        >
+                                          {ikan.nama}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                          {formatPrice(ikan.harga)} /{" "}
+                                          {ikan.satuanHarga}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                      {ikan.satuanHarga}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {formatPrice(ikan.harga)}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {ikan.stok}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <span
+                                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                                        ikan.status
+                                      )}`}
+                                    >
+                                      {getStatusIcon(ikan.status)}
+                                      <span className="ml-1 capitalize">
+                                        {ikan.status}
+                                      </span>
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div className="flex space-x-2">
+                                      <button
+                                        onClick={() => handleView(ikan)}
+                                        className="text-[#00412E] hover:text-[#96BF8A] transition-colors duration-200"
+                                      >
+                                        <Eye size={16} />
+                                      </button>
+                                      <button
+                                        onClick={() => handleEdit(ikan)}
+                                        className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                                      >
+                                        <Edit3 size={16} />
+                                      </button>
+                                      <button
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          handleDelete(ikan);
+                                        }}
+                                        className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                                      >
+                                        <Trash2 size={16} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Empty State */}
+                    {Array.isArray(filteredIkan) &&
+                      filteredIkan.length === 0 && (
+                        <div className="text-center py-12">
+                          <Fish className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                          <h3
+                            className="text-lg font-medium text-gray-900 mb-2"
+                            style={{ fontFamily: "Hanken Grotesk" }}
+                          >
+                            Belum ada data ikan
+                          </h3>
+                          <p className="text-gray-500 mb-6">
+                            Mulai dengan menambahkan ikan pertama ke katalog
+                          </p>
+                          <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-medium rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg">
+                            <Plus className="w-5 h-5 mr-2" />
+                            Tambah Ikan Pertama
+                          </button>
+                        </div>
+                      )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-
-          {/* Loading State */}
-          {isLoading && (
-            <div className="text-center py-12">
-              <Loader2 className="w-16 h-16 text-[#96BF8A] mx-auto mb-4 animate-spin" />
-              <h3
-                className="text-lg font-medium text-gray-900 mb-2"
-                style={{ fontFamily: "Hanken Grotesk" }}
-              >
-                Memuat data ikan...
-              </h3>
-              <p className="text-gray-500">Mohon tunggu sebentar</p>
-            </div>
-          )}
-
-          {/* Error State */}
-          {error && !isLoading && (
-            <div className="text-center py-12">
-              <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <h3
-                className="text-lg font-medium text-gray-900 mb-2"
-                style={{ fontFamily: "Hanken Grotesk" }}
-              >
-                Terjadi kesalahan
-              </h3>
-              <p className="text-gray-500 mb-6">{error}</p>
-              <button
-                onClick={fetchIkan}
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-medium rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
-              >
-                <Loader2 className="w-5 h-5 mr-2" />
-                Coba Lagi
-              </button>
-            </div>
-          )}
         </div>
       </Layout>
 
