@@ -285,12 +285,6 @@ const AdminDashboard = ({
                       </span>
                     </div>
                   </div>
-
-                  <div className="mt-4 lg:mt-0">
-                    <button className="text-sm text-[#96BF8A] hover:text-white transition-colors duration-200 underline decoration-dotted underline-offset-4">
-                      Lihat Tutorial Dashboard →
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
