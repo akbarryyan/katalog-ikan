@@ -173,7 +173,7 @@ const AdminDashboard = ({
                   </div>
 
                   {/* Quick Stats - Jumlah Ikan */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-200 group cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-xs text-[#E8EAE5] opacity-80">
@@ -221,19 +221,6 @@ const AdminDashboard = ({
                       <p className="text-xs text-red-400 mt-1">
                         {stats.habis > 0 ? "Perlu restock" : "Semua tersedia"}
                       </p>
-                    </div>
-
-                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-200 group cursor-pointer">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs text-[#E8EAE5] opacity-80">
-                          Kategori
-                        </p>
-                        <BarChart3 className="w-4 h-4 text-yellow-400 group-hover:scale-110 transition-transform duration-200" />
-                      </div>
-                      <p className="text-xl font-bold">
-                        {loading ? "..." : stats.categoryCount}
-                      </p>
-                      <p className="text-xs text-yellow-400 mt-1">Jenis ikan</p>
                     </div>
                   </div>
                 </div>
