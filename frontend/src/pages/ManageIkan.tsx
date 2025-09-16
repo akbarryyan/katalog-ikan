@@ -383,7 +383,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                     <button
                       onClick={handleOpenModal}
                       disabled={isButtonLoading}
-                      className="group inline-flex items-center justify-center px-6 py-3.5 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-semibold rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-80 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:-translate-y-0"
+                      className="add-button-group inline-flex items-center justify-center px-6 py-3.5 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-semibold rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-80 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:-translate-y-0 relative"
                     >
                       {isButtonLoading ? (
                         <>
@@ -392,11 +392,11 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                         </>
                       ) : (
                         <>
-                          <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+                          <Plus className="w-5 h-5 mr-2 hover:rotate-90 transition-transform duration-300" />
                           <span className="whitespace-nowrap">
                             Tambah Ikan Baru
                           </span>
-                          <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </>
                       )}
                     </button>
