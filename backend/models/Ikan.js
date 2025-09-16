@@ -164,9 +164,9 @@ class Ikan {
         GROUP BY status
       `);
 
-      // Get total value
+      // Get total value (sum of all fish prices, not multiplied by stock)
       const [valueRows] = await db.execute(`
-        SELECT SUM(harga * stok) as totalValue 
+        SELECT SUM(harga) as totalValue 
         FROM fishs
       `);
       const totalValue = valueRows[0].totalValue || 0;

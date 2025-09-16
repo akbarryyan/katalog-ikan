@@ -60,6 +60,14 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   const [filteredIkan, setFilteredIkan] = useState<Ikan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dashboardStats, setDashboardStats] = useState({
+    totalIkan: 0,
+    tersedia: 0,
+    habis: 0,
+    preOrder: 0,
+    totalValue: 0,
+    categoryCount: 0,
+  });
 
   // UI state
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -86,6 +94,19 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   const statuses = ["all", "tersedia", "habis", "pre-order"];
 
   // API Functions
+  const fetchDashboardStats = async () => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.ikanStats);
+      console.log("Dashboard Stats API Response:", response.data);
+
+      if (response.data.success && response.data.data) {
+        setDashboardStats(response.data.data);
+      }
+    } catch (err) {
+      console.error("Error fetching dashboard stats:", err);
+    }
+  };
+
   const fetchIkan = async () => {
     try {
       setIsLoading(true);
@@ -98,8 +119,30 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       const data = response.data.data || response.data;
 
       if (Array.isArray(data)) {
-        setIkanList(data);
-        setFilteredIkan(data);
+        // Convert string numbers to actual numbers if needed
+        const processedData = data.map((ikan) => ({
+          ...ikan,
+          harga:
+            typeof ikan.harga === "string"
+              ? parseFloat(ikan.harga) || 0
+              : Number(ikan.harga) || 0,
+          stok:
+            typeof ikan.stok === "string"
+              ? parseInt(ikan.stok) || 0
+              : Number(ikan.stok) || 0,
+        }));
+
+        setIkanList(processedData);
+        setFilteredIkan(processedData);
+
+        // Debug logging untuk memeriksa data
+        console.log("Sample ikan data:", processedData[0]);
+        if (processedData.length > 0) {
+          const sample = processedData[0];
+          console.log("Harga ikan pertama:", sample.harga, typeof sample.harga);
+          console.log("Stok ikan pertama:", sample.stok, typeof sample.stok);
+          console.log("Total ikan pertama:", sample.harga * sample.stok);
+        }
       } else {
         console.error("Data bukan array:", data);
         setIkanList([]);
@@ -178,6 +221,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
   // Fetch data on component mount
   useEffect(() => {
     fetchIkan();
+    fetchDashboardStats();
   }, []);
 
   const getStatusColor = (status: string) => {
@@ -211,7 +255,20 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(price);
+  };
+
+  // Helper function to calculate total value (sum of prices only, not multiplied by stock)
+  const calculateTotalPriceSum = (ikanArray: Ikan[]) => {
+    if (!Array.isArray(ikanArray) || ikanArray.length === 0) return 0;
+
+    const total = ikanArray.reduce((sum: number, ikan: Ikan) => {
+      const harga = Number(ikan.harga) || 0;
+      return sum + harga;
+    }, 0);
+
+    return total;
   };
 
   const handleEdit = (ikan: Ikan) => {
@@ -236,6 +293,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       if (success) {
         setIsDeleteModalOpen(false);
         setIkanToDelete(null);
+        await fetchDashboardStats(); // Refresh dashboard stats setelah delete
         // Show success notification (you can add toast notification here)
         console.log(`${ikanToDelete.nama} berhasil dihapus`);
       }
@@ -280,6 +338,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       // Data sudah disimpan oleh FormTambahIkan component
       // Sekarang kita hanya perlu refresh data dan close modal
       await fetchIkan();
+      await fetchDashboardStats(); // Refresh dashboard stats juga
       handleCloseModal();
 
       // Show success message
@@ -423,22 +482,13 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                   <div className="mt-4 p-3 bg-gradient-to-r from-[#00412E]/5 to-[#96BF8A]/5 rounded-xl border border-[#96BF8A]/20">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600 font-medium">
-                        Total Nilai Stok:
+                        Total Nilai:
                       </span>
                       <span className="text-[#00412E] font-bold">
-                        {new Intl.NumberFormat("id-ID", {
-                          style: "currency",
-                          currency: "IDR",
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        }).format(
-                          Array.isArray(filteredIkan)
-                            ? filteredIkan.reduce(
-                                (sum: number, i: Ikan) =>
-                                  sum + i.harga * i.stok,
-                                0
-                              )
-                            : 0
+                        {formatPrice(
+                          dashboardStats.totalValue > 0
+                            ? dashboardStats.totalValue
+                            : calculateTotalPriceSum(filteredIkan)
                         )}
                       </span>
                     </div>
@@ -477,7 +527,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                     className="text-3xl font-bold text-[#00412E] mt-1"
                     style={{ fontFamily: "Hanken Grotesk" }}
                   >
-                    {Array.isArray(filteredIkan) ? filteredIkan.length : 0}
+                    {dashboardStats.totalIkan}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-xl">
@@ -499,11 +549,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                     className="text-3xl font-bold text-green-600 mt-1"
                     style={{ fontFamily: "Hanken Grotesk" }}
                   >
-                    {Array.isArray(filteredIkan)
-                      ? filteredIkan.filter(
-                          (i: Ikan) => i.status === "tersedia"
-                        ).length
-                      : 0}
+                    {dashboardStats.tersedia}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
@@ -525,10 +571,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                     className="text-3xl font-bold text-red-600 mt-1"
                     style={{ fontFamily: "Hanken Grotesk" }}
                   >
-                    {Array.isArray(filteredIkan)
-                      ? filteredIkan.filter((i: Ikan) => i.status === "habis")
-                          .length
-                      : 0}
+                    {dashboardStats.habis}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl">
@@ -550,16 +593,11 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                     className="text-3xl font-bold text-[#00412E] mt-1"
                     style={{ fontFamily: "Hanken Grotesk" }}
                   >
-                    Rp{" "}
-                    {(
-                      (Array.isArray(filteredIkan)
-                        ? filteredIkan.reduce(
-                            (sum: number, i: Ikan) => sum + i.harga * i.stok,
-                            0
-                          )
-                        : 0) / 1000000
-                    ).toFixed(1)}
-                    M
+                    {formatPrice(
+                      dashboardStats.totalValue > 0
+                        ? dashboardStats.totalValue
+                        : calculateTotalPriceSum(filteredIkan)
+                    )}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl">
