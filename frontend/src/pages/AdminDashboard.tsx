@@ -1,33 +1,90 @@
-import { useState } from 'react';
-import { 
-  Fish, 
-  Plus, 
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Fish,
+  Plus,
   TrendingUp,
   Package,
   AlertCircle,
   BarChart3,
   DollarSign,
-  Clock
-} from 'lucide-react';
-import Layout from '../components/Layout';
+  Clock,
+} from "lucide-react";
+import Layout from "../components/Layout";
+import { API_ENDPOINTS } from "../config/api";
 
 interface AdminDashboardProps {
   onLogout: () => void;
   user: { email: string } | null;
-  onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan' | 'settings') => void;
+  onNavigate: (
+    route: "dashboard" | "tambah-ikan" | "kelola-ikan" | "settings"
+  ) => void;
 }
 
-const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => {
-  const [activeTab] = useState('dashboard');
+interface DashboardStats {
+  totalIkan: number;
+  tersedia: number;
+  habis: number;
+  preOrder: number;
+  totalValue: number;
+  categoryCount: number;
+}
+
+const AdminDashboard = ({
+  onLogout,
+  user,
+  onNavigate,
+}: AdminDashboardProps) => {
+  const [activeTab] = useState("dashboard");
+  const [stats, setStats] = useState<DashboardStats>({
+    totalIkan: 0,
+    tersedia: 0,
+    habis: 0,
+    preOrder: 0,
+    totalValue: 0,
+    categoryCount: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  // Format currency in Rupiah
+  const formatCurrency = (value: number): string => {
+    if (value >= 1000000) {
+      return `Rp ${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `Rp ${(value / 1000).toFixed(0)}K`;
+    } else {
+      return `Rp ${value.toLocaleString("id-ID")}`;
+    }
+  };
+
+  // Load dashboard statistics
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(API_ENDPOINTS.ikanStats);
+
+        if (response.data.success) {
+          setStats(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error loading dashboard stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStats();
+  }, []);
 
   return (
-    <Layout 
+    <Layout
       onLogout={onLogout}
       user={user}
       onNavigate={onNavigate}
       currentRoute="dashboard"
     >
-      {activeTab === 'dashboard' && (
+      {activeTab === "dashboard" && (
         <div className="space-y-8">
           {/* Welcome Section */}
           <div className="relative overflow-hidden bg-gradient-to-br from-[#00412E] via-[#00412E]/95 to-[#96BF8A] rounded-3xl p-8 lg:p-12 text-white shadow-2xl">
@@ -37,12 +94,12 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
               <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white rounded-full opacity-50"></div>
             </div>
-            
+
             {/* Floating Icons */}
             <div className="absolute top-6 right-8 opacity-20">
               <Fish className="w-16 h-16 text-white animate-pulse" />
             </div>
-            
+
             {/* Main Content */}
             <div className="relative z-10">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
@@ -54,103 +111,142 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                         <span className="text-2xl">👋</span>
                       </div>
                       <div>
-                        <h2 className="text-2xl lg:text-4xl font-bold mb-2" style={{ fontFamily: 'Hanken Grotesk' }}>
-                          Selamat {(() => {
+                        <h2
+                          className="text-2xl lg:text-4xl font-bold mb-2"
+                          style={{ fontFamily: "Hanken Grotesk" }}
+                        >
+                          Selamat{" "}
+                          {(() => {
                             const hour = new Date().getHours();
-                            if (hour < 12) return 'Pagi';
-                            if (hour < 15) return 'Siang';
-                            if (hour < 18) return 'Sore';
-                            return 'Malam';
-                          })()}, Admin!
+                            if (hour < 12) return "Pagi";
+                            if (hour < 15) return "Siang";
+                            if (hour < 18) return "Sore";
+                            return "Malam";
+                          })()}
+                          , Admin!
                         </h2>
-                        <p className="text-[#E8EAE5] text-base lg:text-lg opacity-90" style={{ fontFamily: 'Hanken Grotesk' }}>
-                          Kelola katalog ikan dan pantau performa penjualan Anda dengan mudah
+                        <p
+                          className="text-[#E8EAE5] text-base lg:text-lg opacity-90"
+                          style={{ fontFamily: "Hanken Grotesk" }}
+                        >
+                          Kelola katalog ikan dan pantau performa penjualan Anda
+                          dengan mudah
                         </p>
                       </div>
                     </div>
-                    
+
                     {/* Back to Website Button */}
                     <div className="hidden lg:block">
                       <button
-                        onClick={() => window.location.href = '/'}
+                        onClick={() => (window.location.href = "/")}
                         className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg transition-all duration-200 border border-white/30 hover:border-white/50 flex items-center space-x-2"
                       >
                         <span>🌐</span>
-                        <span className="text-sm font-medium">Kembali ke Website</span>
+                        <span className="text-sm font-medium">
+                          Kembali ke Website
+                        </span>
                       </button>
                     </div>
                   </div>
-                  
+
                   {/* Mobile Back to Website Button */}
                   <div className="lg:hidden mb-4">
                     <button
-                      onClick={() => window.location.href = '/'}
+                      onClick={() => (window.location.href = "/")}
                       className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-3 rounded-lg transition-all duration-200 border border-white/30 hover:border-white/50 flex items-center justify-center space-x-2"
                     >
                       <span>🌐</span>
-                      <span className="text-sm font-medium">Kembali ke Website</span>
+                      <span className="text-sm font-medium">
+                        Kembali ke Website
+                      </span>
                     </button>
                   </div>
-                  
+
                   {/* Quick Stats - Jumlah Ikan */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-200 group cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs text-[#E8EAE5] opacity-80">Total Ikan</p>
+                        <p className="text-xs text-[#E8EAE5] opacity-80">
+                          Total Ikan
+                        </p>
                         <Fish className="w-4 h-4 text-[#96BF8A] group-hover:scale-110 transition-transform duration-200" />
                       </div>
-                      <p className="text-xl font-bold">24</p>
-                      <p className="text-xs text-[#96BF8A] mt-1">+2 dari kemarin</p>
+                      <p className="text-xl font-bold">
+                        {loading ? "..." : stats.totalIkan}
+                      </p>
+                      <p className="text-xs text-[#96BF8A] mt-1">
+                        Total katalog
+                      </p>
                     </div>
-                    
+
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-200 group cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs text-[#E8EAE5] opacity-80">Tersedia</p>
+                        <p className="text-xs text-[#E8EAE5] opacity-80">
+                          Tersedia
+                        </p>
                         <Package className="w-4 h-4 text-green-400 group-hover:scale-110 transition-transform duration-200" />
                       </div>
-                      <p className="text-xl font-bold">18</p>
-                      <p className="text-xs text-green-400 mt-1">75% stok</p>
+                      <p className="text-xl font-bold">
+                        {loading ? "..." : stats.tersedia}
+                      </p>
+                      <p className="text-xs text-green-400 mt-1">
+                        {stats.totalIkan > 0
+                          ? `${Math.round(
+                              (stats.tersedia / stats.totalIkan) * 100
+                            )}% stok`
+                          : "0% stok"}
+                      </p>
                     </div>
-                    
+
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-200 group cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs text-[#E8EAE5] opacity-80">Habis Stok</p>
+                        <p className="text-xs text-[#E8EAE5] opacity-80">
+                          Habis Stok
+                        </p>
                         <AlertCircle className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform duration-200" />
                       </div>
-                      <p className="text-xl font-bold">6</p>
-                      <p className="text-xs text-red-400 mt-1">Perlu restock</p>
+                      <p className="text-xl font-bold">
+                        {loading ? "..." : stats.habis}
+                      </p>
+                      <p className="text-xs text-red-400 mt-1">
+                        {stats.habis > 0 ? "Perlu restock" : "Semua tersedia"}
+                      </p>
                     </div>
-                    
+
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-200 group cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs text-[#E8EAE5] opacity-80">Kategori</p>
+                        <p className="text-xs text-[#E8EAE5] opacity-80">
+                          Kategori
+                        </p>
                         <BarChart3 className="w-4 h-4 text-yellow-400 group-hover:scale-110 transition-transform duration-200" />
                       </div>
-                      <p className="text-xl font-bold">8</p>
-                      <p className="text-xs text-yellow-400 mt-1">Air Tawar & Laut</p>
+                      <p className="text-xl font-bold">
+                        {loading ? "..." : stats.categoryCount}
+                      </p>
+                      <p className="text-xs text-yellow-400 mt-1">Jenis ikan</p>
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Right Side - Action Buttons */}
                 <div className="mt-6 lg:mt-0 lg:ml-8">
                   <div className="flex flex-col space-y-3">
-                    <button 
-                      onClick={() => onNavigate('tambah-ikan')}
+                    <button
+                      onClick={() => onNavigate("tambah-ikan")}
                       className="flex items-center justify-center px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl border border-white/30 hover:border-white/50 transition-all duration-200 hover:scale-105 active:scale-95 group"
                     >
                       <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
                       <span className="font-medium">Tambah Ikan</span>
                     </button>
-                    
-                    <button 
-                      onClick={() => onNavigate('kelola-ikan')}
+
+                    <button
+                      onClick={() => onNavigate("kelola-ikan")}
                       className="flex items-center justify-center px-6 py-3 bg-[#96BF8A]/20 hover:bg-[#96BF8A]/30 backdrop-blur-sm rounded-xl border border-[#96BF8A]/30 hover:border-[#96BF8A]/50 transition-all duration-200 hover:scale-105 active:scale-95 group"
                     >
                       <Fish className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
                       <span className="font-medium">Kelola Katalog</span>
                     </button>
-                    
+
                     <button className="flex items-center justify-center px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl border border-white/20 hover:border-white/40 transition-all duration-200 hover:scale-105 active:scale-95 group">
                       <BarChart3 className="w-5 h-5 mr-2 group-hover:animate-pulse" />
                       <span className="font-medium">Lihat Laporan</span>
@@ -158,7 +254,7 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                   </div>
                 </div>
               </div>
-              
+
               {/* Bottom Info */}
               <div className="mt-8 pt-6 border-t border-white/20">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
@@ -169,15 +265,17 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                     </div>
                     <div className="flex items-center space-x-2">
                       <Clock className="w-4 h-4" />
-                      <span>{new Date().toLocaleDateString('id-ID', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                      })}</span>
+                      <span>
+                        {new Date().toLocaleDateString("id-ID", {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
                     </div>
                   </div>
-                  
+
                   <div className="mt-4 lg:mt-0">
                     <button className="text-sm text-[#96BF8A] hover:text-white transition-colors duration-200 underline decoration-dotted underline-offset-4">
                       Lihat Tutorial Dashboard →
@@ -193,11 +291,17 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-[#96BF8A]/20 hover:shadow-xl transition-all duration-300 group">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-[#96BF8A]" style={{ fontFamily: 'Hanken Grotesk' }}>
+                  <p
+                    className="text-sm font-medium text-[#96BF8A]"
+                    style={{ fontFamily: "Hanken Grotesk" }}
+                  >
                     Total Ikan
                   </p>
-                  <p className="text-3xl font-bold text-[#00412E] mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    24
+                  <p
+                    className="text-3xl font-bold text-[#00412E] mt-1"
+                    style={{ fontFamily: "Hanken Grotesk" }}
+                  >
+                    {loading ? "..." : stats.totalIkan}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-xl group-hover:scale-110 transition-transform duration-300">
@@ -206,18 +310,24 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
               </div>
               <div className="flex items-center mt-4 text-sm text-[#96BF8A]">
                 <TrendingUp size={16} className="mr-1" />
-                <span>+12% dari bulan lalu</span>
+                <span>Total dalam katalog</span>
               </div>
             </div>
-            
+
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-[#96BF8A]/20 hover:shadow-xl transition-all duration-300 group">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-[#96BF8A]" style={{ fontFamily: 'Hanken Grotesk' }}>
+                  <p
+                    className="text-sm font-medium text-[#96BF8A]"
+                    style={{ fontFamily: "Hanken Grotesk" }}
+                  >
                     Tersedia
                   </p>
-                  <p className="text-3xl font-bold text-[#00412E] mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    18
+                  <p
+                    className="text-3xl font-bold text-[#00412E] mt-1"
+                    style={{ fontFamily: "Hanken Grotesk" }}
+                  >
+                    {loading ? "..." : stats.tersedia}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
@@ -226,18 +336,30 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
               </div>
               <div className="flex items-center mt-4 text-sm text-green-500">
                 <TrendingUp size={16} className="mr-1" />
-                <span>+8% dari bulan lalu</span>
+                <span>
+                  {stats.totalIkan > 0
+                    ? `${Math.round(
+                        (stats.tersedia / stats.totalIkan) * 100
+                      )}% dari total`
+                    : "Tidak ada data"}
+                </span>
               </div>
             </div>
-            
+
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-[#96BF8A]/20 hover:shadow-xl transition-all duration-300 group">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-[#96BF8A]" style={{ fontFamily: 'Hanken Grotesk' }}>
+                  <p
+                    className="text-sm font-medium text-[#96BF8A]"
+                    style={{ fontFamily: "Hanken Grotesk" }}
+                  >
                     Habis Stok
                   </p>
-                  <p className="text-3xl font-bold text-[#00412E] mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    6
+                  <p
+                    className="text-3xl font-bold text-[#00412E] mt-1"
+                    style={{ fontFamily: "Hanken Grotesk" }}
+                  >
+                    {loading ? "..." : stats.habis}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
@@ -245,19 +367,27 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                 </div>
               </div>
               <div className="flex items-center mt-4 text-sm text-red-500">
-                <TrendingUp size={16} className="mr-1" />
-                <span>Perlu restock</span>
+                <AlertCircle size={16} className="mr-1" />
+                <span>
+                  {stats.habis > 0 ? "Perlu restock" : "Semua tersedia"}
+                </span>
               </div>
             </div>
-            
+
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-[#96BF8A]/20 hover:shadow-xl transition-all duration-300 group">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-[#96BF8A]" style={{ fontFamily: 'Hanken Grotesk' }}>
+                  <p
+                    className="text-sm font-medium text-[#96BF8A]"
+                    style={{ fontFamily: "Hanken Grotesk" }}
+                  >
                     Total Nilai
                   </p>
-                  <p className="text-3xl font-bold text-[#00412E] mt-1" style={{ fontFamily: 'Hanken Grotesk' }}>
-                    Rp 2.4M
+                  <p
+                    className="text-3xl font-bold text-[#00412E] mt-1"
+                    style={{ fontFamily: "Hanken Grotesk" }}
+                  >
+                    {loading ? "..." : formatCurrency(stats.totalValue)}
                   </p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
@@ -266,11 +396,11 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
               </div>
               <div className="flex items-center mt-4 text-sm text-yellow-600">
                 <TrendingUp size={16} className="mr-1" />
-                <span>+15% dari bulan lalu</span>
+                <span>Nilai total stok</span>
               </div>
             </div>
           </div>
-          
+
           {/* Recent Activity */}
           <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
             {/* Header Section */}
@@ -281,10 +411,15 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                     <BarChart3 className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold" style={{ fontFamily: 'Hanken Grotesk' }}>
+                    <h3
+                      className="text-xl font-bold"
+                      style={{ fontFamily: "Hanken Grotesk" }}
+                    >
                       Aktivitas Terbaru
                     </h3>
-                    <p className="text-sm text-white/80">Pantau semua aktivitas terbaru</p>
+                    <p className="text-sm text-white/80">
+                      Pantau semua aktivitas terbaru
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -297,7 +432,7 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                 </div>
               </div>
             </div>
-            
+
             {/* Activity List */}
             <div className="p-6 lg:p-8">
               <div className="space-y-4">
@@ -316,7 +451,10 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="font-semibold text-gray-900 group-hover:text-[#00412E] transition-colors duration-200" style={{ fontFamily: 'Hanken Grotesk' }}>
+                          <p
+                            className="font-semibold text-gray-900 group-hover:text-[#00412E] transition-colors duration-200"
+                            style={{ fontFamily: "Hanken Grotesk" }}
+                          >
                             Ikan Gurame ditambahkan
                           </p>
                           <div className="flex items-center space-x-3 mt-1 text-sm text-gray-600">
@@ -339,7 +477,7 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Activity Item 2 - Updated */}
                 <div className="group relative">
                   <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -355,7 +493,10 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="font-semibold text-gray-900 group-hover:text-[#00412E] transition-colors duration-200" style={{ fontFamily: 'Hanken Grotesk' }}>
+                          <p
+                            className="font-semibold text-gray-900 group-hover:text-[#00412E] transition-colors duration-200"
+                            style={{ fontFamily: "Hanken Grotesk" }}
+                          >
                             Harga Ikan Mas diupdate
                           </p>
                           <div className="flex items-center space-x-3 mt-1 text-sm text-gray-600">
@@ -364,9 +505,13 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                               <span>Perubahan Harga</span>
                             </span>
                             <span>•</span>
-                            <span className="line-through text-red-500">Rp 45.000</span>
+                            <span className="line-through text-red-500">
+                              Rp 45.000
+                            </span>
                             <span>→</span>
-                            <span className="text-green-600 font-semibold">Rp 52.000</span>
+                            <span className="text-green-600 font-semibold">
+                              Rp 52.000
+                            </span>
                             <span>•</span>
                             <span className="text-green-600">+15.6%</span>
                           </div>
@@ -380,7 +525,7 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Activity Item 3 - Deleted */}
                 <div className="group relative">
                   <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-red-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -396,7 +541,10 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="font-semibold text-gray-900 group-hover:text-[#00412E] transition-colors duration-200" style={{ fontFamily: 'Hanken Grotesk' }}>
+                          <p
+                            className="font-semibold text-gray-900 group-hover:text-[#00412E] transition-colors duration-200"
+                            style={{ fontFamily: "Hanken Grotesk" }}
+                          >
                             Ikan Lele dihapus
                           </p>
                           <div className="flex items-center space-x-3 mt-1 text-sm text-gray-600">
@@ -407,7 +555,9 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                             <span>•</span>
                             <span>Kategori: Air Tawar</span>
                             <span>•</span>
-                            <span className="text-red-600 font-medium">Tindakan: Hapus dari katalog</span>
+                            <span className="text-red-600 font-medium">
+                              Tindakan: Hapus dari katalog
+                            </span>
                           </div>
                         </div>
                         <div className="flex flex-col items-end space-y-2">
@@ -420,12 +570,22 @@ const AdminDashboard = ({ onLogout, user, onNavigate }: AdminDashboardProps) => 
                   </div>
                 </div>
               </div>
-              
+
               {/* Load More Button */}
               <div className="mt-8 text-center">
                 <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#00412E] to-[#96BF8A] text-white font-medium rounded-xl hover:from-[#96BF8A] hover:to-[#00412E] transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                   Muat Lebih Banyak
                 </button>
