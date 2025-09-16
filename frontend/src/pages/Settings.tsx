@@ -99,8 +99,12 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
       setMessage(null);
 
       console.log("Saving settings to API...", settings);
+      console.log("🔍 websiteTitle value:", settings.websiteTitle);
+      console.log("📡 API Endpoint:", API_ENDPOINTS.settings);
 
       const response = await axios.put(API_ENDPOINTS.settings, settings);
+
+      console.log("📥 Server response:", response.data);
 
       if (response.data.success) {
         setMessage({ type: "success", text: "Pengaturan berhasil disimpan!" });
@@ -118,6 +122,12 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
       }, 3000);
     } catch (error) {
       console.error("Error saving settings:", error);
+      if (error instanceof Error) {
+        console.error("📊 Error message:", error.message);
+      }
+      if (error && typeof error === "object" && "response" in error) {
+        console.error("📊 Error response:", (error as any).response?.data);
+      }
       setMessage({ type: "error", text: "Gagal menyimpan pengaturan" });
     } finally {
       setIsSaving(false);
