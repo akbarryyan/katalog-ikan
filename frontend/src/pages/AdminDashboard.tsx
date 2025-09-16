@@ -30,6 +30,19 @@ interface DashboardStats {
   categoryCount: number;
 }
 
+interface Ikan {
+  id: number;
+  nama: string;
+  harga: number;
+  satuanHarga: "kg" | "gram";
+  stok: number;
+  status: "tersedia" | "habis" | "pre-order";
+  deskripsi: string;
+  gambar: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const AdminDashboard = ({
   onLogout,
   user,
@@ -44,17 +57,29 @@ const AdminDashboard = ({
     totalValue: 0,
     categoryCount: 0,
   });
+  const [ikanList, setIkanList] = useState<Ikan[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Format currency in Rupiah
-  const formatCurrency = (value: number): string => {
-    if (value >= 1000000) {
-      return `Rp ${(value / 1000000).toFixed(1)}M`;
-    } else if (value >= 1000) {
-      return `Rp ${(value / 1000).toFixed(0)}K`;
-    } else {
-      return `Rp ${value.toLocaleString("id-ID")}`;
-    }
+  // Helper function to calculate total value (sum of prices only, not multiplied by stock) - same as ManageIkan
+  const calculateTotalPriceSum = (ikanArray: Ikan[]) => {
+    if (!Array.isArray(ikanArray) || ikanArray.length === 0) return 0;
+
+    const total = ikanArray.reduce((sum: number, ikan: Ikan) => {
+      const harga = Number(ikan.harga) || 0;
+      return sum + harga;
+    }, 0);
+
+    return total;
+  };
+
+  // Format price like in ManageIkan - full currency format
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
   };
 
   // Load dashboard statistics
@@ -64,10 +89,19 @@ const AdminDashboard = ({
         setLoading(true);
         // Add longer delay to see skeleton loading clearly
         await new Promise((resolve) => setTimeout(resolve, 3000));
-        const response = await axios.get(API_ENDPOINTS.ikanStats);
 
-        if (response.data.success) {
-          setStats(response.data.data);
+        // Load both stats and ikan data
+        const [statsResponse, ikanResponse] = await Promise.all([
+          axios.get(API_ENDPOINTS.ikanStats),
+          axios.get(API_ENDPOINTS.ikan),
+        ]);
+
+        if (statsResponse.data.success) {
+          setStats(statsResponse.data.data);
+        }
+
+        if (ikanResponse.data.success) {
+          setIkanList(ikanResponse.data.data);
         }
       } catch (error) {
         console.error("Error loading dashboard stats:", error);
@@ -387,7 +421,13 @@ const AdminDashboard = ({
                         className="text-3xl font-bold text-[#00412E] mt-1"
                         style={{ fontFamily: "Hanken Grotesk" }}
                       >
-                        {formatCurrency(stats.totalValue)}
+                        {loading
+                          ? "..."
+                          : formatPrice(
+                              stats.totalValue > 0
+                                ? stats.totalValue
+                                : calculateTotalPriceSum(ikanList)
+                            )}
                       </p>
                     </div>
                     <div className="p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
