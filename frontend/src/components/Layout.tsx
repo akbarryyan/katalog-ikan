@@ -1,16 +1,24 @@
-import { useState, useEffect } from 'react';
-import Sidebar from './Sidebar';
-import TopBar from './TopBar';
+import { useState, useEffect } from "react";
+import Sidebar from "./Sidebar";
+import TopBar from "./TopBar";
 
 interface LayoutProps {
   children: React.ReactNode;
   onLogout: () => void;
   user: { email: string } | null;
-  onNavigate: (route: 'dashboard' | 'tambah-ikan' | 'kelola-ikan' | 'settings') => void;
+  onNavigate: (
+    route: "dashboard" | "tambah-ikan" | "kelola-ikan" | "settings"
+  ) => void;
   currentRoute: string;
 }
 
-const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutProps) => {
+const Layout = ({
+  children,
+  onLogout,
+  user,
+  onNavigate,
+  currentRoute,
+}: LayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -20,15 +28,22 @@ const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutPr
     };
 
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
 
-    return () => window.removeEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#E8EAE5' }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#E8EAE5",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
       {/* Sidebar - Fixed */}
-      <Sidebar 
+      <Sidebar
         onLogout={onLogout}
         user={user}
         onNavigate={onNavigate}
@@ -38,28 +53,34 @@ const Layout = ({ children, onLogout, user, onNavigate, currentRoute }: LayoutPr
       />
 
       {/* Main content - Scrollable */}
-      <div style={{
-        marginLeft: isDesktop ? '18rem' : '0', // Desktop margin for fixed sidebar
-        width: isDesktop ? 'calc(100% - 18rem)' : '100%',
-        position: 'relative',
-        zIndex: 20, // Lower than Sidebar (z-index: 30) and Modal (z-index: 50)
-        minHeight: '100vh',
-        transition: 'margin-left 0.3s ease-in-out, width 0.3s ease-in-out'
-      }}>
+      <div
+        style={{
+          marginLeft: isDesktop ? "18rem" : "0", // Desktop margin for fixed sidebar
+          width: isDesktop ? "calc(100% - 18rem)" : "100%",
+          position: "relative",
+          zIndex: 1, // Much lower than Sidebar z-index
+          minHeight: "100vh",
+          maxHeight: "100vh",
+          overflow: "hidden",
+          transition: "margin-left 0.3s ease-in-out, width 0.3s ease-in-out",
+        }}
+      >
         {/* Top bar */}
-        <TopBar 
+        <TopBar
           currentRoute={currentRoute}
           onNavigate={onNavigate}
           onMobileMenuClick={() => setSidebarOpen(true)}
         />
 
         {/* Content area - This will scroll */}
-        <div 
+        <div
           className="hide-scrollbar"
           style={{
-            padding: '1.5rem',
-            minHeight: 'calc(100vh - 80px)', // Adjust based on TopBar height
-            overflowY: 'auto'
+            padding: "1.5rem",
+            height: "calc(100vh - 80px)", // Fixed height instead of minHeight
+            maxHeight: "calc(100vh - 80px)",
+            overflowY: "auto",
+            overflowX: "hidden",
           }}
         >
           {children}

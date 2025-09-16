@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Fish, LogOut, X, Users, BarChart3, Settings } from "lucide-react";
 import { API_ENDPOINTS } from "../config/api";
+import styles from "./Sidebar.module.css";
 
 interface SidebarProps {
   onLogout: () => void;
@@ -92,21 +93,10 @@ const Sidebar = ({
     onLogout();
   };
 
-  // Calculate transform based on screen size and sidebar state
-  const getTransform = () => {
-    if (window.innerWidth >= 1024) {
-      // Desktop: always visible
-      return "translateX(0)";
-    } else {
-      // Mobile: based on sidebarOpen state
-      return sidebarOpen ? "translateX(0)" : "translateX(-100%)";
-    }
-  };
-
   return (
     <>
       {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
+      {sidebarOpen && isMobile && (
         <div
           style={{
             position: "fixed",
@@ -114,7 +104,10 @@ const Sidebar = ({
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: 9998,
+            zIndex: 9999,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
           }}
           className="lg:hidden mobile-sidebar-overlay"
           onClick={() => setSidebarOpen(false)}
@@ -123,33 +116,12 @@ const Sidebar = ({
 
       {/* Sidebar */}
       <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: "auto",
-          width: "18rem",
-          backgroundColor: "white",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-          zIndex: isMobile ? 9999 : 1000, // Increased z-index
-          overflow: "hidden",
-          transform: getTransform(),
-          transition: "transform 0.3s ease-in-out",
-        }}
+        className={`${styles.sidebarFixed} ${
+          isMobile ? (sidebarOpen ? styles.open : styles.closed) : ""
+        }`}
       >
         {/* Sidebar Content Container */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            width: "100%",
-            overflow: "hidden",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
+        <div className={styles.sidebarContent}>
           {/* Sidebar Header */}
           <div
             style={{
