@@ -5,6 +5,34 @@ const SettingsController = require("../controllers/settingsController");
 // GET /api/settings - Get all settings
 router.get("/", SettingsController.getAllSettings);
 
+// GET /api/settings/website/title - Get website title only (optimized)
+router.get("/website/title", async (req, res) => {
+  try {
+    const titleSetting = await require("../models/Settings").getByKey(
+      "websiteTitle"
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Website title berhasil diambil",
+      data: {
+        websiteTitle: titleSetting
+          ? titleSetting.setting_value
+          : "Ikan Oni - Platform Penjualan Ikan Segar",
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error getting website title:", error);
+    res.status(500).json({
+      success: false,
+      message: "Gagal mengambil website title",
+      data: {
+        websiteTitle: "Ikan Oni - Platform Penjualan Ikan Segar",
+      },
+    });
+  }
+});
+
 // GET /api/settings/website - Get website settings as object
 router.get("/website", SettingsController.getWebsiteSettings);
 
