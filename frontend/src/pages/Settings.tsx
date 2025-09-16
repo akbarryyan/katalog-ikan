@@ -238,32 +238,6 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
                       </div>
                     </div>
                   </div>
-
-                  {/* Back to Website Button */}
-                  <div className="hidden lg:block">
-                    <button
-                      onClick={() => (window.location.href = "/")}
-                      className="bg-[#00412E]/10 hover:bg-[#00412E]/20 text-[#00412E] px-4 py-2 rounded-lg transition-all duration-200 border border-[#00412E]/20 hover:border-[#00412E]/40 flex items-center space-x-2"
-                    >
-                      <span>🌐</span>
-                      <span className="text-sm font-medium">
-                        Kembali ke Website
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Mobile Back to Website Button */}
-                <div className="lg:hidden mb-4">
-                  <button
-                    onClick={() => (window.location.href = "/")}
-                    className="w-full bg-[#00412E]/10 hover:bg-[#00412E]/20 text-[#00412E] px-4 py-3 rounded-lg transition-all duration-200 border border-[#00412E]/20 hover:border-[#00412E]/40 flex items-center justify-center space-x-2"
-                  >
-                    <span>🌐</span>
-                    <span className="text-sm font-medium">
-                      Kembali ke Website
-                    </span>
-                  </button>
                 </div>
               </div>
             </div>
