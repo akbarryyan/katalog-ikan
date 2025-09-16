@@ -136,32 +136,6 @@ const AdminDashboard = ({
                         </p>
                       </div>
                     </div>
-
-                    {/* Back to Website Button */}
-                    <div className="hidden lg:block">
-                      <button
-                        onClick={() => (window.location.href = "/")}
-                        className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg transition-all duration-200 border border-white/30 hover:border-white/50 flex items-center space-x-2"
-                      >
-                        <span>🌐</span>
-                        <span className="text-sm font-medium">
-                          Kembali ke Website
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Mobile Back to Website Button */}
-                  <div className="lg:hidden mb-4">
-                    <button
-                      onClick={() => (window.location.href = "/")}
-                      className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-3 rounded-lg transition-all duration-200 border border-white/30 hover:border-white/50 flex items-center justify-center space-x-2"
-                    >
-                      <span>🌐</span>
-                      <span className="text-sm font-medium">
-                        Kembali ke Website
-                      </span>
-                    </button>
                   </div>
 
                   {/* Quick Stats - Jumlah Ikan */}
