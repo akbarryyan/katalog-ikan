@@ -220,8 +220,8 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        // Add small delay to see skeleton loading
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Add longer delay to see skeleton loading clearly
+        await new Promise((resolve) => setTimeout(resolve, 3000));
         await Promise.all([fetchIkan(), fetchDashboardStats()]);
       } catch (error) {
         console.error("Error loading data:", error);
@@ -303,6 +303,8 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
         setIsDeleteModalOpen(false);
         setIkanToDelete(null);
         setIsLoading(true);
+        // Add delay to show skeleton loading
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         await fetchDashboardStats(); // Refresh dashboard stats setelah delete
         setIsLoading(false);
         // Show success notification (you can add toast notification here)
@@ -350,6 +352,8 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
       // Data sudah disimpan oleh FormTambahIkan component
       // Sekarang kita hanya perlu refresh data dan close modal
       setIsLoading(true);
+      // Add delay to show skeleton loading
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       await Promise.all([fetchIkan(), fetchDashboardStats()]);
       setIsLoading(false);
       handleCloseModal();
@@ -1064,6 +1068,10 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                         setIsLoading(true);
                         setError(null);
                         try {
+                          // Add delay to show skeleton loading
+                          await new Promise((resolve) =>
+                            setTimeout(resolve, 2500)
+                          );
                           await Promise.all([
                             fetchIkan(),
                             fetchDashboardStats(),
