@@ -820,7 +820,8 @@ const Transactions: React.FC = () => {
 
         {/* Enhanced Transactions Table */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
@@ -942,6 +943,109 @@ const Transactions: React.FC = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4 p-4">
+            {filteredTransactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md border border-white/60 hover:shadow-lg transition-all duration-200"
+              >
+                {/* Card Header */}
+                <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-200">
+                  <div className="text-lg font-bold text-gray-900">
+                    #{transaction.id}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {new Date(transaction.orderDate).toLocaleDateString("id-ID")}
+                  </div>
+                </div>
+
+                {/* Items */}
+                <div className="mb-3">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Items:</h4>
+                  <div className="space-y-2">
+                    {transaction.items.map((item, index) => (
+                      <div key={item.id} className="text-sm">
+                        <div className="font-medium text-gray-900">
+                          {item.ikanName} x{item.quantity}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Stok: {item.initialStock} → {item.remainingStock}
+                          {transaction.stockReduced && (
+                            <span className="ml-1 text-green-600 font-semibold">
+                              ✓ Dikurangi
+                            </span>
+                          )}
+                        </div>
+                        {index < transaction.items.length - 1 && (
+                          <hr className="my-1 border-gray-200" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Total & Profit */}
+                <div className="mb-3 bg-gray-50 rounded-lg p-3">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-600">Total:</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      Rp {transaction.totalAmount.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-600">Profit:</span>
+                    <span className="text-sm font-semibold text-green-600">
+                      Rp {transaction.totalProfit.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Status Badges */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <StatusBadge status={transaction.status} />
+                  <PaymentBadge status={transaction.paymentStatus} />
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleViewTransaction(transaction)}
+                      className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                      title="Lihat Detail"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleEditTransaction(transaction)}
+                      className="p-2 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-lg transition-all duration-200"
+                      title="Edit"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    {!transaction.stockReduced && (
+                      <button
+                        onClick={() => handleStockReduction(transaction)}
+                        className="p-2 text-orange-600 hover:text-orange-900 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                        title="Kurangi Stok"
+                      >
+                        <Package className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => handleDeleteTransaction(transaction)}
+                    className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-all duration-200"
+                    title="Hapus"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Enhanced Empty State */}
