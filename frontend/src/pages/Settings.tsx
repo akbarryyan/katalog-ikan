@@ -37,6 +37,7 @@ interface WebsiteSettings {
   logoUrl: string;
   contactEmail: string;
   contactPhone: string;
+  whatsappNumber: string;
   address: string;
 }
 
@@ -50,6 +51,7 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
     logoUrl: "",
     contactEmail: "admin@ikanoni.com",
     contactPhone: "+62 812-3456-7890",
+    whatsappNumber: "+62 812-3456-7890",
     address: "Jl. Ikan Segar No. 123, Jakarta",
   });
 
@@ -252,14 +254,17 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
                 </div>
 
                 <div className="space-y-4">
-                  {[1, 2, 3].map((index) => (
+                  {[1, 2, 3, 4].map((index) => (
                     <div key={index}>
                       <div className="h-4 bg-gray-200 rounded w-28 mb-2"></div>
                       <div
                         className={`h-12 bg-gray-100 rounded-xl w-full ${
-                          index === 3 ? "h-20" : ""
+                          index === 4 ? "h-20" : ""
                         }`}
                       ></div>
+                      {index === 3 && (
+                        <div className="h-3 bg-gray-100 rounded w-72 mt-1"></div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -309,12 +314,18 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
                 </div>
 
                 <div className="space-y-3">
-                  {[1, 2, 3].map((index) => (
+                  {[1, 2, 3, 4].map((index) => (
                     <div key={index} className="p-3 bg-gray-50 rounded-lg">
                       <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
                       <div
                         className={`h-5 bg-gray-200 rounded ${
-                          index === 1 ? "w-32" : index === 2 ? "w-48" : "w-40"
+                          index === 1
+                            ? "w-32"
+                            : index === 2
+                            ? "w-48"
+                            : index === 3
+                            ? "w-40"
+                            : "w-36"
                         }`}
                       ></div>
                     </div>
@@ -559,6 +570,27 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
                     className="block text-sm font-semibold text-gray-700 mb-2"
                     style={{ fontFamily: "Hanken Grotesk" }}
                   >
+                    💬 Nomor WhatsApp
+                  </label>
+                  <input
+                    type="tel"
+                    value={settings.whatsappNumber}
+                    onChange={(e) =>
+                      handleInputChange("whatsappNumber", e.target.value)
+                    }
+                    className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] focus:bg-white transition-all duration-200"
+                    placeholder="+62 812-3456-7890"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Nomor WhatsApp untuk tombol "Pesan Sekarang" di homepage
+                  </p>
+                </div>
+
+                <div>
+                  <label
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                    style={{ fontFamily: "Hanken Grotesk" }}
+                  >
                     📍 Alamat
                   </label>
                   <textarea
@@ -732,6 +764,13 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
                   </p>
                   <p className="text-sm text-gray-700">
                     {settings.websiteDescription}
+                  </p>
+                </div>
+
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-600">WhatsApp:</p>
+                  <p className="text-sm text-gray-700 font-mono">
+                    {settings.whatsappNumber}
                   </p>
                 </div>
 
