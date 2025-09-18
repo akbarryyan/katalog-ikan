@@ -958,13 +958,17 @@ const Transactions: React.FC = () => {
                     #{transaction.id}
                   </div>
                   <div className="text-sm text-gray-500">
-                    {new Date(transaction.orderDate).toLocaleDateString("id-ID")}
+                    {new Date(transaction.orderDate).toLocaleDateString(
+                      "id-ID"
+                    )}
                   </div>
                 </div>
 
                 {/* Items */}
                 <div className="mb-3">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Items:</h4>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                    Items:
+                  </h4>
                   <div className="space-y-2">
                     {transaction.items.map((item, index) => (
                       <div key={item.id} className="text-sm">
@@ -990,13 +994,17 @@ const Transactions: React.FC = () => {
                 {/* Total & Profit */}
                 <div className="mb-3 bg-gray-50 rounded-lg p-3">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-medium text-gray-600">Total:</span>
+                    <span className="text-sm font-medium text-gray-600">
+                      Total:
+                    </span>
                     <span className="text-lg font-bold text-gray-900">
                       Rp {transaction.totalAmount.toLocaleString("id-ID")}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600">Profit:</span>
+                    <span className="text-sm font-medium text-gray-600">
+                      Profit:
+                    </span>
                     <span className="text-sm font-semibold text-green-600">
                       Rp {transaction.totalProfit.toLocaleString("id-ID")}
                     </span>
