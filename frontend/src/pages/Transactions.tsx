@@ -788,8 +788,7 @@ const Transactions: React.FC = () => {
                           0
                         ),
                       0
-                    )}{" "}
-                  kg
+                    )}
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg">
