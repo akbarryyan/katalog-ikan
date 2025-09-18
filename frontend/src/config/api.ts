@@ -7,4 +7,5 @@ export const API_ENDPOINTS = {
   ikanStats: `${API_BASE_URL}/ikan/stats`,
   settings: `${API_BASE_URL}/settings/website`,
   websiteTitle: `${API_BASE_URL}/settings/website/title`,
+  adminLogin: `${API_BASE_URL}/admin/login`,
 } as const;
