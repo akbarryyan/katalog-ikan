@@ -43,6 +43,7 @@ class SettingsController {
         logoUrl: settings.logoUrl || "",
         contactEmail: settings.contactEmail || "admin@ikanoni.com",
         contactPhone: settings.contactPhone || "+62 812-3456-7890",
+        whatsappNumber: settings.whatsappNumber || "+62 812-3456-7890",
         address: settings.address || "Jl. Ikan Segar No. 123, Jakarta",
       };
 
@@ -76,6 +77,7 @@ class SettingsController {
         logoUrl,
         contactEmail,
         contactPhone,
+        whatsappNumber,
         address,
       } = req.body;
 
@@ -97,6 +99,7 @@ class SettingsController {
         logoUrl: logoUrl || "",
         contactEmail: contactEmail || "admin@ikanoni.com",
         contactPhone: contactPhone || "+62 812-3456-7890",
+        whatsappNumber: whatsappNumber || "+62 812-3456-7890",
         address: address || "Jl. Ikan Segar No. 123, Jakarta",
       };
 
@@ -225,6 +228,7 @@ class SettingsController {
         logoUrl: "",
         contactEmail: "admin@ikanoni.com",
         contactPhone: "+62 812-3456-7890",
+        whatsappNumber: "+62 812-3456-7890",
         address: "Jl. Ikan Segar No. 123, Jakarta",
       };
 
