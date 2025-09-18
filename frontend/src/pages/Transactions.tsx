@@ -13,6 +13,7 @@ import {
   ShoppingCart,
   CreditCard,
   TrendingUp,
+  BarChart3,
   Clock,
 } from "lucide-react";
 import Layout from "../components/Layout";
@@ -30,12 +31,14 @@ interface Transaction {
   customerAddress: string;
   items: TransactionItem[];
   totalAmount: number;
+  totalProfit: number;
   status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
   paymentStatus: "unpaid" | "paid" | "refunded";
   orderDate: string;
   deliveryDate?: string;
   notes?: string;
   whatsappOrderId?: string;
+  stockReduced: boolean; // Flag untuk track apakah stok sudah dikurangi
 }
 
 interface TransactionItem {
@@ -43,8 +46,12 @@ interface TransactionItem {
   ikanId: number;
   ikanName: string;
   quantity: number;
-  price: number;
+  price: number; // Harga jual
+  costPrice: number; // Harga modal/beli
   subtotal: number;
+  profit: number; // Profit per item
+  initialStock?: number; // Stok awal saat transaksi dibuat
+  remainingStock?: number; // Sisa stok setelah transaksi
 }
 
 interface FormTransaction {
@@ -110,8 +117,12 @@ const Transactions: React.FC = () => {
               ikanId: 1,
               ikanName: "Ikan Bawal",
               quantity: 2,
-              price: 45000,
+              price: 45000, // Harga jual
+              costPrice: 35000, // Harga modal
               subtotal: 90000,
+              profit: 20000, // (45000-35000) * 2
+              initialStock: 20,
+              remainingStock: 18,
             },
             {
               id: 2,
@@ -119,16 +130,22 @@ const Transactions: React.FC = () => {
               ikanName: "Ikan Gurame",
               quantity: 1,
               price: 65000,
+              costPrice: 50000,
               subtotal: 65000,
+              profit: 15000, // (65000-50000) * 1
+              initialStock: 15,
+              remainingStock: 14,
             },
           ],
           totalAmount: 155000,
-          status: "confirmed",
+          totalProfit: 35000,
+          status: "delivered",
           paymentStatus: "paid",
           orderDate: "2024-01-15T10:30:00Z",
           deliveryDate: "2024-01-16T14:00:00Z",
           notes: "Pengiriman sore hari",
           whatsappOrderId: "WA001",
+          stockReduced: true,
         },
         {
           id: 2,
@@ -142,14 +159,47 @@ const Transactions: React.FC = () => {
               ikanName: "Ikan Nila",
               quantity: 3,
               price: 35000,
+              costPrice: 25000,
               subtotal: 105000,
+              profit: 30000, // (35000-25000) * 3
+              initialStock: 25,
+              remainingStock: 22,
             },
           ],
           totalAmount: 105000,
-          status: "pending",
-          paymentStatus: "unpaid",
+          totalProfit: 30000,
+          status: "confirmed",
+          paymentStatus: "paid",
           orderDate: "2024-01-15T15:20:00Z",
           notes: "Mohon konfirmasi ketersediaan",
+          stockReduced: true,
+        },
+        {
+          id: 3,
+          customerName: "Budi Santoso",
+          customerPhone: "083456789012",
+          customerAddress: "Jl. Gatot Subroto No. 789, Surabaya",
+          items: [
+            {
+              id: 4,
+              ikanId: 1,
+              ikanName: "Ikan Bawal",
+              quantity: 1,
+              price: 45000,
+              costPrice: 35000,
+              subtotal: 45000,
+              profit: 10000,
+              initialStock: 18,
+              remainingStock: 17,
+            },
+          ],
+          totalAmount: 45000,
+          totalProfit: 10000,
+          status: "pending",
+          paymentStatus: "unpaid",
+          orderDate: "2024-01-16T09:15:00Z",
+          notes: "Pesan untuk besok pagi",
+          stockReduced: false,
         },
       ];
 
@@ -264,10 +314,195 @@ const Transactions: React.FC = () => {
     }
   };
 
-  // Export transactions
+  // Handle stock reduction
+  const handleStockReduction = async (transaction: Transaction) => {
+    if (transaction.stockReduced) {
+      alert("Stok untuk transaksi ini sudah dikurangi sebelumnya!");
+      return;
+    }
+
+    try {
+      // Confirm action
+      const confirmReduce = window.confirm(
+        `Apakah Anda yakin ingin mengurangi stok untuk transaksi #${transaction.id}?\n\n` +
+          transaction.items
+            .map(
+              (item) =>
+                `${item.ikanName}: ${item.quantity} unit (Stok: ${item.initialStock} → ${item.remainingStock})`
+            )
+            .join("\n")
+      );
+
+      if (!confirmReduce) return;
+
+      // Mock API call to reduce stock
+      // Dalam implementasi real, ini akan memanggil API untuk update stok ikan
+      console.log("Reducing stock for transaction:", transaction.id);
+
+      // Update transaction status
+      const updatedTransactions = transactions.map((t) =>
+        t.id === transaction.id
+          ? { ...t, stockReduced: true, status: "delivered" as const }
+          : t
+      );
+
+      setTransactions(updatedTransactions);
+      alert("Stok berhasil dikurangi!");
+    } catch (err) {
+      console.error("Error reducing stock:", err);
+      setError("Gagal mengurangi stok");
+    }
+  };
   const handleExportTransactions = () => {
-    // Mock export functionality
-    console.log("Exporting transactions...");
+    try {
+      // Filter hanya transaksi yang sudah mengurangi stok
+      const completedTransactions = transactions.filter((t) => t.stockReduced);
+
+      if (completedTransactions.length === 0) {
+        alert("Tidak ada transaksi yang telah mengurangi stok untuk diekspor.");
+        return;
+      }
+
+      // Generate rekap per ikan
+      const salesReport: {
+        [key: string]: {
+          ikanName: string;
+          initialStock: number;
+          totalSold: number;
+          remainingStock: number;
+          totalRevenue: number;
+          totalProfit: number;
+          totalCost: number;
+          transactions: number;
+        };
+      } = {};
+
+      completedTransactions.forEach((transaction) => {
+        transaction.items.forEach((item) => {
+          const key = `${item.ikanId}-${item.ikanName}`;
+
+          if (!salesReport[key]) {
+            salesReport[key] = {
+              ikanName: item.ikanName,
+              initialStock: item.initialStock || 0,
+              totalSold: 0,
+              remainingStock: item.remainingStock || 0,
+              totalRevenue: 0,
+              totalProfit: 0,
+              totalCost: 0,
+              transactions: 0,
+            };
+          }
+
+          salesReport[key].totalSold += item.quantity;
+          salesReport[key].totalRevenue += item.subtotal;
+          salesReport[key].totalProfit += item.profit;
+          salesReport[key].totalCost += item.costPrice * item.quantity;
+          salesReport[key].transactions += 1;
+        });
+      });
+
+      // Generate CSV content
+      const csvHeader = [
+        "Nama Ikan",
+        "Stok Awal",
+        "Terjual",
+        "Sisa Stok",
+        "Total Transaksi",
+        "Total Revenue (Rp)",
+        "Total Cost (Rp)",
+        "Total Profit (Rp)",
+        "Margin (%)",
+        "Tanggal Export",
+      ].join(",");
+
+      const csvRows = Object.values(salesReport).map((report) => {
+        const margin =
+          report.totalRevenue > 0
+            ? ((report.totalProfit / report.totalRevenue) * 100).toFixed(2)
+            : "0";
+        return [
+          `"${report.ikanName}"`,
+          report.initialStock,
+          report.totalSold,
+          report.remainingStock,
+          report.transactions,
+          report.totalRevenue,
+          report.totalCost,
+          report.totalProfit,
+          `${margin}%`,
+          new Date().toLocaleDateString("id-ID"),
+        ].join(",");
+      });
+
+      // Summary row
+      const totalRevenue = Object.values(salesReport).reduce(
+        (sum, r) => sum + r.totalRevenue,
+        0
+      );
+      const totalCost = Object.values(salesReport).reduce(
+        (sum, r) => sum + r.totalCost,
+        0
+      );
+      const totalProfit = Object.values(salesReport).reduce(
+        (sum, r) => sum + r.totalProfit,
+        0
+      );
+      const totalMargin =
+        totalRevenue > 0
+          ? ((totalProfit / totalRevenue) * 100).toFixed(2)
+          : "0";
+
+      const summaryRow = [
+        '"TOTAL KESELURUHAN"',
+        "-",
+        Object.values(salesReport).reduce((sum, r) => sum + r.totalSold, 0),
+        "-",
+        completedTransactions.length,
+        totalRevenue,
+        totalCost,
+        totalProfit,
+        `${totalMargin}%`,
+        new Date().toLocaleDateString("id-ID"),
+      ].join(",");
+
+      const csvContent = [csvHeader, ...csvRows, "", summaryRow].join("\\n");
+
+      // Download CSV
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `Laporan_Penjualan_Ikan_${new Date().toISOString().split("T")[0]}.csv`
+      );
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Show summary alert
+      const summary = Object.values(salesReport);
+      alert(
+        `Laporan berhasil diekspor!\\n\\n` +
+          `📊 RINGKASAN PENJUALAN:\\n` +
+          `• Total Ikan Terjual: ${summary.reduce(
+            (sum, r) => sum + r.totalSold,
+            0
+          )} unit\\n` +
+          `• Total Revenue: Rp ${totalRevenue.toLocaleString("id-ID")}\\n` +
+          `• Total Profit: Rp ${totalProfit.toLocaleString("id-ID")}\\n` +
+          `• Margin Keuntungan: ${totalMargin}%\\n` +
+          `• Jumlah Transaksi: ${completedTransactions.length}\\n\\n` +
+          `File disimpan sebagai: Laporan_Penjualan_Ikan_${
+            new Date().toISOString().split("T")[0]
+          }.csv`
+      );
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      alert("Gagal mengekspor data. Silakan coba lagi.");
+    }
   };
 
   // Enhanced Status badge component
@@ -531,12 +766,12 @@ const Transactions: React.FC = () => {
                 <p className="text-sm font-medium text-gray-600 mb-1">
                   Total Transaksi
                 </p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-blue-600">
                   {transactions.length}
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-                <Package className="h-8 w-8 text-white" />
+                <ShoppingCart className="h-8 w-8 text-white" />
               </div>
             </div>
           </div>
@@ -545,50 +780,68 @@ const Transactions: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">
-                  Menunggu Konfirmasi
-                </p>
-                <p className="text-3xl font-bold text-yellow-600">
-                  {transactions.filter((t) => t.status === "pending").length}
-                </p>
-              </div>
-              <div className="p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-lg">
-                <Clock className="h-8 w-8 text-white" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
-                  Selesai
-                </p>
-                <p className="text-3xl font-bold text-green-600">
-                  {transactions.filter((t) => t.status === "delivered").length}
-                </p>
-              </div>
-              <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
-                <Package className="h-8 w-8 text-white" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
-                  Total Penjualan
+                  Total Revenue
                 </p>
                 <p className="text-2xl font-bold text-green-600">
                   Rp{" "}
                   {transactions
-                    .filter((t) => t.paymentStatus === "paid")
+                    .filter((t) => t.stockReduced)
                     .reduce((sum, t) => sum + t.totalAmount, 0)
                     .toLocaleString("id-ID")}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
                 <DollarSign className="h-8 w-8 text-white" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Stok Terjual
+                </p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {transactions
+                    .filter((t) => t.stockReduced)
+                    .reduce(
+                      (sum, t) =>
+                        sum +
+                        t.items.reduce(
+                          (itemSum, item) =>
+                            itemSum +
+                            ((item.initialStock || 0) -
+                              (item.remainingStock || 0)),
+                          0
+                        ),
+                      0
+                    )}{" "}
+                  kg
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg">
+                <BarChart3 className="h-8 w-8 text-white" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Total Profit
+                </p>
+                <p className="text-2xl font-bold text-green-600">
+                  Rp{" "}
+                  {transactions
+                    .filter((t) => t.stockReduced)
+                    .reduce((sum, t) => sum + t.totalProfit, 0)
+                    .toLocaleString("id-ID")}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
+                <TrendingUp className="h-8 w-8 text-white" />
               </div>
             </div>
           </div>
@@ -604,10 +857,10 @@ const Transactions: React.FC = () => {
                     ID & Customer
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Items
+                    Items & Stok
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Total
+                    Total & Profit
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Status
@@ -644,16 +897,33 @@ const Transactions: React.FC = () => {
                       <div className="text-sm text-gray-900">
                         {transaction.items.map((item, index) => (
                           <div key={item.id} className="mb-1">
-                            <span className="font-medium">{item.ikanName}</span>{" "}
-                            x{item.quantity}
-                            {index < transaction.items.length - 1 && ", "}
+                            <div className="font-medium">
+                              {item.ikanName} x{item.quantity}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              Stok: {item.initialStock} → {item.remainingStock}
+                              {transaction.stockReduced && (
+                                <span className="ml-1 text-green-600">
+                                  ✓ Dikurangi
+                                </span>
+                              )}
+                            </div>
+                            {index < transaction.items.length - 1 && (
+                              <hr className="my-1" />
+                            )}
                           </div>
                         ))}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-gray-900">
-                        Rp {transaction.totalAmount.toLocaleString("id-ID")}
+                      <div className="text-sm">
+                        <div className="font-bold text-gray-900">
+                          Rp {transaction.totalAmount.toLocaleString("id-ID")}
+                        </div>
+                        <div className="text-green-600 font-medium">
+                          Profit: Rp{" "}
+                          {transaction.totalProfit.toLocaleString("id-ID")}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -683,6 +953,15 @@ const Transactions: React.FC = () => {
                         >
                           <Edit className="h-4 w-4" />
                         </button>
+                        {!transaction.stockReduced && (
+                          <button
+                            onClick={() => handleStockReduction(transaction)}
+                            className="p-2 text-orange-600 hover:text-orange-900 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                            title="Kurangi Stok"
+                          >
+                            <Package className="h-4 w-4" />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDeleteTransaction(transaction)}
                           className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-all duration-200"
