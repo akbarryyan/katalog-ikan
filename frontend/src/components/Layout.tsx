@@ -7,7 +7,12 @@ interface LayoutProps {
   onLogout: () => void;
   user: { email: string } | null;
   onNavigate: (
-    route: "dashboard" | "tambah-ikan" | "kelola-ikan" | "settings"
+    route:
+      | "dashboard"
+      | "tambah-ikan"
+      | "kelola-ikan"
+      | "settings"
+      | "transactions"
   ) => void;
   currentRoute: string;
 }

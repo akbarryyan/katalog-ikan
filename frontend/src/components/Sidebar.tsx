@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Fish, LogOut, X, Users, BarChart3, Settings } from "lucide-react";
+import {
+  Fish,
+  LogOut,
+  X,
+  Users,
+  BarChart3,
+  Settings,
+  ShoppingCart,
+} from "lucide-react";
 import { API_ENDPOINTS } from "../config/api";
 import styles from "./Sidebar.module.css";
 
@@ -8,7 +16,12 @@ interface SidebarProps {
   onLogout: () => void;
   user: { email: string } | null;
   onNavigate: (
-    route: "dashboard" | "tambah-ikan" | "kelola-ikan" | "settings"
+    route:
+      | "dashboard"
+      | "tambah-ikan"
+      | "kelola-ikan"
+      | "settings"
+      | "transactions"
   ) => void;
   currentRoute: string;
   sidebarOpen: boolean;
@@ -37,6 +50,12 @@ const Sidebar = ({
       id: "kelola-ikan",
       label: "Kelola Ikan",
       icon: Fish,
+      color: "from-[#00412E] to-[#96BF8A]",
+    },
+    {
+      id: "transactions",
+      label: "Transaksi",
+      icon: ShoppingCart,
       color: "from-[#00412E] to-[#96BF8A]",
     },
     {
@@ -282,6 +301,8 @@ const Sidebar = ({
                           onNavigate("kelola-ikan");
                         } else if (item.id === "settings") {
                           onNavigate("settings");
+                        } else if (item.id === "transactions") {
+                          onNavigate("transactions");
                         } else {
                           onNavigate("dashboard");
                         }

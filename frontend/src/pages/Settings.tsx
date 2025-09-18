@@ -22,9 +22,9 @@ interface SettingsProps {
     route:
       | "dashboard"
       | "tambah-ikan"
-      | "edit-ikan"
       | "kelola-ikan"
       | "settings"
+      | "transactions"
   ) => void;
 }
 

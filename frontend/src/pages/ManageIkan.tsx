@@ -47,9 +47,9 @@ interface ManageIkanProps {
     route:
       | "dashboard"
       | "tambah-ikan"
-      | "edit-ikan"
       | "kelola-ikan"
       | "settings"
+      | "transactions"
   ) => void;
 }
 
