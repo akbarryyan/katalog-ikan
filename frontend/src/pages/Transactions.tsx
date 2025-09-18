@@ -10,6 +10,10 @@ import {
   MapPin,
   Package,
   DollarSign,
+  ShoppingCart,
+  CreditCard,
+  TrendingUp,
+  Clock,
 } from "lucide-react";
 import Layout from "../components/Layout";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -266,56 +270,98 @@ const Transactions: React.FC = () => {
     console.log("Exporting transactions...");
   };
 
-  // Status badge component
+  // Enhanced Status badge component
   const StatusBadge: React.FC<{ status: Transaction["status"] }> = ({
     status,
   }) => {
-    const statusColors = {
-      pending: "bg-yellow-100 text-yellow-800",
-      confirmed: "bg-blue-100 text-blue-800",
-      shipped: "bg-purple-100 text-purple-800",
-      delivered: "bg-green-100 text-green-800",
-      cancelled: "bg-red-100 text-red-800",
+    const statusConfig = {
+      pending: {
+        bg: "bg-gradient-to-r from-yellow-100 to-yellow-200",
+        text: "text-yellow-800",
+        border: "border-yellow-300",
+        icon: Clock,
+        label: "Menunggu",
+      },
+      confirmed: {
+        bg: "bg-gradient-to-r from-blue-100 to-blue-200",
+        text: "text-blue-800",
+        border: "border-blue-300",
+        icon: Package,
+        label: "Dikonfirmasi",
+      },
+      shipped: {
+        bg: "bg-gradient-to-r from-purple-100 to-purple-200",
+        text: "text-purple-800",
+        border: "border-purple-300",
+        icon: TrendingUp,
+        label: "Dikirim",
+      },
+      delivered: {
+        bg: "bg-gradient-to-r from-green-100 to-green-200",
+        text: "text-green-800",
+        border: "border-green-300",
+        icon: Package,
+        label: "Selesai",
+      },
+      cancelled: {
+        bg: "bg-gradient-to-r from-red-100 to-red-200",
+        text: "text-red-800",
+        border: "border-red-300",
+        icon: Clock,
+        label: "Dibatalkan",
+      },
     };
 
-    const statusLabels = {
-      pending: "Menunggu",
-      confirmed: "Dikonfirmasi",
-      shipped: "Dikirim",
-      delivered: "Selesai",
-      cancelled: "Dibatalkan",
-    };
+    const config = statusConfig[status];
+    const IconComponent = config.icon;
 
     return (
       <span
-        className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[status]}`}
+        className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border ${config.bg} ${config.text} ${config.border} shadow-sm`}
       >
-        {statusLabels[status]}
+        <IconComponent className="w-3 h-3 mr-1.5" />
+        {config.label}
       </span>
     );
   };
 
-  // Payment status badge
+  // Enhanced Payment status badge
   const PaymentBadge: React.FC<{ status: Transaction["paymentStatus"] }> = ({
     status,
   }) => {
-    const statusColors = {
-      unpaid: "bg-red-100 text-red-800",
-      paid: "bg-green-100 text-green-800",
-      refunded: "bg-gray-100 text-gray-800",
+    const statusConfig = {
+      unpaid: {
+        bg: "bg-gradient-to-r from-red-100 to-red-200",
+        text: "text-red-800",
+        border: "border-red-300",
+        icon: Clock,
+        label: "Belum Bayar",
+      },
+      paid: {
+        bg: "bg-gradient-to-r from-green-100 to-green-200",
+        text: "text-green-800",
+        border: "border-green-300",
+        icon: CreditCard,
+        label: "Lunas",
+      },
+      refunded: {
+        bg: "bg-gradient-to-r from-gray-100 to-gray-200",
+        text: "text-gray-800",
+        border: "border-gray-300",
+        icon: TrendingUp,
+        label: "Refund",
+      },
     };
 
-    const statusLabels = {
-      unpaid: "Belum Bayar",
-      paid: "Lunas",
-      refunded: "Refund",
-    };
+    const config = statusConfig[status];
+    const IconComponent = config.icon;
 
     return (
       <span
-        className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[status]}`}
+        className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border ${config.bg} ${config.text} ${config.border} shadow-sm`}
       >
-        {statusLabels[status]}
+        <IconComponent className="w-3 h-3 mr-1.5" />
+        {config.label}
       </span>
     );
   };
@@ -329,24 +375,89 @@ const Transactions: React.FC = () => {
       onLogout={() => {}}
       onNavigate={() => {}}
     >
-      <div className="p-6">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Manage Transaksi
-          </h1>
-          <p className="text-gray-600">Kelola semua transaksi pesanan ikan</p>
+      <div className="bg-[#E8EAE5] p-6">
+        {/* Enhanced Header Section */}
+        <div className="relative mb-8 overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white via-[#E8EAE5]/30 to-[#96BF8A]/10 rounded-3xl"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#96BF8A]/5 rounded-full -translate-y-16 translate-x-16"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#00412E]/5 rounded-full translate-y-12 -translate-x-12"></div>
+
+          {/* Floating Transaction Icon */}
+          <div className="absolute top-6 right-8 opacity-10">
+            <CreditCard className="w-20 h-20 text-[#00412E] animate-pulse" />
+          </div>
+
+          {/* Main Content */}
+          <div className="relative z-10 bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 border border-white/50 shadow-xl">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              {/* Left Section - Title & Description */}
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-4">
+                    {/* Icon Container */}
+                    <div className="flex-shrink-0 p-4 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-2xl shadow-lg">
+                      <ShoppingCart className="w-8 h-8 text-white" />
+                    </div>
+
+                    {/* Title & Subtitle */}
+                    <div>
+                      <h1
+                        className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#00412E] leading-tight"
+                        style={{ fontFamily: "Hanken Grotesk" }}
+                      >
+                        Manage Transaksi
+                      </h1>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <div className="w-2 h-2 bg-[#96BF8A] rounded-full animate-pulse"></div>
+                        <p
+                          className="text-gray-600 text-base lg:text-lg font-medium"
+                          style={{ fontFamily: "Hanken Grotesk" }}
+                        >
+                          Kelola semua transaksi pesanan ikan
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Info Badges */}
+                <div className="flex flex-wrap gap-2 mt-4">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#00412E]/10 text-[#00412E] border border-[#00412E]/20">
+                    <Package className="w-3 h-3 mr-1" />
+                    {transactions.length} Total Transaksi
+                  </span>
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 border border-yellow-200">
+                    <Clock className="w-3 h-3 mr-1" />
+                    {
+                      transactions.filter((t) => t.status === "pending").length
+                    }{" "}
+                    Menunggu
+                  </span>
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
+                    <TrendingUp className="w-3 h-3 mr-1" />
+                    Rp{" "}
+                    {transactions
+                      .filter((t) => t.paymentStatus === "paid")
+                      .reduce((sum, t) => sum + t.totalAmount, 0)
+                      .toLocaleString("id-ID")}{" "}
+                    Revenue
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-600">{error}</p>
+          <div className="mb-6 p-4 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-2xl shadow-lg">
+            <p className="text-red-600 font-medium">{error}</p>
           </div>
         )}
 
-        {/* Filters and Search */}
-        <div className="mb-6 bg-white p-4 rounded-lg shadow-sm border">
+        {/* Enhanced Filters and Search */}
+        <div className="mb-6 bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/50">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Search */}
             <div className="relative">
@@ -356,7 +467,7 @@ const Transactions: React.FC = () => {
                 placeholder="Cari nama, telepon, atau ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 pr-4 py-2.5 w-full border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] transition-all duration-200 bg-white/80"
               />
             </div>
 
@@ -366,7 +477,7 @@ const Transactions: React.FC = () => {
               onChange={(e) =>
                 setStatusFilter(e.target.value as typeof statusFilter)
               }
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] transition-all duration-200 bg-white/80"
             >
               <option value="all">Semua Status</option>
               <option value="pending">Menunggu</option>
@@ -382,7 +493,7 @@ const Transactions: React.FC = () => {
               onChange={(e) =>
                 setPaymentFilter(e.target.value as typeof paymentFilter)
               }
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] transition-all duration-200 bg-white/80"
             >
               <option value="all">Semua Pembayaran</option>
               <option value="unpaid">Belum Bayar</option>
@@ -397,14 +508,14 @@ const Transactions: React.FC = () => {
                 type="date"
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 pr-4 py-2.5 w-full border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] transition-all duration-200 bg-white/80"
               />
             </div>
 
             {/* Export Button */}
             <button
               onClick={handleExportTransactions}
-              className="flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              className="flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <Download className="h-4 w-4 mr-2" />
               Export
@@ -412,48 +523,62 @@ const Transactions: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
+        {/* Enhanced Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Transaksi</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Total Transaksi
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
                   {transactions.length}
                 </p>
               </div>
-              <Package className="h-8 w-8 text-blue-600" />
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                <Package className="h-8 w-8 text-white" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
+          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Menunggu Konfirmasi</p>
-                <p className="text-2xl font-bold text-yellow-600">
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Menunggu Konfirmasi
+                </p>
+                <p className="text-3xl font-bold text-yellow-600">
                   {transactions.filter((t) => t.status === "pending").length}
                 </p>
               </div>
-              <Calendar className="h-8 w-8 text-yellow-600" />
+              <div className="p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-lg">
+                <Clock className="h-8 w-8 text-white" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
+          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Selesai</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Selesai
+                </p>
+                <p className="text-3xl font-bold text-green-600">
                   {transactions.filter((t) => t.status === "delivered").length}
                 </p>
               </div>
-              <Package className="h-8 w-8 text-green-600" />
+              <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
+                <Package className="h-8 w-8 text-white" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
+          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Penjualan</p>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Total Penjualan
+                </p>
                 <p className="text-2xl font-bold text-green-600">
                   Rp{" "}
                   {transactions
@@ -462,49 +587,54 @@ const Transactions: React.FC = () => {
                     .toLocaleString("id-ID")}
                 </p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
+                <DollarSign className="h-8 w-8 text-white" />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Transactions Table */}
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+        {/* Enhanced Transactions Table */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     ID & Customer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Items
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Total
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Pembayaran
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Tanggal
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Aksi
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white/50 divide-y divide-gray-200">
                 {filteredTransactions.map((transaction) => (
-                  <tr key={transaction.id} className="hover:bg-gray-50">
+                  <tr
+                    key={transaction.id}
+                    className="hover:bg-white/80 transition-colors duration-200"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-semibold text-gray-900">
                           #{transaction.id} - {transaction.customerName}
                         </div>
-                        <div className="text-sm text-gray-500 flex items-center">
+                        <div className="text-sm text-gray-500 flex items-center mt-1">
                           <Phone className="h-3 w-3 mr-1" />
                           {transaction.customerPhone}
                         </div>
@@ -513,15 +643,16 @@ const Transactions: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900">
                         {transaction.items.map((item, index) => (
-                          <div key={item.id}>
-                            {item.ikanName} x{item.quantity}
+                          <div key={item.id} className="mb-1">
+                            <span className="font-medium">{item.ikanName}</span>{" "}
+                            x{item.quantity}
                             {index < transaction.items.length - 1 && ", "}
                           </div>
                         ))}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-bold text-gray-900">
                         Rp {transaction.totalAmount.toLocaleString("id-ID")}
                       </div>
                     </td>
@@ -540,19 +671,22 @@ const Transactions: React.FC = () => {
                       <div className="flex space-x-2">
                         <button
                           onClick={() => handleViewTransaction(transaction)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                          title="Lihat Detail"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleEditTransaction(transaction)}
-                          className="text-green-600 hover:text-green-900"
+                          className="p-2 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-lg transition-all duration-200"
+                          title="Edit"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteTransaction(transaction)}
-                          className="text-red-600 hover:text-red-900"
+                          className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-all duration-200"
+                          title="Hapus"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -564,11 +698,18 @@ const Transactions: React.FC = () => {
             </table>
           </div>
 
-          {/* Empty State */}
+          {/* Enhanced Empty State */}
           {filteredTransactions.length === 0 && (
-            <div className="text-center py-8">
-              <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">Tidak ada transaksi ditemukan</p>
+            <div className="text-center py-12">
+              <div className="w-20 h-20 mx-auto mb-4 p-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl">
+                <Package className="h-12 w-12 text-gray-400 mx-auto" />
+              </div>
+              <p className="text-gray-500 text-lg font-medium">
+                Tidak ada transaksi ditemukan
+              </p>
+              <p className="text-gray-400 text-sm mt-1">
+                Coba ubah filter pencarian Anda
+              </p>
             </div>
           )}
         </div>
