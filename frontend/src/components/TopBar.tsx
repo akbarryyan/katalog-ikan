@@ -4,14 +4,12 @@ interface TopBarProps {
   currentRoute: string;
   onNavigate: (route: "dashboard" | "tambah-ikan" | "kelola-ikan") => void;
   onMobileMenuClick: () => void;
-  onTambahIkan?: () => void; // Callback untuk membuka modal tambah ikan
 }
 
 const TopBar = ({
   currentRoute,
   onNavigate,
   onMobileMenuClick,
-  onTambahIkan,
 }: TopBarProps) => {
   return (
     <div className="bg-white shadow-lg border-b border-gray-100">
@@ -105,9 +103,7 @@ const TopBar = ({
             <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right scale-95 group-hover:scale-100 z-50">
               <div className="py-2">
                 <button
-                  onClick={() =>
-                    onTambahIkan ? onTambahIkan() : onNavigate("tambah-ikan")
-                  }
+                  onClick={() => onNavigate("kelola-ikan")}
                   className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-[#E8EAE5] hover:text-[#00412E] transition-colors duration-200"
                 >
                   <svg

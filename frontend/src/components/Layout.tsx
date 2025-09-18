@@ -10,7 +10,6 @@ interface LayoutProps {
     route: "dashboard" | "tambah-ikan" | "kelola-ikan" | "settings"
   ) => void;
   currentRoute: string;
-  onTambahIkan?: () => void; // Callback untuk membuka modal tambah ikan
 }
 
 const Layout = ({
@@ -19,7 +18,6 @@ const Layout = ({
   user,
   onNavigate,
   currentRoute,
-  onTambahIkan,
 }: LayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -72,7 +70,6 @@ const Layout = ({
           currentRoute={currentRoute}
           onNavigate={onNavigate}
           onMobileMenuClick={() => setSidebarOpen(true)}
-          onTambahIkan={onTambahIkan}
         />
 
         {/* Content area - This will scroll */}

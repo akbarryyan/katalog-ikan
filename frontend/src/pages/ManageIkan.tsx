@@ -377,7 +377,6 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
         user={user || null}
         onNavigate={onNavigate || (() => {})}
         currentRoute="kelola-ikan"
-        onTambahIkan={handleOpenModal}
       >
         <div className="bg-[#E8EAE5] p-6">
           {/* Enhanced Header Section */}

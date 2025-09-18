@@ -17,7 +17,12 @@ interface AdminDashboardProps {
   onLogout: () => void;
   user: { email: string } | null;
   onNavigate: (
-    route: "dashboard" | "tambah-ikan" | "kelola-ikan" | "settings"
+    route:
+      | "dashboard"
+      | "tambah-ikan"
+      | "edit-ikan"
+      | "kelola-ikan"
+      | "settings"
   ) => void;
 }
 
