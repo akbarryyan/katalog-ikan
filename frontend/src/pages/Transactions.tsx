@@ -6,8 +6,6 @@ import {
   Trash2,
   Download,
   Calendar,
-  Phone,
-  MapPin,
   Package,
   DollarSign,
   ShoppingCart,
@@ -26,9 +24,6 @@ import Modal from "../components/Modal";
 // Interface untuk Transaction
 interface Transaction {
   id: number;
-  customerName: string;
-  customerPhone: string;
-  customerAddress: string;
   items: TransactionItem[];
   totalAmount: number;
   totalProfit: number;
@@ -55,9 +50,6 @@ interface TransactionItem {
 }
 
 interface FormTransaction {
-  customerName: string;
-  customerPhone: string;
-  customerAddress: string;
   status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
   paymentStatus: "unpaid" | "paid" | "refunded";
   deliveryDate: string;
@@ -89,9 +81,6 @@ const Transactions: React.FC = () => {
 
   // Form state
   const [formData, setFormData] = useState<FormTransaction>({
-    customerName: "",
-    customerPhone: "",
-    customerAddress: "",
     status: "pending",
     paymentStatus: "unpaid",
     deliveryDate: "",
@@ -108,9 +97,6 @@ const Transactions: React.FC = () => {
       const mockTransactions: Transaction[] = [
         {
           id: 1,
-          customerName: "Ahmad Wijaya",
-          customerPhone: "081234567890",
-          customerAddress: "Jl. Sudirman No. 123, Jakarta",
           items: [
             {
               id: 1,
@@ -149,9 +135,6 @@ const Transactions: React.FC = () => {
         },
         {
           id: 2,
-          customerName: "Siti Nurhaliza",
-          customerPhone: "082345678901",
-          customerAddress: "Jl. Merdeka No. 456, Bandung",
           items: [
             {
               id: 3,
@@ -176,9 +159,6 @@ const Transactions: React.FC = () => {
         },
         {
           id: 3,
-          customerName: "Budi Santoso",
-          customerPhone: "083456789012",
-          customerAddress: "Jl. Gatot Subroto No. 789, Surabaya",
           items: [
             {
               id: 4,
@@ -218,12 +198,7 @@ const Transactions: React.FC = () => {
 
   // Filter transactions
   const filteredTransactions = transactions.filter((transaction) => {
-    const matchesSearch =
-      transaction.customerName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      transaction.customerPhone.includes(searchTerm) ||
-      transaction.id.toString().includes(searchTerm);
+    const matchesSearch = transaction.id.toString().includes(searchTerm);
 
     const matchesStatus =
       statusFilter === "all" || transaction.status === statusFilter;
@@ -251,9 +226,6 @@ const Transactions: React.FC = () => {
   const handleEditTransaction = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setFormData({
-      customerName: transaction.customerName,
-      customerPhone: transaction.customerPhone,
-      customerAddress: transaction.customerAddress,
       status: transaction.status,
       paymentStatus: transaction.paymentStatus,
       deliveryDate: transaction.deliveryDate
@@ -854,7 +826,7 @@ const Transactions: React.FC = () => {
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    ID & Customer
+                    ID Transaksi
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Items & Stok
@@ -885,11 +857,7 @@ const Transactions: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-semibold text-gray-900">
-                          #{transaction.id} - {transaction.customerName}
-                        </div>
-                        <div className="text-sm text-gray-500 flex items-center mt-1">
-                          <Phone className="h-3 w-3 mr-1" />
-                          {transaction.customerPhone}
+                          #{transaction.id}
                         </div>
                       </div>
                     </td>
@@ -1001,29 +969,6 @@ const Transactions: React.FC = () => {
             title={`Detail Transaksi #${selectedTransaction.id}`}
           >
             <div className="space-y-4">
-              {/* Customer Info */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-medium text-gray-900 mb-2">
-                  Informasi Customer
-                </h3>
-                <div className="space-y-1 text-sm">
-                  <p>
-                    <span className="font-medium">Nama:</span>{" "}
-                    {selectedTransaction.customerName}
-                  </p>
-                  <p className="flex items-center">
-                    <Phone className="h-3 w-3 mr-1" />
-                    <span className="font-medium">Telepon:</span>{" "}
-                    {selectedTransaction.customerPhone}
-                  </p>
-                  <p className="flex items-start">
-                    <MapPin className="h-3 w-3 mr-1 mt-0.5" />
-                    <span className="font-medium">Alamat:</span>{" "}
-                    {selectedTransaction.customerAddress}
-                  </p>
-                </div>
-              </div>
-
               {/* Items */}
               <div>
                 <h3 className="font-medium text-gray-900 mb-2">
@@ -1118,55 +1063,6 @@ const Transactions: React.FC = () => {
             title={`Edit Transaksi #${selectedTransaction.id}`}
           >
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nama Customer
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.customerName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, customerName: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nomor Telepon
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.customerPhone}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        customerPhone: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Alamat
-                </label>
-                <textarea
-                  value={formData.customerAddress}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      customerAddress: e.target.value,
-                    })
-                  }
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
