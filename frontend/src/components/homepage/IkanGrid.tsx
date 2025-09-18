@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../config/api";
 
 interface Ikan {
   id: number;
@@ -19,7 +21,6 @@ interface IkanGridProps {
   statusFilter: "all" | "tersedia" | "habis";
   setSearchTerm: (term: string) => void;
   setStatusFilter: (status: "all" | "tersedia" | "habis") => void;
-  handleWhatsAppOrder: (ikan: Ikan) => void;
 }
 
 const IkanGrid: React.FC<IkanGridProps> = ({
@@ -28,8 +29,64 @@ const IkanGrid: React.FC<IkanGridProps> = ({
   statusFilter,
   setSearchTerm,
   setStatusFilter,
-  handleWhatsAppOrder,
 }) => {
+  // State untuk menyimpan nomor WhatsApp dari settings
+  const [whatsappNumber, setWhatsappNumber] =
+    useState<string>("+62 812-3456-7890"); // Default
+
+  // Fetch nomor WhatsApp dari settings saat component mount
+  useEffect(() => {
+    const fetchWhatsAppNumber = async () => {
+      try {
+        console.log("🔍 Fetching WhatsApp number from settings...");
+        const response = await axios.get(API_ENDPOINTS.settings);
+
+        if (response.data.success && response.data.data.whatsappNumber) {
+          setWhatsappNumber(response.data.data.whatsappNumber);
+          console.log(
+            "✅ WhatsApp number loaded:",
+            response.data.data.whatsappNumber
+          );
+        } else {
+          console.log(
+            "⚠️ WhatsApp number not found in settings, using default"
+          );
+        }
+      } catch (error) {
+        console.error("❌ Error fetching WhatsApp number:", error);
+        console.log("📱 Using default WhatsApp number");
+      }
+    };
+
+    fetchWhatsAppNumber();
+  }, []);
+
+  // Fungsi untuk handle WhatsApp redirect
+  const handleWhatsAppRedirect = (ikan: Ikan) => {
+    console.log("📱 Opening WhatsApp for ikan:", ikan.nama);
+    console.log("📞 WhatsApp number:", whatsappNumber);
+
+    // Format nomor WhatsApp (remove spaces, dashes, and plus)
+    const cleanNumber = whatsappNumber.replace(/[\s\-\+]/g, "");
+
+    // Buat pesan WhatsApp
+    const message = `Halo! Saya tertarik dengan ikan ${
+      ikan.nama
+    } (${ikan.harga.toLocaleString("id-ID")}/${
+      ikan.satuanHarga
+    }). Apakah masih tersedia?`;
+
+    // Encode message untuk URL
+    const encodedMessage = encodeURIComponent(message);
+
+    // Buat URL WhatsApp
+    const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+
+    console.log("🔗 WhatsApp URL:", whatsappUrl);
+
+    // Buka WhatsApp di tab baru
+    window.open(whatsappUrl, "_blank");
+  };
   // Format harga
   const formatHarga = (harga: number, satuan: string) => {
     // Format harga tanpa .00 di belakang
@@ -202,7 +259,7 @@ const IkanGrid: React.FC<IkanGridProps> = ({
                 onClick={() => {
                   console.log("Button clicked, ikan status:", ikan.status);
                   if (ikan.status === "tersedia") {
-                    handleWhatsAppOrder(ikan);
+                    handleWhatsAppRedirect(ikan);
                   }
                 }}
                 disabled={ikan.status !== "tersedia"}

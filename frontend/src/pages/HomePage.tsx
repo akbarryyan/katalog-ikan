@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { API_ENDPOINTS } from '../config/api';
-import { Header, HeroSection, SearchFilterSection, IkanGrid, Footer } from '../components/homepage';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from "../config/api";
+import {
+  Header,
+  HeroSection,
+  SearchFilterSection,
+  IkanGrid,
+  Footer,
+} from "../components/homepage";
 
 // Interface untuk data ikan
 interface Ikan {
   id: number;
   nama: string;
   harga: number;
-  satuanHarga: 'kg' | 'gram';
+  satuanHarga: "kg" | "gram";
   stok: string;
-  status: 'tersedia' | 'habis';
+  status: "tersedia" | "habis";
   deskripsi: string;
   gambar: string;
   created_at: string;
@@ -27,14 +33,16 @@ interface WebsiteSettings {
 const HomePage: React.FC = () => {
   const [ikanList, setIkanList] = useState<Ikan[]>([]);
   const [settings, setSettings] = useState<WebsiteSettings>({
-    websiteName: 'Ikan Oni',
-    websiteDescription: 'Toko Ikan Segar Terpercaya',
-    contactInfo: 'Hubungi kami untuk pemesanan'
+    websiteName: "Ikan Oni",
+    websiteDescription: "Toko Ikan Segar Terpercaya",
+    contactInfo: "Hubungi kami untuk pemesanan",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'tersedia' | 'habis'>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "tersedia" | "habis"
+  >("all");
 
   // Fetch data ikan
   const fetchIkan = async () => {
@@ -43,8 +51,8 @@ const HomePage: React.FC = () => {
       const response = await axios.get(API_ENDPOINTS.ikan);
       setIkanList(response.data.data || []);
     } catch (err) {
-      console.error('Error fetching ikan:', err);
-      setError('Gagal mengambil data ikan');
+      console.error("Error fetching ikan:", err);
+      setError("Gagal mengambil data ikan");
     } finally {
       setLoading(false);
     }
@@ -56,13 +64,16 @@ const HomePage: React.FC = () => {
       const response = await axios.get(API_ENDPOINTS.settings);
       if (response.data.success && response.data.data) {
         setSettings({
-          websiteName: response.data.data.websiteName || 'Ikan Oni',
-          websiteDescription: response.data.data.websiteDescription || 'Toko Ikan Segar Terpercaya',
-          contactInfo: response.data.data.contactInfo || 'Hubungi kami untuk pemesanan'
+          websiteName: response.data.data.websiteName || "Ikan Oni",
+          websiteDescription:
+            response.data.data.websiteDescription ||
+            "Toko Ikan Segar Terpercaya",
+          contactInfo:
+            response.data.data.contactInfo || "Hubungi kami untuk pemesanan",
         });
       }
     } catch (err) {
-      console.error('Error fetching settings:', err);
+      console.error("Error fetching settings:", err);
     }
   };
 
@@ -72,29 +83,14 @@ const HomePage: React.FC = () => {
   }, []);
 
   // Filter ikan berdasarkan search dan status
-  const filteredIkan = ikanList.filter(ikan => {
-    const matchesSearch = ikan.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         ikan.deskripsi.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || ikan.status === statusFilter;
+  const filteredIkan = ikanList.filter((ikan) => {
+    const matchesSearch =
+      ikan.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ikan.deskripsi.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || ikan.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
-
-
-  // Redirect ke WhatsApp dengan template chat
-  const handleWhatsAppOrder = (ikan: Ikan) => {
-    const phoneNumber = '6281234567890'; // Ganti dengan nomor WhatsApp yang benar
-    const message = `Halo! Saya tertarik untuk memesan ikan:
-
-🐟 *${ikan.nama}*
-💰 Harga: Rp ${Math.round(ikan.harga).toLocaleString('id-ID')}/${ikan.satuanHarga}
-📦 Stok: ${ikan.stok} unit
-📝 Deskripsi: ${ikan.deskripsi}
-
-Apakah ikan ini masih tersedia? Terima kasih!`;
-
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-  };
 
   if (loading) {
     return (
@@ -112,7 +108,9 @@ Apakah ikan ini masih tersedia? Terima kasih!`;
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Terjadi Kesalahan</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Terjadi Kesalahan
+          </h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={fetchIkan}
@@ -150,7 +148,6 @@ Apakah ikan ini masih tersedia? Terima kasih!`;
           statusFilter={statusFilter}
           setSearchTerm={setSearchTerm}
           setStatusFilter={setStatusFilter}
-          handleWhatsAppOrder={handleWhatsAppOrder}
         />
       </main>
 
