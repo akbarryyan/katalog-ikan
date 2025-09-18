@@ -11,7 +11,6 @@ import {
   ChevronDown,
   ChevronUp,
   Download,
-  Upload,
   AlertCircle,
   CheckCircle,
   Clock,
@@ -492,13 +491,6 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
 
                     {/* Secondary Action Buttons */}
                     <div className="flex gap-2">
-                      <button className="group inline-flex items-center justify-center px-4 py-3.5 bg-white text-[#00412E] font-medium rounded-xl hover:bg-[#96BF8A]/10 transition-all duration-300 hover:scale-105 active:scale-95 border border-[#96BF8A]/20 hover:border-[#96BF8A]/40 shadow-lg hover:shadow-xl">
-                        <Upload className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
-                        <span className="hidden sm:inline whitespace-nowrap">
-                          Import
-                        </span>
-                      </button>
-
                       <button className="group inline-flex items-center justify-center px-4 py-3.5 bg-white text-[#00412E] font-medium rounded-xl hover:bg-[#96BF8A]/10 transition-all duration-300 hover:scale-105 active:scale-95 border border-[#96BF8A]/20 hover:border-[#96BF8A]/40 shadow-lg hover:shadow-xl">
                         <Download className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
                         <span className="hidden sm:inline whitespace-nowrap">
