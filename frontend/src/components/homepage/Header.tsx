@@ -1,5 +1,6 @@
 import React from "react";
 import defaultLogo from "../../assets/removebg-preview.png";
+import { SERVER_BASE_URL } from "../../config/api";
 
 interface WebsiteSettings {
   websiteName: string;
@@ -20,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({ settings }) => {
           <div className="flex items-center space-x-3">
             <div className="w-14 h-14 flex items-center justify-center">
               <img
-                src={settings.logoUrl ? `http://localhost:3001${settings.logoUrl}` : defaultLogo}
+                src={settings.logoUrl ? `${SERVER_BASE_URL}${settings.logoUrl}` : defaultLogo}
                 alt="Logo"
                 className="h-full w-full object-contain"
               />

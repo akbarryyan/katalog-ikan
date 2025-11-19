@@ -1,5 +1,6 @@
 import React from "react";
 import defaultLogo from "../../assets/removebg-preview.png";
+import { SERVER_BASE_URL } from "../../config/api";
 
 interface WebsiteSettings {
   websiteName: string;
@@ -45,11 +46,7 @@ const Footer: React.FC<FooterProps> = ({ settings }) => {
               <div className="flex flex-col items-center sm:items-start mb-6 ">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mb-4">
                   <img
-                    src={
-                      settings.logoUrl
-                        ? `http://localhost:3001${settings.logoUrl}`
-                        : defaultLogo
-                    }
+                    src={settings.logoUrl ? `${SERVER_BASE_URL}${settings.logoUrl}` : defaultLogo}
                     alt={`${settings.websiteName} Logo`}
                     className="h-full w-full object-contain"
                   />

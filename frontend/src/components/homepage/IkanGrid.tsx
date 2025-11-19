@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { API_ENDPOINTS } from "../../config/api";
+import { API_ENDPOINTS, SERVER_BASE_URL } from "../../config/api";
 
 interface Ikan {
   id: number;
@@ -136,7 +136,7 @@ const IkanGrid: React.FC<IkanGridProps> = ({
           <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
             {ikan.gambar ? (
               <img
-                src={`http://localhost:3001${ikan.gambar}`}
+                src={`${SERVER_BASE_URL}${ikan.gambar}`}
                 alt={ikan.nama}
                 className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                 onError={(e) => {

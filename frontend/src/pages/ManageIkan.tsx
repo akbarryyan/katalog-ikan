@@ -22,7 +22,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Layout from "../components/Layout";
-import { API_ENDPOINTS } from "../config/api";
+import { API_ENDPOINTS, SERVER_BASE_URL } from "../config/api";
 import Modal from "../components/Modal";
 import FormTambahIkan from "../components/FormTambahIkan";
 import ConfirmModal from "../components/ConfirmModal";
@@ -1093,8 +1093,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                             {/* Fish Image */}
                             <div className="h-48 bg-gradient-to-br from-[#00412E] to-[#96BF8A] flex items-center justify-center overflow-hidden">
                               {ikan.gambar ? (
-                                <img
-                                  src={`http://localhost:3001${ikan.gambar}`}
+                                <img                                  src={`${SERVER_BASE_URL}${ikan.gambar}`}
                                   alt={ikan.nama}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
@@ -1238,7 +1237,7 @@ const ManageIkan = ({ onLogout, user, onNavigate }: ManageIkanProps) => {
                                       <div className="w-12 h-12 bg-gradient-to-br from-[#00412E] to-[#96BF8A] rounded-lg flex items-center justify-center mr-3 overflow-hidden">
                                         {ikan.gambar ? (
                                           <img
-                                            src={`http://localhost:3001${ikan.gambar}`}
+                                            src={`${SERVER_BASE_URL}${ikan.gambar}`}
                                             alt={ikan.nama}
                                             className="w-full h-full object-cover rounded-lg"
                                             onError={(e) => {

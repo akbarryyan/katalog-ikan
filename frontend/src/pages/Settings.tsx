@@ -13,7 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Layout from "../components/Layout";
-import { API_ENDPOINTS } from "../config/api";
+import { API_ENDPOINTS, SERVER_BASE_URL } from "../config/api";
 
 interface SettingsProps {
   onLogout?: () => void;
@@ -82,7 +82,7 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
       if (response.data.success) {
         setSettings(response.data.data);
         if (response.data.data.logoUrl) {
-          setLogoPreview(`http://localhost:3001${response.data.data.logoUrl}`);
+          setLogoPreview(`${SERVER_BASE_URL}${response.data.data.logoUrl}`);
         }
         console.log("Settings loaded successfully:", response.data.data);
       } else {
@@ -124,7 +124,8 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
 
       // Append all text settings
       Object.entries(settings).forEach(([key, value]) => {
-        if (key !== 'logoUrl') { // Don't send the old logoUrl string
+        if (key !== "logoUrl") {
+          // Don't send the old logoUrl string
           formData.append(key, value);
         }
       });
@@ -148,7 +149,7 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
 
         // Update logo preview with the new URL from server and reset file state
         setSettings(response.data.data);
-        setLogoPreview(`http://localhost:3001${response.data.data.logoUrl}`);
+        setLogoPreview(`${SERVER_BASE_URL}${response.data.data.logoUrl}`);
         setLogoFile(null);
       } else {
         throw new Error(response.data.message || "Failed to save settings");
@@ -531,8 +532,7 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
                     className="block text-sm font-semibold text-gray-700 mb-2"
                     style={{ fontFamily: "Hanken Grotesk" }}
                   >
-                    🖼️ URL Logo
-                    🖼️ Unggah Logo
+                    🖼️ URL Logo 🖼️ Unggah Logo
                   </label>
                   <div className="flex items-center space-x-4">
                     {logoPreview && (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Fish, Upload, X, Save, AlertCircle } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api';
 
 interface FormTambahIkanProps {
   onSave: (data: any) => void;
@@ -118,9 +119,9 @@ const FormTambahIkan = ({ onSave, onCancel, mode = 'add', initialData }: FormTam
       }
 
       // Call API to save ikan
-      const url = mode === 'edit' && initialData?.id 
-        ? `http://localhost:3001/api/ikan/${initialData.id}`
-        : 'http://localhost:3001/api/ikan';
+      const url = mode === 'edit' && initialData?.id
+        ? `${API_ENDPOINTS.ikan}/${initialData.id}`
+        : API_ENDPOINTS.ikan;
       
       const response = await fetch(url, {
         method: mode === 'edit' ? 'PUT' : 'POST',
