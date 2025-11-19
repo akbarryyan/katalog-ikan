@@ -18,17 +18,17 @@ interface Ikan {
 interface IkanGridProps {
   filteredIkan: Ikan[];
   searchTerm: string;
-  statusFilter: "all" | "tersedia" | "habis";
+  // statusFilter: "all" | "tersedia" | "habis";
   setSearchTerm: (term: string) => void;
-  setStatusFilter: (status: "all" | "tersedia" | "habis") => void;
+  // setStatusFilter: (status: "all" | "tersedia" | "habis") => void;
 }
 
 const IkanGrid: React.FC<IkanGridProps> = ({
   filteredIkan,
   searchTerm,
-  statusFilter,
+  // statusFilter,
   setSearchTerm,
-  setStatusFilter,
+  // setStatusFilter,
 }) => {
   // State untuk menyimpan nomor WhatsApp dari settings
   const [whatsappNumber, setWhatsappNumber] =
@@ -102,24 +102,23 @@ const IkanGrid: React.FC<IkanGridProps> = ({
           className="text-2xl font-bold text-gray-700 mb-3"
           style={{ fontFamily: "Hanken Grotesk" }}
         >
-          {searchTerm || statusFilter !== "all"
+          {searchTerm
             ? "Tidak ada ikan yang sesuai"
             : "Belum ada ikan tersedia"}
         </h3>
         <p className="text-gray-500 text-lg max-w-md mx-auto">
-          {searchTerm || statusFilter !== "all"
-            ? "Coba ubah kata kunci pencarian atau filter untuk menemukan ikan yang Anda cari"
+          {searchTerm
+            ? "Coba ubah kata kunci pencarian untuk menemukan ikan yang Anda cari"
             : "Kami sedang mempersiapkan stok ikan segar terbaik untuk Anda"}
         </p>
-        {(searchTerm || statusFilter !== "all") && (
+        {searchTerm && (
           <button
             onClick={() => {
               setSearchTerm("");
-              setStatusFilter("all");
             }}
             className="mt-6 bg-[#00412E] text-white px-6 py-3 rounded-xl hover:bg-[#00412E]/90 transition-colors font-medium"
           >
-            Reset Filter
+            Reset Pencarian
           </button>
         )}
       </div>
@@ -172,7 +171,7 @@ const IkanGrid: React.FC<IkanGridProps> = ({
           {/* Card Body */}
           <div className="p-6 flex flex-col">
             {/* Header Section */}
-            <div className="mb-4">
+            <div className="mb-1">
               {/* Title */}
               <h3
                 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#00412E] transition-colors duration-200 line-clamp-1"
@@ -180,12 +179,6 @@ const IkanGrid: React.FC<IkanGridProps> = ({
               >
                 {ikan.nama}
               </h3>
-
-              {/* Category Badge */}
-              <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#00412E]/10 text-[#00412E] mb-3">
-                <span className="w-2 h-2 bg-[#00412E] rounded-full mr-2"></span>
-                Ikan Segar
-              </div>
             </div>
 
             {/* Price Section */}
@@ -198,13 +191,6 @@ const IkanGrid: React.FC<IkanGridProps> = ({
                   <p className="text-xs text-gray-500 mt-1">
                     Harga per {ikan.satuanHarga}
                   </p>
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center text-xs text-gray-500 mb-1">
-                    <span className="mr-1">⭐</span>
-                    <span className="font-semibold">4.8</span>
-                  </div>
-                  <div className="text-xs text-gray-400">Rating</div>
                 </div>
               </div>
             </div>

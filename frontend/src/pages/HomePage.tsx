@@ -40,9 +40,9 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<
-    "all" | "tersedia" | "habis"
-  >("all");
+  // const [statusFilter, setStatusFilter] = useState<
+  //   "all" | "tersedia" | "habis"
+  // >("all");
 
   // Fetch data ikan
   const fetchIkan = async () => {
@@ -87,8 +87,7 @@ const HomePage: React.FC = () => {
     const matchesSearch =
       ikan.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ikan.deskripsi.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || ikan.status === statusFilter;
+    const matchesStatus = true; // Since statusFilter is commented out, always return true
     return matchesSearch && matchesStatus;
   });
 
@@ -137,17 +136,17 @@ const HomePage: React.FC = () => {
         <SearchFilterSection
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
+          // statusFilter={statusFilter}
+          // setStatusFilter={setStatusFilter}
         />
 
         {/* Ikan Grid */}
         <IkanGrid
           filteredIkan={filteredIkan}
           searchTerm={searchTerm}
-          statusFilter={statusFilter}
+          // statusFilter={statusFilter}
           setSearchTerm={setSearchTerm}
-          setStatusFilter={setStatusFilter}
+          // setStatusFilter={setStatusFilter}
         />
       </main>
 

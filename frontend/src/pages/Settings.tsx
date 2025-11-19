@@ -62,6 +62,8 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
     text: string;
   } | null>(null);
 
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   // Load settings on component mount
   useEffect(() => {
     loadSettings();
@@ -79,6 +81,9 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
 
       if (response.data.success) {
         setSettings(response.data.data);
+        if (response.data.data.logoUrl) {
+          setLogoPreview(`http://localhost:3001${response.data.data.logoUrl}`);
+        }
         console.log("Settings loaded successfully:", response.data.data);
       } else {
         throw new Error(response.data.message || "Failed to load settings");
@@ -98,21 +103,41 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
     }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = async () => {
     try {
       setIsSaving(true);
       setMessage(null);
 
-      console.log("Saving settings to API...", settings);
-      console.log("🔍 websiteTitle value:", settings.websiteTitle);
-      console.log("📡 API Endpoint:", API_ENDPOINTS.settings);
+      const formData = new FormData();
+
+      // Append all text settings
+      Object.entries(settings).forEach(([key, value]) => {
+        if (key !== 'logoUrl') { // Don't send the old logoUrl string
+          formData.append(key, value);
+        }
+      });
+
+      // Append the new logo file if it exists
+      if (logoFile) {
+        formData.append("logo", logoFile);
+      }
 
       // Add delay for better UX feedback
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      const response = await axios.put(API_ENDPOINTS.settings, settings);
-
-      console.log("📥 Server response:", response.data);
+      const response = await axios.put(API_ENDPOINTS.settings, formData);
 
       if (response.data.success) {
         setMessage({ type: "success", text: "Pengaturan berhasil disimpan!" });
@@ -120,6 +145,11 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
 
         // Dispatch custom event to notify other components
         window.dispatchEvent(new CustomEvent("settingsUpdated"));
+
+        // Update logo preview with the new URL from server and reset file state
+        setSettings(response.data.data);
+        setLogoPreview(`http://localhost:3001${response.data.data.logoUrl}`);
+        setLogoFile(null);
       } else {
         throw new Error(response.data.message || "Failed to save settings");
       }
@@ -502,16 +532,30 @@ const Settings = ({ onLogout, user, onNavigate }: SettingsProps) => {
                     style={{ fontFamily: "Hanken Grotesk" }}
                   >
                     🖼️ URL Logo
+                    🖼️ Unggah Logo
                   </label>
-                  <input
-                    type="url"
-                    value={settings.logoUrl}
-                    onChange={(e) =>
-                      handleInputChange("logoUrl", e.target.value)
-                    }
-                    className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-[#96BF8A]/50 focus:border-[#96BF8A] focus:bg-white transition-all duration-200"
-                    placeholder="https://example.com/logo.png"
-                  />
+                  <div className="flex items-center space-x-4">
+                    {logoPreview && (
+                      <img
+                        src={logoPreview}
+                        alt="Logo Preview"
+                        className="w-20 h-20 rounded-xl object-cover border-2 border-gray-200 shadow-sm"
+                      />
+                    )}
+                    <label className="flex-1 block">
+                      <span className="sr-only">Pilih file logo</span>
+                      <input
+                        type="file"
+                        onChange={handleFileChange}
+                        accept="image/png, image/jpeg, image/gif, image/svg+xml"
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#00412E]/10 file:text-[#00412E] hover:file:bg-[#00412E]/20 cursor-pointer"
+                      />
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Rekomendasi ukuran: 200x200px. Format: PNG, JPG, GIF, atau
+                    SVG.
+                  </p>
                 </div>
               </div>
             </div>

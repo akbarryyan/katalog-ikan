@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+import logo from "../../assets/removebg-preview.png";
 
 interface WebsiteSettings {
   websiteName: string;
@@ -17,35 +18,50 @@ const Header: React.FC<HeaderProps> = ({ settings }) => {
         <div className="flex justify-between items-center h-16">
           {/* Logo & Brand */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-[#00412E] rounded-lg flex items-center justify-center">
-              <span className="text-white text-xl">🐟</span>
+            <div className="w-14 h-14 flex items-center justify-center">
+              <img src={logo} alt="Logo" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Hanken Grotesk' }}>
+              <h1
+                className="text-xl font-bold text-gray-900"
+                style={{ fontFamily: "Hanken Grotesk" }}
+              >
                 {settings.websiteName}
               </h1>
-              <p className="text-sm text-gray-600 hidden sm:block">
+              {/* <p className="text-sm text-gray-600 hidden sm:block">
                 {settings.websiteDescription}
-              </p>
+              </p> */}
             </div>
           </div>
-          
+
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#home" className="text-gray-700 hover:text-[#00412E] font-medium transition-colors">
+            <a
+              href="#home"
+              className="text-gray-700 hover:text-[#00412E] font-medium transition-colors"
+            >
               Beranda
             </a>
-            <a href="#products" className="text-gray-700 hover:text-[#00412E] font-medium transition-colors">
+            <a
+              href="#products"
+              className="text-gray-700 hover:text-[#00412E] font-medium transition-colors"
+            >
               Produk
             </a>
-            <a href="#about" className="text-gray-700 hover:text-[#00412E] font-medium transition-colors">
+            <a
+              href="#about"
+              className="text-gray-700 hover:text-[#00412E] font-medium transition-colors"
+            >
               Tentang
             </a>
-            <a href="#contact" className="text-gray-700 hover:text-[#00412E] font-medium transition-colors">
+            <a
+              href="#contact"
+              className="text-gray-700 hover:text-[#00412E] font-medium transition-colors"
+            >
               Kontak
             </a>
           </nav>
-          
+
           {/* CTA Button */}
           <div className="flex items-center space-x-4">
             <button className="bg-[#00412E] text-white px-4 py-2 rounded-lg hover:bg-[#00412E]/90 transition-colors text-sm font-medium">

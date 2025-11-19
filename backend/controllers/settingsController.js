@@ -1,4 +1,6 @@
 const Settings = require("../models/Settings");
+const fs = require("fs");
+const path = require("path");
 
 class SettingsController {
   // Get all settings
@@ -66,7 +68,8 @@ class SettingsController {
   static async updateWebsiteSettings(req, res) {
     try {
       console.log("💾 Updating website settings...");
-      console.log("📊 Request body:", req.body);
+      console.log("📄 Request body (text fields):", req.body);
+      console.log("🖼️ Request file (logo):", req.file);
 
       const {
         websiteName,
@@ -80,9 +83,15 @@ class SettingsController {
         whatsappNumber,
         address,
       } = req.body;
+      const textSettings = req.body;
+      let logoPath = null;
 
       // Validate required fields
-      if (!websiteName || !websiteDescription || !websiteTitle) {
+      if (
+        !textSettings.websiteName ||
+        !textSettings.websiteDescription ||
+        !textSettings.websiteTitle
+      ) {
         return res.status(400).json({
           success: false,
           message: "Nama website, title website, dan deskripsi harus diisi",
@@ -90,28 +99,43 @@ class SettingsController {
       }
 
       // Prepare settings object
-      const settingsObject = {
-        websiteName: websiteName.trim(),
-        websiteTitle: websiteTitle.trim(),
-        websiteDescription: websiteDescription.trim(),
-        primaryColor: primaryColor || "#00412E",
-        secondaryColor: secondaryColor || "#96BF8A",
-        logoUrl: logoUrl || "",
-        contactEmail: contactEmail || "admin@ikanoni.com",
-        contactPhone: contactPhone || "+62 812-3456-7890",
-        whatsappNumber: whatsappNumber || "+62 812-3456-7890",
-        address: address || "Jl. Ikan Segar No. 123, Jakarta",
-      };
+      // If a new logo is uploaded
+      if (req.file) {
+        // 1. Get the old logo path to delete it later
+        const oldSettings = await Settings.getByKey("logoUrl");
+        if (oldSettings && oldSettings.setting_value) {
+          // Path lama relatif terhadap root backend, misal: /uploads/logos/file.png
+          const oldLogoPath = path.join(
+            __dirname,
+            "..",
+            oldSettings.setting_value
+          );
+          if (fs.existsSync(oldLogoPath)) {
+            console.log(`🗑️ Deleting old logo: ${oldLogoPath}`);
+            fs.unlinkSync(oldLogoPath);
+          }
+        }
+
+        // 2. Prepare the new logo path for the database (e.g., /uploads/logos/filename.png)
+        // req.file.path dari multer akan menjadi 'uploads\logos\filename.png' (di Windows)
+        logoPath = `/${req.file.path.replace(/\\/g, "/")}`;
+        console.log(`✨ New logo path to be saved: ${logoPath}`);
+      }
 
       // Update multiple settings
-      const results = await Settings.updateMultiple(settingsObject);
+      await Settings.updateMultiple(textSettings, logoPath);
 
-      console.log("✅ Settings updated successfully:", results);
+      // Fetch the complete, updated settings from the database to send back to the client
+      const updatedSettings = await Settings.getWebsiteSettings();
+      console.log(
+        "✅ Settings updated successfully. New data:",
+        updatedSettings
+      );
 
       res.status(200).json({
         success: true,
         message: "Website settings berhasil diperbarui",
-        data: settingsObject,
+        data: updatedSettings,
       });
     } catch (error) {
       console.error("❌ Error updating website settings:", error);

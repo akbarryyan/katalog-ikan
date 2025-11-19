@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import logo from "../assets/removebg-preview.png";
 import axios from "axios";
 import {
   Fish,
@@ -163,18 +164,8 @@ const Sidebar = ({
                 gap: "0.75rem",
               }}
             >
-              <div
-                style={{
-                  padding: "0.75rem",
-                  background:
-                    "linear-gradient(to bottom right, #00412E, #96BF8A)",
-                  borderRadius: "0.75rem",
-                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                <Fish
-                  style={{ color: "white", width: "24px", height: "24px" }}
-                />
+              <div className="w-14 h-14 flex items-center justify-center">
+                <img src={logo} alt="Logo" />
               </div>
               <h1
                 style={{
