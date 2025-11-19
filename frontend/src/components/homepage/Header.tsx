@@ -1,10 +1,10 @@
 import React from "react";
-import logo from "../../assets/removebg-preview.png";
+import defaultLogo from "../../assets/removebg-preview.png";
 
 interface WebsiteSettings {
   websiteName: string;
   websiteDescription: string;
-  contactInfo: string;
+  logoUrl: string;
 }
 
 interface HeaderProps {
@@ -19,7 +19,11 @@ const Header: React.FC<HeaderProps> = ({ settings }) => {
           {/* Logo & Brand */}
           <div className="flex items-center space-x-3">
             <div className="w-14 h-14 flex items-center justify-center">
-              <img src={logo} alt="Logo" />
+              <img
+                src={settings.logoUrl ? `http://localhost:3001${settings.logoUrl}` : defaultLogo}
+                alt="Logo"
+                className="h-full w-full object-contain"
+              />
             </div>
             <div>
               <h1

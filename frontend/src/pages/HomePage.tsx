@@ -27,15 +27,21 @@ interface Ikan {
 interface WebsiteSettings {
   websiteName: string;
   websiteDescription: string;
-  contactInfo: string;
+  logoUrl: string;
+  contactEmail: string;
+  whatsappNumber: string;
+  address: string;
 }
 
 const HomePage: React.FC = () => {
   const [ikanList, setIkanList] = useState<Ikan[]>([]);
   const [settings, setSettings] = useState<WebsiteSettings>({
     websiteName: "Ikan Oni",
-    websiteDescription: "Toko Ikan Segar Terpercaya",
-    contactInfo: "Hubungi kami untuk pemesanan",
+    websiteDescription: "Platform penjualan ikan segar terpercaya",
+    logoUrl: "",
+    contactEmail: "admin@ikanoni.com",
+    whatsappNumber: "+6281234567890",
+    address: "Jl. Ikan Segar No. 123, Jakarta",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,9 +73,11 @@ const HomePage: React.FC = () => {
           websiteName: response.data.data.websiteName || "Ikan Oni",
           websiteDescription:
             response.data.data.websiteDescription ||
-            "Toko Ikan Segar Terpercaya",
-          contactInfo:
-            response.data.data.contactInfo || "Hubungi kami untuk pemesanan",
+            "Platform penjualan ikan segar terpercaya",
+          logoUrl: response.data.data.logoUrl || "",
+          contactEmail: response.data.data.contactEmail || "admin@ikanoni.com",
+          whatsappNumber: response.data.data.whatsappNumber || "+6281234567890",
+          address: response.data.data.address || "Jl. Ikan Segar No. 123, Jakarta",
         });
       }
     } catch (err) {
